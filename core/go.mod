@@ -8,7 +8,7 @@ require (
 	github.com/metacubex/sing v0.5.8
 	github.com/metacubex/sing-tun v0.4.27
 	github.com/miekg/dns v1.1.63
-	github.com/sirupsen/logrus v1.9.4
+	github.com/sirupsen/logrus v1.10.2
 	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/mobile v0.0.0-20261011034528-197770444867
 	golang.org/x/sys v0.49.0
