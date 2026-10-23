@@ -78,7 +78,8 @@ class ProxyPageTest {
                 device.executeShellCommand("settings put system font_scale 1.8")
                 compose.waitUntil(10000) {compose.activity.resources.configuration.fontScale>=1.7f}
                 compose.onNodeWithTag("nav-1").performClick()
-                compose.onNodeWithTag("group-choice-✨ 主代理-🚀 高速优选").performScrollTo().assertIsDisplayed()
+                compose.onNodeWithTag("group-members-✨ 主代理").performScrollToIndex(0)
+                compose.onNodeWithTag("group-choice-✨ 主代理-🚀 高速优选").assertIsDisplayed()
                 captureSyntheticFixture(compose,device,"proxy-grid-large.png")
             } finally {device.executeShellCommand("settings put system font_scale 1.0");device.executeShellCommand("cmd uimode night no")}
         } finally {

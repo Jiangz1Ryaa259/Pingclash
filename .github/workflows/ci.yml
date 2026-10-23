@@ -100,3 +100,4 @@ jobs:
           path: |
             .tools/test-results/ci-android.txt
             .tools/test-results/ci-relay-stats.json
+            .tools/test-results/ci-device/*.png

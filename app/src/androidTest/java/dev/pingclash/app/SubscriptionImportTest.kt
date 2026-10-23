@@ -143,19 +143,47 @@ class SubscriptionImportTest {
         val device = UiDevice.getInstance(instrumentation)
         fun assertCaptureProtected(expected: Boolean) {
             compose.waitForIdle(); device.waitForIdle(1000)
-            // Observe compositor output, without changing production window flags.
+            hideFixtureKeyboard()
+            // Inspect the credential field itself. A secure floating window need
+            // not black out the unrelated activity or navigation bar beneath it.
+            val field=compose.onAllNodesWithTag("subscription-content").fetchSemanticsNodes().isNotEmpty()
+            if(field)compose.onNodeWithTag("subscription-content").performScrollTo()
+            val bounds=if(field)compose.onNodeWithTag("subscription-content").fetchSemanticsNode().boundsInWindow else null
+            val location=IntArray(2)
+            var width=0;var height=0
+            instrumentation.runOnMainSync {
+                val view=android.view.inspector.WindowInspector.getGlobalWindowViews().last {it.isShown}
+                view.getLocationOnScreen(location);width=view.width;height=view.height
+            }
+            val left=(bounds?.left?:width*.2f)+location[0]
+            val top=(bounds?.top?:height*.3f)+location[1]
+            val spanX=bounds?.width?:width*.6f
+            val spanY=bounds?.height?:height*.4f
+            assertTrue("Credential capture bounds must be visible",spanX>20&&spanY>20)
             var protected = !expected
-            compose.waitUntil(5000) {
-                val bitmap = instrumentation.uiAutomation.takeScreenshot() ?: return@waitUntil false
-                var dark = 0; var samples = 0
-                for (x in 2..8) for (y in 6..8) {
-                    val pixel = bitmap.getPixel(bitmap.width*x/10, bitmap.height*y/10)
-                    if (android.graphics.Color.red(pixel)<8 && android.graphics.Color.green(pixel)<8 && android.graphics.Color.blue(pixel)<8) dark++
-                    samples++
+            try {
+                compose.waitUntil(5000) {
+                    val bitmap = instrumentation.uiAutomation.takeScreenshot() ?: return@waitUntil false
+                    var dark = 0; var samples = 0
+                    for (x in 2..8) for (y in 2..8) {
+                        val px=(left+spanX*x/10).toInt().coerceIn(0,bitmap.width-1)
+                        val py=(top+spanY*y/10).toInt().coerceIn(0,bitmap.height-1)
+                        val pixel = bitmap.getPixel(px,py)
+                        if (android.graphics.Color.red(pixel)<8 && android.graphics.Color.green(pixel)<8 && android.graphics.Color.blue(pixel)<8) dark++
+                        samples++
+                    }
+                    bitmap.recycle()
+                    protected = dark == samples
+                    protected == expected
                 }
-                bitmap.recycle()
-                protected = dark == samples
-                protected == expected
+            } catch(failure: Throwable) {
+                val folder=java.io.File(instrumentation.targetContext.getExternalFilesDir(null),"synthetic-test-evidence").apply {mkdirs()}
+                instrumentation.uiAutomation.takeScreenshot()?.let {frame ->
+                    java.io.File(folder,"capture-${android.os.Build.VERSION.SDK_INT}-$expected.png").outputStream().use {frame.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)}
+                    frame.recycle()
+                }
+                println("Synthetic capture bounds: $left,$top,$spanX,$spanY expected=$expected")
+                throw failure
             }
             assertEquals(expected, protected)
         }

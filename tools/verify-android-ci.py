@@ -65,6 +65,7 @@ def main():
             output = result.stdout + result.stderr
             (OUT / 'ci-android.txt').write_text(output, encoding='utf-8')
             print(output)
+            adb('pull', '/sdcard/Android/data/dev.pingclash.app/files/synthetic-test-evidence', str(OUT / 'ci-device'), check=False)
             matched = re.search(r'OK \((\d+) tests?\)', output)
             if result.returncode or not matched or int(matched[1]) != 26 or re.search(r'INSTRUMENTATION_STATUS_CODE: -[34]\b', output):
                 raise RuntimeError('Android integration tests failed or were not fully executed')

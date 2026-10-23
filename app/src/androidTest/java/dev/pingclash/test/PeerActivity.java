@@ -26,9 +26,23 @@ public final class PeerActivity extends Activity {
                 result.putBoolean("serviceDenied", false);
             } catch (SecurityException expected) { result.putBoolean("serviceDenied", true); }
             result.putBoolean("privateFileDenied", !new File("/data/user/0/dev.pingclash.app/files/profiles.enc").canRead());
-            String stage = "dns";
+            String stage = "vpn_route";
             try {
-                InetAddress address = InetAddress.getByName(host);
+                // Native startup precedes Android netd publishing the per-UID
+                // default network. Never send the synthetic DNS lookup on the
+                // physical network while that routing transition is pending.
+                android.net.ConnectivityManager manager=getSystemService(android.net.ConnectivityManager.class);
+                android.net.Network vpn=null;
+                long deadline=android.os.SystemClock.elapsedRealtime()+5000;
+                while(android.os.SystemClock.elapsedRealtime()<deadline) {
+                    android.net.Network candidate=manager.getActiveNetwork();
+                    android.net.NetworkCapabilities caps=candidate==null?null:manager.getNetworkCapabilities(candidate);
+                    if(candidate!=null&&caps!=null&&caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_VPN)) {vpn=candidate;break;}
+                    Thread.sleep(50);
+                }
+                if(vpn==null)throw new java.io.IOException("vpn_route_unavailable");
+                stage="dns";
+                InetAddress address = vpn.getAllByName(host)[0];
                 stage = "connect";
                 try (Socket socket = new Socket()) {
                     socket.connect(new InetSocketAddress(address, 8080), 8000);
