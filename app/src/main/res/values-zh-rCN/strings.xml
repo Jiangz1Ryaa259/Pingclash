@@ -1,0 +1,6 @@
+<resources>
+    <string name="terminal_warning_title">终端权限提示</string>
+    <string name="terminal_warning_body">命令使用本应用的 UID 和权限运行，能够读取或修改应用文件并访问网络。请只运行你理解的命令。终端请求不会自动使用所选代理。历史默认只在内存；你手动执行写文件的命令仍会保存文件。</string>
+    <string name="terminal_warning_accept">我已了解</string>
+    <string name="cancel">取消</string>
+</resources>

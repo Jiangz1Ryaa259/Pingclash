@@ -30,3 +30,15 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - [Licenses and attribution](NOTICE.md)
 
 This repository contains the current source, tests and build scripts. Local toolchains, signing keys, user configurations, APKs and historical source archives are excluded. Release signing creates a new private local identity; upstream project signing keys are never distributed.
+
+## Screenshots
+
+Synthetic emulator data only; no personal subscription or credentials are shown.
+
+| Dashboard | Proxies | Settings | DNS |
+| --- | --- | --- | --- |
+| ![Dashboard](docs/images/dashboard.png) | ![Proxies](docs/images/proxies.png) | ![Settings](docs/images/settings.png) | ![DNS](docs/images/dns.png) |
+
+## Development status
+
+See the [checklist review](docs/hardening-review.md), [documentation index](docs/README.md) and [changelog](CHANGELOG.md). Provider support, automatic network reconnection and complete Android resource localization remain under development. The CI configuration and dependency-update proposals do not constitute a security certification.

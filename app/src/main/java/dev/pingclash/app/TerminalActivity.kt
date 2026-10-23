@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.termux.terminal.TerminalSession
@@ -35,6 +36,11 @@ internal class TerminalModel(application:Application):AndroidViewModel(applicati
         set(value) {viewRef=java.lang.ref.WeakReference(value)}
     var paste by mutableStateOf<String?>(null)
     private val app=application
+    var noticeAccepted by mutableStateOf(application.getSharedPreferences("terminal_ui",0).getBoolean("uid_notice_accepted",false))
+    fun acceptNotice() {
+        app.getSharedPreferences("terminal_ui",0).edit().putBoolean("uid_notice_accepted",true).apply()
+        noticeAccepted=true
+    }
     private val callbacks=object:TerminalCallbacks() {
         override fun onTextChanged(s:TerminalSession) {if(sessions.getOrNull(selected)===s)view?.onScreenUpdated()}
         override fun onSessionFinished(s:TerminalSession) {revision++;onTextChanged(s)}
@@ -49,7 +55,7 @@ internal class TerminalModel(application:Application):AndroidViewModel(applicati
         paste=clip?.takeIf {it.itemCount>0}?.getItemAt(0)?.text?.toString()?.take(16384)
     }
     fun create() {
-        if(sessions.size>=3)return
+        if(!noticeAccepted||sessions.size>=3)return
         val cwd=File(app.cacheDir,"terminal").apply {mkdirs()}
         val env=arrayOf("HOME=${cwd.absolutePath}","TMPDIR=${cwd.absolutePath}","PATH=/system/bin:/system/xbin","TERM=xterm-256color","LANG=C.UTF-8","ENV=/dev/null","HISTFILE=/dev/null","PS1=\$ ")
         sessions.add(TerminalSession("/system/bin/sh",cwd.absolutePath,arrayOf("sh","-i"),env,2000,callbacks))
@@ -88,7 +94,7 @@ class TerminalActivity:ComponentActivity() {
     Column(Modifier.fillMaxSize().background(Color(0xff0c0e12)).safeDrawingPadding().imePadding()) {
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
             TextButton(back) {Text("返回")}
-            TextButton(model::create,enabled=model.sessions.size<3,modifier=Modifier.testTag("terminal-new")) {Text("新建终端")}
+            TextButton(model::create,enabled=model.noticeAccepted&&model.sessions.size<3,modifier=Modifier.testTag("terminal-new")) {Text("新建终端")}
             TextButton(model::closeCurrent,enabled=model.sessions.isNotEmpty()) {Text("关闭会话")}
         }
         Text("标准 sh · 本应用权限 · 普通命令走系统网络",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)
@@ -112,5 +118,8 @@ class TerminalActivity:ComponentActivity() {
             }
         }
     }
+    if(!model.noticeAccepted) AlertDialog(onDismissRequest=back,title={Text(stringResource(R.string.terminal_warning_title))},text={Text(stringResource(R.string.terminal_warning_body))},
+        confirmButton={TextButton(model::acceptNotice,Modifier.testTag("terminal-notice-accept")){Text(stringResource(R.string.terminal_warning_accept))}},
+        dismissButton={TextButton(back){Text(stringResource(R.string.cancel))}})
     model.paste?.let {text->AlertDialog(onDismissRequest={model.paste=null},title={Text("粘贴到终端")},text={Text("包含换行的文本可能立即执行命令。确认后原样粘贴 ${text.length} 个字符。")},confirmButton={TextButton({model.sessions.getOrNull(model.selected)?.emulator?.paste(text);model.paste=null}){Text("粘贴")}},dismissButton={TextButton({model.paste=null}){Text("取消")}})}
 }

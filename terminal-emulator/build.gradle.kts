@@ -1,4 +1,4 @@
-plugins { id("com.android.library") }
+plugins { alias(libs.plugins.android.library) }
 android {
     namespace = "com.termux.terminal"
     compileSdk = 35
@@ -6,4 +6,4 @@ android {
     sourceSets["main"].jniLibs.srcDir(rootProject.file(".tools/terminal-native"))
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 }
-dependencies { implementation("androidx.annotation:annotation:1.3.0") }
+dependencies { implementation(libs.annotation) }

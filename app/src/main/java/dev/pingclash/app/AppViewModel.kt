@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withTimeout
@@ -171,32 +172,59 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             if(raw==null) "" else (0 until raw.length()).mapNotNull {raw.optJSONObject(it)}.firstOrNull {it.optString("name")==groupName}?.optString("url").orEmpty()
         }.getOrDefault("").ifBlank {data.value.probeUrl}}
         val queue=AtomicInteger(0)
+        val pending=ConcurrentHashMap<String,ProxyDelay>()
+        val completed=AtomicInteger(0)
+        val flushLock=Any()
+        fun flush() {
+            synchronized(flushLock) {
+            if(requestKey(data.value)!=version||!mutableProxyTests.value.running)return@synchronized
+            val entries=pending.entries.map {it.key to it.value}
+            entries.forEach {(key,value)->pending.remove(key,value)}
+            if(entries.isNotEmpty())mutableProxyTests.update {it.copy(completed=completed.get(),values=it.values+entries)}
+            }
+        }
         mutableProxyTests.update {it.copy(running=true,completed=0,total=candidates.size)}
         testJob=viewModelScope.launch(Dispatchers.IO) {
+            val updates=launch {while(true){delay(100);flush()}}
             try {
-                List(settings.probeConcurrency.coerceIn(1,16)) { async {
-                    while(mutableProxyTests.value.running && requestKey(data.value)==version) {
-                        val index=queue.getAndIncrement();if(index>=candidates.size) break
-                        val name=candidates[index];val config=profile.proxyConfig(name) ?: continue
+                fun runProbe(name: String) {
+                        val config=profile.proxyConfig(name) ?: return
                         val id=UUID.randomUUID().toString();val key=delayKey(profile.id,name,groupName)
                         if(!Mobile.prepareProbe(id,settings.probeTimeout+1000L)) {
-                            mutableProxyTests.update {it.copy(completed=it.completed+1,values=it.values+(key to ProxyDelay("busy")))}
-                            continue
+                            completed.incrementAndGet();pending[key]=ProxyDelay("busy")
+                            return
                         }
                         testRuns.add(id)
                         try {
-                            if(!mutableProxyTests.value.running) {Mobile.cancel(id);break}
-                            mutableProxyTests.update {it.copy(values=it.values+(key to ProxyDelay("running")))}
+                            if(!mutableProxyTests.value.running) {Mobile.cancel(id);return}
+                            pending[key]=ProxyDelay("running")
                             val reply=JSONObject(Mobile.probeDelay(config,target,id,settings.probeTimeout.toLong(),settings.unifiedDelay))
                             if(requestKey(data.value)==version && mutableProxyTests.value.running) {
                                 val state=when(reply.optString("code")) {"proxy_delay_measured" -> "passed";"cancelled" -> "idle";"timeout_stage_unknown","proxy_channel_timeout","proxy_quic_handshake_timeout" -> "timeout";else -> "failed"}
-                                mutableProxyTests.update {it.copy(completed=it.completed+1,values=it.values+(key to ProxyDelay(state,reply.optLong("elapsedMs"))))}
+                                completed.incrementAndGet();pending[key]=ProxyDelay(state,reply.optLong("elapsedMs"))
                             }
                         } finally {testRuns.remove(id);Mobile.discardProbe(id)}
+                }
+                // Core auto-group health checks already fan out internally. Run
+                // graph-backed tests separately to avoid multiplying two pools.
+                val graphNames=candidates.filter {name ->profile.groups.any {it.name==name}||profile.nodes.any {it.name==name&&it.requiresProfile}}
+                val leafNames=candidates.filterNot {it in graphNames}
+                for(name in graphNames) {
+                    if(!mutableProxyTests.value.running||requestKey(data.value)!=version)break
+                    runProbe(name)
+                }
+                List(settings.probeConcurrency.coerceIn(1,16)) { async {
+                    while(mutableProxyTests.value.running&&requestKey(data.value)==version) {
+                        val index=queue.getAndIncrement();if(index>=leafNames.size)break
+                        runProbe(leafNames[index])
                     }
                 } }.awaitAll()
             } finally {
+                updates.cancel()
+                synchronized(flushLock) {
+                flush()
                 mutableProxyTests.update {it.copy(running=false,values=it.values.filterValues {v -> v.state!="running"})}
+                }
             }
         }
     }

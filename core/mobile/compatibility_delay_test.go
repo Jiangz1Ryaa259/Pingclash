@@ -63,6 +63,8 @@ func TestHY2OptionalBandwidthMatchesMihomoAndKeepsOriginalGroups(t *testing.T) {
 }
 
 func TestDelayHEADUnifiedTimingAndDiagnosticRemainDistinct(t *testing.T) {
+	previous := adapter.UnifiedDelay.Load()
+	defer adapter.UnifiedDelay.Store(previous)
 	var hits atomic.Int32
 	var wrongMethod atomic.Bool
 	target := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +106,8 @@ func TestDelayHEADUnifiedTimingAndDiagnosticRemainDistinct(t *testing.T) {
 }
 
 func TestDelayKeepsTargetTLSVerificationAndCancellation(t *testing.T) {
+	previous := adapter.UnifiedDelay.Load()
+	defer adapter.UnifiedDelay.Store(previous)
 	target := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(204) }))
 	defer target.Close()
 	config := asJSON(t, anyTLSFixture(t, target.Listener.Addr().String()))

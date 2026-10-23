@@ -5,12 +5,12 @@ $stage=[IO.Path]::GetFullPath((Join-Path $projectRoot ('.tools\source-package\'+
 if(-not $stage.StartsWith($allowed,[StringComparison]::OrdinalIgnoreCase)){throw 'Source staging escaped project tools.'}
 $root=Join-Path $stage 'PingClash-0.1.0-beta.1-dev-source'
 New-Item -ItemType Directory -Path $root -Force|Out-Null
-foreach($relative in @('README.md','NOTICE.md','LICENSE','SECURITY.md','PRIVACY.md','.gitignore','settings.gradle.kts','build.gradle.kts','gradle.properties','gradlew','gradlew.bat',
+foreach($relative in @('README.md','NOTICE.md','LICENSE','SECURITY.md','PRIVACY.md','CHANGELOG.md','.editorconfig','.gitignore','settings.gradle.kts','build.gradle.kts','gradle.properties','gradlew','gradlew.bat',
     'app\build.gradle.kts','diagnostics\build.gradle.kts','core\go.mod','core\go.sum','core\README.md','core\NOTICE.md','core\LICENSE')){
     $target=Join-Path $root $relative;New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force|Out-Null
     Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination $target
 }
-foreach($relative in @('app\src','terminal-emulator','terminal-view','diagnostics\src','core\mobile','core\tools','tools','docs','gradle')){
+foreach($relative in @('.github','app\src','terminal-emulator','terminal-view','diagnostics\src','core\mobile','core\tools','tools','docs','gradle')){
     $source=[IO.Path]::GetFullPath((Join-Path $projectRoot $relative)).TrimEnd('\')+'\'
     foreach($file in (Get-ChildItem -LiteralPath $source -File -Recurse)){
         if($file.FullName.Substring($source.Length) -match '^build\\'){continue}

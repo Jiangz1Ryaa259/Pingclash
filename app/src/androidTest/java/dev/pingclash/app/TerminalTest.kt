@@ -10,15 +10,26 @@ import androidx.lifecycle.Lifecycle
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class TerminalTest {
     @get:Rule val compose=createAndroidComposeRule<TerminalActivity>()
     private val model get()=compose.activity.terminal
+    @Before fun acceptExplicitNotice() {
+        if(!model.noticeAccepted)compose.onNodeWithTag("terminal-notice-accept").performClick()
+    }
     private fun output()=model.sessions.firstOrNull()?.emulator?.screen?.transcriptText.orEmpty()
     private fun command(text:String) {compose.runOnUiThread {model.send(text+"\r")}}
     private fun awaitText(text:String) {try {compose.waitUntil(5000) {output().contains(text)}}catch(e:Exception){throw AssertionError("Synthetic terminal output: "+output(),e)}}
+    @Test fun unacknowledgedNoticeCannotStartShell() {
+        compose.runOnUiThread {model.noticeAccepted=false;model.create()}
+        assertTrue(model.sessions.isEmpty())
+        compose.onNodeWithTag("terminal-notice-accept").assertIsDisplayed().performClick()
+        assertTrue(compose.activity.getSharedPreferences("terminal_ui",0).getBoolean("uid_notice_accepted",false))
+        compose.onNodeWithTag("terminal-new").assertIsEnabled()
+    }
     @Test fun realShellPtyPipesInteractiveInputAndInterrupt() {
         compose.onNodeWithTag("terminal-new").performClick()
         compose.waitUntil(10000) {model.sessions.firstOrNull()?.pid?.let {it>0}==true}

@@ -19,6 +19,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outbound"
 	"github.com/metacubex/mihomo/component/proxydialer"
 	C "github.com/metacubex/mihomo/constant"
@@ -154,6 +155,24 @@ func probe(configJSON, targetURL, runID string, timeoutMillis int, delay, unifie
 		entry.expiry.Stop()
 		entry.cancel()
 	}()
+	if delay {
+		// This is the same core URLTest called by controller delay endpoints.
+		// No controller or local listening socket is needed by the mobile bridge.
+		adapter.UnifiedDelay.Store(unified)
+		if graph, ok := proxy.(*runtimeGraph); ok {
+			if err := graph.activate(ctx); err != nil {
+				return probeError(runID, ctx, err, 0)
+			}
+		}
+		delayMs, err := adapter.NewProxy(&delayBoundary{proxy}).URLTest(ctx, targetURL, nil)
+		if ctx.Err() != nil {
+			err = ctx.Err()
+		}
+		if err != nil {
+			return probeError(runID, ctx, err, int64(delayMs))
+		}
+		return encode(runID, "passed", "proxy_delay_measured", 0, int64(delayMs))
+	}
 
 	transport := &http.Transport{
 		// No environment HTTP proxy and no fallback to a direct route.
@@ -175,7 +194,7 @@ func probe(configJSON, targetURL, runID string, timeoutMillis int, delay, unifie
 			return conn, nil
 		},
 		TLSHandshakeTimeout:    time.Duration(timeoutMillis) * time.Millisecond,
-		DisableKeepAlives:      !unified,
+		DisableKeepAlives:      true,
 		DisableCompression:     true,
 		MaxResponseHeaderBytes: 32 * 1024,
 	}
@@ -184,36 +203,14 @@ func probe(configJSON, targetURL, runID string, timeoutMillis int, delay, unifie
 		Transport:     transport,
 		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 	}
-	method := http.MethodGet
-	if delay {
-		method = http.MethodHead
-	}
-	request, err := http.NewRequestWithContext(ctx, method, targetURL, nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, targetURL, nil)
 	if err != nil {
 		return encode(runID, "failed", "target_invalid", 0, 0)
 	}
 	request.Header.Set("User-Agent", "PingClash-Diagnostic/0.2")
-	// Auto-group health selection is preparation, not the selected path's RTT.
-	// It remains inside the cancellation/deadline budget.
-	if delay {
-		if graph, ok := proxy.(*runtimeGraph); ok {
-			_ = graph.activate(ctx)
-		}
-	}
 	started := time.Now()
 	reply, err := client.Do(request)
 	elapsed := time.Since(started).Milliseconds()
-	if delay && unified && err == nil {
-		_ = reply.Body.Close()
-		secondStart := time.Now()
-		second, secondErr := client.Do(request)
-		if secondErr == nil {
-			reply = second
-			elapsed = time.Since(secondStart).Milliseconds()
-		} else if ctx.Err() != nil {
-			err = secondErr
-		}
-	}
 	if err != nil {
 		if errors.Is(err, errSocketPolicy) {
 			return encode(runID, "blocked", "local_network_restriction", 0, elapsed)
@@ -232,13 +229,33 @@ func probe(configJSON, targetURL, runID string, timeoutMillis int, delay, unifie
 		return encode(runID, "failed", code, 0, elapsed)
 	}
 	defer reply.Body.Close()
-	if !delay && (reply.StatusCode < 200 || reply.StatusCode >= 300) {
+	if reply.StatusCode < 200 || reply.StatusCode >= 300 {
 		return encode(runID, "failed", "target_http_status", reply.StatusCode, elapsed)
 	}
-	if delay {
-		return encode(runID, "passed", "proxy_delay_measured", reply.StatusCode, elapsed)
-	}
 	return encode(runID, "passed", "proxy_request_verified", reply.StatusCode, elapsed)
+}
+
+type delayBoundary struct{ C.ProxyAdapter }
+
+func (p *delayBoundary) DialContext(ctx context.Context, m *C.Metadata) (C.Conn, error) {
+	c, err := p.ProxyAdapter.DialContext(ctx, m)
+	if err != nil {
+		return nil, &proxyConnectError{cause: err}
+	}
+	return c, nil
+}
+func probeError(id string, ctx context.Context, err error, elapsed int64) string {
+	if errors.Is(err, errSocketPolicy) {
+		return encode(id, "blocked", "local_network_restriction", 0, elapsed)
+	}
+	if errors.Is(ctx.Err(), context.Canceled) {
+		return encode(id, "cancelled", "cancelled", 0, elapsed)
+	}
+	var networkError net.Error
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) || errors.As(err, &networkError) && networkError.Timeout() {
+		return encode(id, "failed", "timeout_stage_unknown", 0, elapsed)
+	}
+	return encode(id, "failed", proxyFailureCode(err), 0, elapsed)
 }
 
 // Cancel cancels only an existing run. It does not create background work.
