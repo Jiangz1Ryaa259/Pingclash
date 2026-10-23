@@ -67,7 +67,8 @@ class ClientIntegrationTest {
             compose.onNodeWithText("节点配置").performClick()
             compose.onNodeWithText("名称（可选）").performTextInput(name)
             compose.onNodeWithText("节点 JSON / Clash YAML").performTextInput(config)
-            compose.onNodeWithText("导入", useUnmergedTree = false).performClick()
+            androidx.test.espresso.Espresso.closeSoftKeyboard() // Dismiss only IME before scrolling on small displays.
+            compose.onNodeWithText("导入", useUnmergedTree = false).performScrollTo().performClick()
             compose.waitUntil(10_000) { app.repository.data.value.nodes.isNotEmpty() }
             compose.waitUntil(5000) { compose.onAllNodesWithText("知道了").fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText("知道了").performClick()

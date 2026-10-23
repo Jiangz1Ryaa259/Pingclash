@@ -66,7 +66,7 @@ def main():
             (OUT / 'ci-android.txt').write_text(output, encoding='utf-8')
             print(output)
             matched = re.search(r'OK \((\d+) tests?\)', output)
-            if result.returncode or not matched or int(matched[1]) < 25:
+            if result.returncode or not matched or int(matched[1]) != 26 or re.search(r'INSTRUMENTATION_STATUS_CODE: -[34]\b', output):
                 raise RuntimeError('Android integration tests failed or were not fully executed')
             port = int(data['httpPort'])
             if not 0 < port < 65536:
