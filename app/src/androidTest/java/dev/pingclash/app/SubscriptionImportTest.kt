@@ -150,20 +150,29 @@ class SubscriptionImportTest {
             if(field)compose.onNodeWithTag("subscription-content").performScrollTo()
             val bounds=if(field)compose.onNodeWithTag("subscription-content").fetchSemanticsNode().boundsInWindow else null
             val location=IntArray(2)
-            var width=0;var height=0
+            var width=0;var height=0;var secureWindow=false
             instrumentation.runOnMainSync {
                 val view=android.view.inspector.WindowInspector.getGlobalWindowViews().last {it.isShown}
                 view.getLocationOnScreen(location);width=view.width;height=view.height
+                secureWindow=(view.layoutParams as android.view.WindowManager.LayoutParams).flags and android.view.WindowManager.LayoutParams.FLAG_SECURE!=0
             }
             val left=(bounds?.left?:width*.2f)+location[0]
             val top=(bounds?.top?:height*.3f)+location[1]
             val spanX=bounds?.width?:width*.6f
             val spanY=bounds?.height?:height*.4f
             assertTrue("Credential capture bounds must be visible",spanX>20&&spanY>20)
+            assertEquals("Actual import window protection",expected,secureWindow)
             var protected = !expected
             try {
                 compose.waitUntil(5000) {
-                    val bitmap = instrumentation.uiAutomation.takeScreenshot() ?: return@waitUntil false
+                    val bitmap = instrumentation.uiAutomation.takeScreenshot()
+                    if(bitmap==null) {
+                        // Android 12/13 may deny the entire secure-window capture.
+                        // Masked/ordinary A/B controls still require a real bitmap.
+                        android.util.Log.i("PingClashTest","Capture denied: secureWindow=$secureWindow expected=$expected")
+                        protected=secureWindow
+                        return@waitUntil expected&&secureWindow
+                    }
                     var dark = 0; var samples = 0
                     for (x in 2..8) for (y in 2..8) {
                         val px=(left+spanX*x/10).toInt().coerceIn(0,bitmap.width-1)
