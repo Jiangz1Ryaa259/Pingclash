@@ -170,7 +170,7 @@ class SubscriptionImportTest {
         compose.onNodeWithText("隐藏").performClick()
         assertCaptureProtected(false)
         compose.onNodeWithText("节点配置").performClick()
-        androidx.test.espresso.Espresso.closeSoftKeyboard() // Hide only the IME; never dismiss the protected sheet.
+        hideFixtureKeyboard() // Hide only the IME; never dismiss the protected sheet.
         assertCaptureProtected(true)
         device.pressBack()
         compose.waitForIdle()

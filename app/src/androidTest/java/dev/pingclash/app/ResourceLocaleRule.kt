@@ -17,3 +17,16 @@ class ResourceLocaleRule: TestRule {
         }
     }
 }
+
+/** Close input windows without sending Back to the sheet under test. */
+@android.annotation.TargetApi(29)
+internal fun hideFixtureKeyboard() {
+    val instrumentation=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+    instrumentation.runOnMainSync {
+        android.view.inspector.WindowInspector.getGlobalWindowViews().forEach { view ->
+            val input=view.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            input.hideSoftInputFromWindow(view.windowToken,0)
+        }
+    }
+    androidx.test.uiautomator.UiDevice.getInstance(instrumentation).waitForIdle(1000)
+}
