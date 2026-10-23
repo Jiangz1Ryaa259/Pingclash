@@ -150,6 +150,12 @@ func TestLiveTrafficCountsBeforeCloseAndControlClosesBothSockets(t *testing.T) {
 	if _, e = io.ReadFull(response.Body, payload); e != nil || string(payload) != "stream!" {
 		t.Fatal("live relay failed")
 	}
+	// net.Pipe can wake its reader before the writer returns and records bytes.
+	// Observe eventual live accounting while both sides are still open.
+	deadline := time.Now().Add(time.Second)
+	for (s.up.Load() == 0 || s.down.Load() == 0) && time.Now().Before(deadline) {
+		time.Sleep(time.Millisecond)
+	}
 	if s.up.Load() == 0 || s.down.Load() == 0 {
 		t.Fatal("live counts wait for close")
 	}

@@ -57,6 +57,7 @@ func TestMainStrategyGroupsReallyForwardAndHealthChecksStayOfflineUntilUse(t *te
 	var first, second, health atomic.Int32
 	fixture := func(counter *atomic.Int32) *httptest.Server {
 		s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(2 * time.Millisecond) // Avoid upstream's zero-delay/unknown sentinel on loopback.
 			if r.Method == "HEAD" {
 				health.Add(1)
 			} else {

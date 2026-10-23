@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func Test101ValidAnd11MalformedLeavesKeepThreeOriginalGroups(t *testing.T) {
@@ -52,7 +53,13 @@ func Test101ValidAnd11MalformedLeavesKeepThreeOriginalGroups(t *testing.T) {
 
 func TestQuarantinedMembersForwardHealthyBranchAndNeverFallbackDirect(t *testing.T) {
 	var hits atomic.Int32
-	target := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { hits.Add(1); w.WriteHeader(204) }))
+	target := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits.Add(1)
+		// Upstream treats a zero-millisecond history as unknown. Model a small
+		// real network delay so this fixture tests quarantine, not that sentinel.
+		time.Sleep(2 * time.Millisecond)
+		w.WriteHeader(204)
+	}))
 	defer target.Close()
 	good := anyTLSFixture(t, target.Listener.Addr().String())
 	var healthy map[string]any
