@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class HysteriaCompatibilityTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose = createAndroidComposeRule<MainActivity>()
     @Test fun selfSignedHysteriaKeepsSubscriptionPolicyAndForwardsPeerDnsAndTcp() {
         val arguments = InstrumentationRegistry.getArguments()
         val hyPort = requireNotNull(arguments.getString("hy2Port")) { "Run tools/verify-android.ps1 for controlled host fixture" }.toInt()

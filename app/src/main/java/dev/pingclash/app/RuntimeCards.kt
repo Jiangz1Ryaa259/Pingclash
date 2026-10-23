@@ -38,20 +38,20 @@ internal fun durationText(seconds: Long)="%02d:%02d:%02d".format(Locale.ROOT,sec
 }
 @Composable internal fun StatLine(label: String,value: String) {
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-        Text(localize(label),Modifier.weight(1f),color=Muted,style=MaterialTheme.typography.bodyMedium)
+        Text((label),Modifier.weight(1f),color=Muted,style=MaterialTheme.typography.bodyMedium)
         Text(value,style=MaterialTheme.typography.bodyMedium)
     }
 }
 @Composable internal fun RuntimeCards(data: AppData,vpn: VpnUiState,all: Boolean=false) {
     val prefs=data.client
     if(prefs.showSpeed||all) SettingsCard {
-        Text(localize("实时速度"),style=MaterialTheme.typography.titleMedium)
+        Text((tr(R.string.message_e68cf04b35)),style=MaterialTheme.typography.titleMedium)
         Row(Modifier.fillMaxWidth()) {
-            Column(Modifier.weight(1f)) {Text("↑ ${formatBytes(vpn.uploadSpeed)}/s",color=Mint,style=MaterialTheme.typography.titleLarge);Text(localize("上传"),color=Muted)}
-            Column(Modifier.weight(1f)) {Text("↓ ${formatBytes(vpn.downloadSpeed)}/s",color=Success,style=MaterialTheme.typography.titleLarge);Text(localize("下载"),color=Muted)}
+            Column(Modifier.weight(1f)) {Text("↑ ${formatBytes(vpn.uploadSpeed)}/s",color=Mint,style=MaterialTheme.typography.titleLarge);Text((tr(R.string.message_9e07e3c053)),color=Muted)}
+            Column(Modifier.weight(1f)) {Text("↓ ${formatBytes(vpn.downloadSpeed)}/s",color=Success,style=MaterialTheme.typography.titleLarge);Text((tr(R.string.message_4673a23061)),color=Muted)}
         }
         val upload=Mint;val download=Success;val grid=MaterialTheme.colorScheme.outlineVariant
-        val chartDescription=localize("最近 60 秒，仅本机内存")
+        val chartDescription=(tr(R.string.message_8cdc5372a8))
         Canvas(Modifier.fillMaxWidth().height(110.dp).testTag("traffic-chart").semantics {contentDescription=chartDescription}) {
             repeat(3) {i -> val y=size.height*i/2;drawLine(grid,Offset(0f,y),Offset(size.width,y),1.dp.toPx())}
             val samples=vpn.history
@@ -62,21 +62,21 @@ internal fun durationText(seconds: Long)="%02d:%02d:%02d".format(Locale.ROOT,sec
                 drawLine(download,point(i-1,samples[i-1].down),point(i,samples[i].down),2.dp.toPx())
             }
         }
-        Text(localize("最近 60 秒，仅本机内存"),color=Muted,style=MaterialTheme.typography.bodySmall)
+        Text((tr(R.string.message_8cdc5372a8)),color=Muted,style=MaterialTheme.typography.bodySmall)
     }
     if(prefs.showTraffic||all) SettingsCard {
-        Text(localize("本次流量"),style=MaterialTheme.typography.titleMedium)
-        StatLine("已上传",formatBytes(vpn.uploaded));StatLine("已下载",formatBytes(vpn.downloaded))
-        StatLine("连接时长",durationText(vpn.uptime));StatLine("连接总数",vpn.totalConnections.toString())
-        Text(localize("统计应用转发的有效载荷，不含协议封装；不是运营商账单。"),color=Muted,style=MaterialTheme.typography.bodySmall)
+        Text((tr(R.string.message_bf817b54c8)),style=MaterialTheme.typography.titleMedium)
+        StatLine(tr(R.string.message_f2f0204946),formatBytes(vpn.uploaded));StatLine(tr(R.string.message_e2f12da7fa),formatBytes(vpn.downloaded))
+        StatLine(tr(R.string.message_fd1e76eafb),durationText(vpn.uptime));StatLine(tr(R.string.message_6b566e6b22),vpn.totalConnections.toString())
+        Text((tr(R.string.message_518eae8255)),color=Muted,style=MaterialTheme.typography.bodySmall)
     }
     if(prefs.showService||all) SettingsCard {
-        Text(localize("服务状态"),style=MaterialTheme.typography.titleMedium)
-        StatLine("VPN 服务",localize(when(vpn.phase){"established"->"运行中";"connecting"->"正在启动";"error"->"发生错误";else->"已停止"}))
-        StatLine("出站模式",localize(when(prefs.mode){"rule"->"规则";"direct"->"直连";else->"全局代理"}))
-        StatLine("活动连接",vpn.connections.toString());StatLine("DNS 查询",vpn.dnsQueries.toString())
-        StatLine("策略阻断",vpn.rejected.toString());StatLine("转发异常",vpn.failures.toString())
-        StatLine("策略组",data.activeProfile?.groups?.size?.toString()?:"0")
+        Text((tr(R.string.message_e8a4f7c09d)),style=MaterialTheme.typography.titleMedium)
+        StatLine(tr(R.string.message_03d39aa1b9),(when(vpn.phase){"established"->tr(R.string.message_1f0eb99b7e);"connecting"->tr(R.string.message_087739b986);"error"->tr(R.string.message_0cb3fb5b86);else->tr(R.string.message_f006455e3b)}))
+        StatLine(tr(R.string.message_daae3125b8),(when(prefs.mode){"rule"->tr(R.string.message_1123245d1b);"direct"->tr(R.string.message_b06325c566);else->tr(R.string.message_f1880deaae)}))
+        StatLine(tr(R.string.message_3726bcb690),vpn.connections.toString());StatLine(tr(R.string.message_058ff47156),vpn.dnsQueries.toString())
+        StatLine(tr(R.string.message_e38ff950f7),vpn.rejected.toString());StatLine(tr(R.string.message_c6abe0d5e7),vpn.failures.toString())
+        StatLine(tr(R.string.message_47d56387f5),data.activeProfile?.groups?.size?.toString()?:"0")
     }
     if(prefs.showMemory||all) MemoryCard(vpn)
 }
@@ -94,9 +94,9 @@ internal fun durationText(seconds: Long)="%02d:%02d:%02d".format(Locale.ROOT,sec
         }
     }
     SettingsCard {
-        Text(localize("内存信息"),style=MaterialTheme.typography.titleMedium)
-        StatLine("应用 PSS",formatBytes(snapshot[0]));StatLine("Java 堆",formatBytes(snapshot[1]))
-        StatLine("Go 堆",formatBytes(if(vpn.active)vpn.heapBytes else snapshot[3]));StatLine("Go 协程",(if(vpn.active)vpn.goroutines.toLong() else snapshot[4]).toString())
-        StatLine("系统可用内存",formatBytes(snapshot[2]));Text(localize("实时读取本机内存，不采集其他应用使用记录。"),color=Muted,style=MaterialTheme.typography.bodySmall)
+        Text((tr(R.string.message_8d27645263)),style=MaterialTheme.typography.titleMedium)
+        StatLine(tr(R.string.message_77939c5206),formatBytes(snapshot[0]));StatLine(tr(R.string.message_e72275ffce),formatBytes(snapshot[1]))
+        StatLine(tr(R.string.message_ea2678384d),formatBytes(if(vpn.active)vpn.heapBytes else snapshot[3]));StatLine(tr(R.string.message_da5ea7565a),(if(vpn.active)vpn.goroutines.toLong() else snapshot[4]).toString())
+        StatLine(tr(R.string.message_a51797a853),formatBytes(snapshot[2]));Text((tr(R.string.message_2b379681df)),color=Muted,style=MaterialTheme.typography.bodySmall)
     }
 }

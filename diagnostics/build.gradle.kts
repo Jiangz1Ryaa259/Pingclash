@@ -30,6 +30,6 @@ tasks.register<JavaExec>("verifyCore") {
     dependsOn(tasks.testClasses, testCertificate)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("dev.pingclash.diagnostics.CoreVerification")
-    args(verificationKeyStore.get().asFile.absolutePath)
+    args(verificationKeyStore.get().asFile.absolutePath,rootProject.file("app/src/main/res/values-zh-rCN/diagnostics.xml").absolutePath)
 }
 

@@ -1,8 +1,8 @@
 # 发布前排查 / Installation-readiness review
 
-本轮已修复：改用 Mihomo 原生 URLTest、默认 10 路并发与 5 秒超时、100 ms 合并 UI 结果、隔开自动组与普通节点批次、终端首次使用权限确认。新增 CI、Dependabot、版本目录、文档索引和问题模板。完整资源本地化、远程 providers、自动重连及其他下表缺口尚未完成；不作为已支持功能发布。
+本轮已修复：改用 Mihomo 原生 URLTest、默认 10 路并发与 5 秒超时、100 ms 合并 UI 结果、隔开自动组与普通节点批次、终端首次使用权限确认。新增 CI、Dependabot、版本目录、文档索引和问题模板。后续已加入应用与诊断文本资源、系统应用语言、自动重连和最近任务修正。远程 providers 及下表其余缺口仍未完成。
 
-本地验证：Android 25 项、Java 28 项、Go 68 个测试函数通过；两类短时模糊测试通过。lint 为 0 错误、21 条提示，待交付源码未检出凭据。CI 尚未在 GitHub 运行；本轮没有发布新版本。范围、候选包校验值和限制见[验证记录](security-testing.md)。
+最近本地 debug 验证：Android 26 项、Java 28 项、Go 70 个测试函数通过。原生测试连续三轮通过，两个时序相关测试连续 20 轮通过。GitHub 首次完整通过记录：提交 5f2470e 的 Actions 运行 39995451294；本地化/后台后续修改另行验证，本轮不替换已发布资产。范围、候选包校验值和限制见[验证记录](security-testing.md)。
 
 This review distinguishes existing implementation, changes in the current working tree, and remaining work. A configured workflow is not evidence that GitHub Actions has already run successfully. The published beta release is not replaced by this review.
 
@@ -16,7 +16,7 @@ Remaining: the node cards do not yet show a separate TCP-connect metric; TCP/TLS
 
 ## 2. Security
 
-Production code does not instantiate Mihomo's controller, mixed, HTTP or SOCKS listeners, or load its global listener configuration. It uses TUN plus directly constructed outbound adapters. Socket protection and network binding fail closed. There is no control listener on which to add a random API secret. If one is added later, loopback alone must not be treated as authentication. This is a code/configuration audit, not a claim that every OEM kernel has been probed for open ports.
+Production code does not instantiate Mihomo's controller, mixed, HTTP or SOCKS listeners, or load its global listener configuration. It uses TUN plus directly constructed outbound adapters. Socket protection and network binding fail closed. There is no control listener on which to add a random API secret or return HTTP 401. Regression checks instead prohibit mobile listener/global-config initialization, strip global listener directives from imported runtime definitions, and compare app-UID TCP acceptors before/after VPN startup in the controlled emulator. A future controller must add authentication tests before this architecture guard is changed. If one is added later, loopback alone must not be treated as authentication. This is a code/configuration audit, not a claim that every OEM kernel has been probed for open ports.
 
 Subscription fetch errors become fixed public messages. Native logs are disabled; diagnostic results contain fixed codes and omit endpoints/credentials. Subscription URLs are stored only in encrypted profiles and excluded from profile exports. Android backup is disabled and data-extraction exclusions cover cloud backup and device transfer. Existing tests cover encryption, tampering, redaction and separate-UID forwarding.
 
@@ -39,23 +39,29 @@ Provider support needs bounded downloads, explicit HTTPS/redirect handling, cycl
 
 ## 4. Repository maintenance
 
-Added a read-only-permission push/PR workflow with pinned official action SHAs, debug APK build, lint, Java verification, native tests, bounded fuzzing and reachable vulnerability scan. The workflow never uses release signing keys, uploads user data or runs pull_request_target. Dependabot covers Gradle, Go modules and Actions weekly, without auto-merge. Versions are centralized in libs.versions.toml; this refactor does not blindly upgrade eight old baseline dependencies. Dependency updates must also update and review the verification hashes.
+Added a read-only-permission push/PR workflow with pinned action SHAs, debug APK build, lint, Java verification, native tests, bounded fuzzing and reachable vulnerability scan. The first clean GitHub run passed after adding three publisher-checksummed Maven metadata entries and fixing asynchronous test fixtures. Android 12–15 emulator integration jobs are also configured; their results must be checked per commit. The workflow never uses release signing keys, uploads user data or runs pull_request_target. Dependabot covers Gradle, Go modules and Actions weekly, without auto-merge. Versions are centralized in libs.versions.toml; this refactor does not blindly upgrade eight old baseline dependencies. Dependency updates must also update and review the verification hashes.
 
 Added .editorconfig, CHANGELOG, a privacy-aware issue form and documentation index. README screenshots use synthetic emulator data. ktlint/detekt remains pending; the existing compact Kotlin formatting needs an explicit formatting migration rather than thousands of unrelated changes mixed into the security fixes.
 
 ## 5. Tests
 
-The initial beta already had 68 native test functions, Java diagnostic verification, and Android integration tests. Parser, legacy fields, null/type confusion, duplicate keys, nesting, malformed documents and static error-code redaction are covered. `FuzzUntrustedProfile` and `FuzzRuntimeOptions` already exist and are rerun for this review. The new URLTest path is exercised against real local AnyTLS and TLS fixtures; cancellation, untrusted target certificates and global-mode isolation are checked.
+The initial beta had 68 native test functions; two listener-policy regressions bring the current count to 70. It also had Java diagnostic verification and Android integration tests. Parser, legacy fields, null/type confusion, duplicate keys, nesting, malformed documents and static error-code redaction are covered. `FuzzUntrustedProfile` and `FuzzRuntimeOptions` already exist and are rerun for this review. The new URLTest path is exercised against real local AnyTLS and TLS fixtures; cancellation, untrusted target certificates and global-mode isolation are checked.
 
 Remaining: consolidate existing fixtures into a named, sanitized compatibility corpus; add more provider-specific cases once providers are implemented. Error classification uses typed errors/call boundaries, not arbitrary raw log-string matching. OEM and physical-device validation remains separate.
 
 ## 6. Device robustness
 
-Network-loss handling currently stops the VPN safely; it does not perform automatic Wi-Fi/cellular reconnection. Traffic notifications already update once per second. Quick Settings tile is missing. Foreground service is declared as systemExempted for an authorized VPN; always-on startup is accepted only when Android authorization exists. System VPN and battery-settings entry points are present. OEM-specific survival, Android 12–14 physical-device behavior, automatic reconnect and detailed lockdown guidance remain pending. No guarantee of surviving vendor task killers is made.
+Automatic reconnection now stops old outbound sockets, keeps the original TUN open and waits for the current usable non-VPN network. A 26th Android test disables Wi-Fi/cellular, verifies TUN/foreground notification retention, restores connectivity and verifies proxy access without new permission. Explicit disconnect, permission revocation or invalid configuration stops recovery. Traffic notifications already update once per second. Quick Settings tile is missing. Foreground service is declared as systemExempted for an authorized VPN; always-on startup is accepted only when Android authorization exists. System VPN and battery-settings entry points are present. OEM-specific survival and Android 12–14 physical-device validation remain pending. Generic always-on/lockdown and notification guidance is in background-vpn.md. The dashboard is no longer excluded from recents; its snapshot is disabled on Android 13+. No guarantee of surviving vendor task killers is made.
 
 ## 7. Localization
 
-The current UI relies heavily on hardcoded Chinese strings and a hand-maintained translation map. Full strings.xml/plurals migration, locale-config and system/app language preference synchronization are **not complete**. New terminal-warning strings are Android resources in values and values-zh-rCN. Do not describe this initial resource addition as a completed localization migration. Android 13 provides a native LocaleManager API as well as AppCompat's cross-version API; a Compose ComponentActivity does not inherently require switching to XML views or AppCompatActivity.
+App-owned messages and diagnostic evidence now use 527 paired English/Chinese Android resource entries, including plurals. Diagnostic enums resolve labels at display time; reports use the actual app version. Android 13+ uses LocaleManager with locale-config and system preference synchronization; older Android uses an observable resource context. Both languages are packaged, so language switching requires no Play Services download. Terminal notices use the same resource resolver.
+
+MissingTranslation and HardcodedText are lint errors. A separate CI guard checks resource keys, format placeholders and hardcoded app/Compose messages. Shell output, user node/group names and third-party terminal command output are not translated. ktlint/detekt remains separate work.
+
+## Latency retry tradeoff
+
+Cancel is already available for a batch and individual runs use core cancellation. A mandatory 2.5-second pass followed by 5-second retries would raise the all-failed 200-node/10-worker worst case from about 100 to 150 seconds, plus overhead. That two-pass strategy is not enabled by default; an optional fast mode needs its own UI/progress contract. Native URLTest, bounded workers and 100 ms result batches remain the implemented path.
 
 ## Sources
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auto_reconnect">自动重连</string>
+    <string name="auto_reconnect_detail">底层网络变化后自动重建连接。等待网络时保留 TUN；主动断开或撤销 VPN 授权后停止重连。</string>
+    <string name="vpn_waiting_network">等待可用网络 · VPN 继续接管流量</string>
+    <string name="vpn_reconnecting">网络已变化 · 正在重连 VPN</string>
+    <string name="notification_settings">VPN 通知设置</string>
+    <string name="background_settings">后台与始终开启 VPN</string>
+    <string name="background_detail">Android 管理 VPN 前台通知；仪表盘现会显示在最近任务中。若系统仍停止服务，可检查电池设置，或在系统设置中开启始终开启 VPN；锁定模式可在 VPN 不可用时阻止流量。</string>
+</resources>

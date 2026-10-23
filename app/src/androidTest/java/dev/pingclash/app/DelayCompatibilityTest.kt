@@ -19,7 +19,8 @@ import kotlin.concurrent.thread
 
 @RunWith(AndroidJUnit4::class)
 class DelayCompatibilityTest {
-    @get:Rule val compose=createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
 
     @Test fun nullBandwidthHttpGroupsImportAndRefreshButtonRemainsEnabled() {
         val app=compose.activity.application as PingClashApplication

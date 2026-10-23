@@ -10,70 +10,73 @@ public final class Models {
     private Models() {}
 
     public enum Stage {
-        NETWORK("网络环境"), DNS("入口 DNS"), TCP("入口 TCP"),
-        TLS("辅助 TLS"), POLICY("节点证书策略"), ROUTE("拨号路径"), PROXY("代理通路");
-        public final String title;
-        Stage(String title) { this.title = title; }
+        NETWORK("diagnostic_db3e6453db"), DNS("diagnostic_7a6232872d"), TCP("diagnostic_e21bd916a5"),
+        TLS("diagnostic_a990a60997"), POLICY("diagnostic_b9c1e1d0e6"), ROUTE("diagnostic_dd2e781707"), PROXY("diagnostic_1f23c2c551");
+        private final String key;
+        public String title() { return DiagnosticText.text(key); }
+        Stage(String title) { this.key = title; }
     }
 
     public enum State {
-        PASSED("通过"), FAILED("失败"), SKIPPED("跳过"), UNKNOWN("未知"),
-        CANCELLED("已取消"), STALE("已失效"), BLOCKED("受限");
-        public final String title;
-        State(String title) { this.title = title; }
+        PASSED("diagnostic_1e9f2561b7"), FAILED("diagnostic_28384d7afd"), SKIPPED("diagnostic_fc50a99caa"), UNKNOWN("diagnostic_4d8c1c5b42"),
+        CANCELLED("diagnostic_a37778f17c"), STALE("diagnostic_2fe5a8d0ee"), BLOCKED("diagnostic_878363589f");
+        private final String key;
+        public String title() { return DiagnosticText.text(key); }
+        State(String title) { this.key = title; }
     }
 
     public enum Family { AUTO, IPV4, IPV6 }
 
     // Messages are a whitelist. Raw exceptions, hosts, SNI and credentials never enter a report.
     public enum Code {
-        GROUP_ROUTE("本次通过所选策略组访问测试目标；自动组由内核选择成员，不对某个固定入口执行直连辅助探测。"),
-        NETWORK_READY("使用系统当前的非 VPN 网络进行辅助探测。"),
-        NETWORK_UNAVAILABLE("没有可用的非 VPN 默认网络。"),
-        VPN_ACTIVE("默认网络由其他 VPN 接管；本原型暂停直连诊断，请断开该 VPN 后重试。"),
-        NETWORK_CHANGED("网络已变化，本次结果不能继续代表当前连接。"),
-        CONFIG_CHANGED("节点选择或诊断配置已变化，本次结果已失效，请重新诊断。"),
-        DNS_OK("已取得符合所选地址族的入口地址。"),
-        LITERAL_ADDRESS("输入为 IP 地址，无需域名解析。"),
-        DNS_FAILED("入口域名未能解析；无法据此判断服务器状态。"),
-        DNS_TIMEOUT("入口解析未在时限内完成。"),
-        NO_MATCHING_ADDRESS("没有符合所选 IPv4 / IPv6 条件的地址。"),
-        TCP_OK("入口端口已建立 TCP 连接，尚不代表代理服务可用。"),
-        TCP_REFUSED("入口连接被拒绝；请核对端口与服务端监听。"),
-        TCP_TIMEOUT("未在时限内建立 TCP 连接；具体丢包位置未知。"),
-        TCP_FAILED("入口连接失败；可能涉及路由、本地网络或服务端状态。"),
-        TLS_OK("辅助 TLS 握手及主机名校验通过；不等于 mihomo 的实际握手已验证。"),
-        TLS_CERTIFICATE("TLS 证书校验失败；请核对 SNI、证书与设备时间。"),
-        TLS_TIMEOUT("辅助 TLS 握手超时；无法单独确认网络干预或服务端故障。"),
-        TLS_FAILED("辅助 TLS 未完成；服务可能并非标准 TLS，或参数不兼容。"),
-        TLS_DISABLED("本次仅检查 DNS 与 TCP，未请求 TLS 探测。"),
-        DEPENDENCY_FAILED("前置步骤未成功，此步骤未执行。"),
-        CORE_UNAVAILABLE("mihomo 尚未接入，未进行 AnyTLS 认证或代理访问验证。"),
-        PROXY_NOT_REQUESTED("本次辅助探测未请求代理访问，可在节点诊断中执行。"),
-        NODE_CERTIFICATE_UNVERIFIED("此节点或其父代理按配置跳过服务器证书验证，相应服务器身份未通过证书确认；HTTPS 测试目标的证书验证保持开启。"),
-        PROXY_CHAIN_ACTIVE("实际请求按所选策略组通过父代理拨号；入口辅助探测仍是直连，未逐跳检查代理链，不能据此定位链内哪一跳失败。"),
-        PROXY_OK("已通过指定节点取得目标的成功响应；该次代理访问已验证。"),
-        PROXY_HTTP_STATUS("已收到目标响应，但 HTTP 状态未达到本次测试的成功条件。"),
-        PROXY_TIMEOUT("实际代理请求超时；目前无法定位到外层 TLS、协议会话或目标访问中的具体阶段。"),
-        PROXY_FAILED("实际代理请求未完成；需结合辅助探测复测，不能据此确认密码错误或网络拦截。"),
-        PROXY_CERTIFICATE("建立代理通道时证书校验失败。请核对节点 SNI、证书信任和设备时间；应用按节点原配置执行。"),
-        TARGET_CERTIFICATE("HTTPS 测试目标的证书校验失败；可更换测试目标。此结果不表示节点证书有问题。"),
-        PROXY_QUIC_TIMEOUT("节点 QUIC 握手超时。尚不能区分 UDP 链路、服务端响应和参数问题；TCP 跳过不是故障原因。"),
-        PROXY_QUIC_TLS("节点 QUIC/TLS 返回握手错误，未建立可用通道；尚不能仅凭此确认是证书还是协议参数问题。"),
-        PROXY_DNS("内核建立代理通道时域名解析失败；辅助 DNS 的成功结果不等同于内核这次解析成功。"),
-        PROXY_CHANNEL_TIMEOUT("建立代理通道超时，尚未得到 HTTPS 测试目标响应；无法仅凭超时确认网络拦截。"),
-        PROXY_CHANNEL_FAILED("建立代理通道失败，尚未得到 HTTPS 测试目标响应；请核对节点参数和服务端状态，不能据此确认密码错误。"),
-        PROXY_CONFIG_INVALID("内核未接受该节点配置，本次代理请求未执行。"),
-        CORE_BUSY("内核当前没有执行资源，本次请求未执行，不能判为节点故障。"),
-        DNS_ONLY("本次为仅 DNS 检查，此步骤未执行。"),
-        UDP_PROTOCOL("该节点使用 UDP 传输，不执行直连 TCP / 标准 TLS 辅助探测。"),
-        CANCELLED("用户已取消，后续探测已停止。"),
-        DEADLINE("本次诊断的总时间预算已耗尽。"),
-        LOCAL_RESTRICTION("系统限制了探测，不能将其判为节点故障。"),
-        INTERNAL_ERROR("本地诊断模块出现错误，本次结果不完整。");
+        GROUP_ROUTE("diagnostic_de96e215ad"),
+        NETWORK_READY("diagnostic_1220f0afb1"),
+        NETWORK_UNAVAILABLE("diagnostic_e119133695"),
+        VPN_ACTIVE("diagnostic_497ea7c8df"),
+        NETWORK_CHANGED("diagnostic_2c6141c9d1"),
+        CONFIG_CHANGED("diagnostic_a06e2f7464"),
+        DNS_OK("diagnostic_5e6306beb8"),
+        LITERAL_ADDRESS("diagnostic_1fa2095106"),
+        DNS_FAILED("diagnostic_4f6e6aef34"),
+        DNS_TIMEOUT("diagnostic_8323aed76c"),
+        NO_MATCHING_ADDRESS("diagnostic_73889f1c38"),
+        TCP_OK("diagnostic_324a2fb408"),
+        TCP_REFUSED("diagnostic_1040fe9199"),
+        TCP_TIMEOUT("diagnostic_8cee8a6c08"),
+        TCP_FAILED("diagnostic_2f4a98946a"),
+        TLS_OK("diagnostic_845962210f"),
+        TLS_CERTIFICATE("diagnostic_9c4ff8cd30"),
+        TLS_TIMEOUT("diagnostic_85697593c5"),
+        TLS_FAILED("diagnostic_f436822f06"),
+        TLS_DISABLED("diagnostic_479efd4122"),
+        DEPENDENCY_FAILED("diagnostic_724f043f2c"),
+        CORE_UNAVAILABLE("diagnostic_9a6458e7eb"),
+        PROXY_NOT_REQUESTED("diagnostic_3efc8c490f"),
+        NODE_CERTIFICATE_UNVERIFIED("diagnostic_3daf983439"),
+        PROXY_CHAIN_ACTIVE("diagnostic_0064f169a7"),
+        PROXY_OK("diagnostic_176db0ac7b"),
+        PROXY_HTTP_STATUS("diagnostic_5e1e2dc3fe"),
+        PROXY_TIMEOUT("diagnostic_61898abe66"),
+        PROXY_FAILED("diagnostic_58dd8e81ef"),
+        PROXY_CERTIFICATE("diagnostic_e642c54e2f"),
+        TARGET_CERTIFICATE("diagnostic_ee5360d995"),
+        PROXY_QUIC_TIMEOUT("diagnostic_966595c730"),
+        PROXY_QUIC_TLS("diagnostic_c0fe650e0f"),
+        PROXY_DNS("diagnostic_7b07c45933"),
+        PROXY_CHANNEL_TIMEOUT("diagnostic_42a4997f82"),
+        PROXY_CHANNEL_FAILED("diagnostic_63b64999b6"),
+        PROXY_CONFIG_INVALID("diagnostic_ea04adcef3"),
+        CORE_BUSY("diagnostic_da75645a01"),
+        DNS_ONLY("diagnostic_83fb0b4014"),
+        UDP_PROTOCOL("diagnostic_bf1ec6ae9c"),
+        CANCELLED("diagnostic_a3adba9eaa"),
+        DEADLINE("diagnostic_03c5bcd8f1"),
+        LOCAL_RESTRICTION("diagnostic_c2fe14386d"),
+        INTERNAL_ERROR("diagnostic_7f9c427e0c");
 
-        public final String message;
-        Code(String message) { this.message = message; }
+        private final String key;
+        public String message() { return DiagnosticText.text(key); }
+        Code(String message) { this.key = message; }
     }
 
     public static final class Request {
@@ -89,7 +92,7 @@ public final class Models {
         }
         public Request(String host, int port, boolean useTls, String serverName, Family family, boolean dnsOnly) {
             this.host = normalizeHost(host);
-            if (port < 1 || port > 65535) throw new IllegalArgumentException("端口应在 1–65535 之间");
+            if (port < 1 || port > 65535) throw new IllegalArgumentException(DiagnosticText.text("diagnostic_7b13119502"));
             this.port = port;
             this.useTls = useTls;
             this.serverName = serverName == null || serverName.trim().isEmpty()
@@ -100,25 +103,25 @@ public final class Models {
     }
 
     public static String normalizeHost(String raw) {
-        if (raw == null) throw new IllegalArgumentException("请输入服务器域名或 IP");
+        if (raw == null) throw new IllegalArgumentException(DiagnosticText.text("diagnostic_7c4a238bab"));
         String host = raw.trim();
         if (host.startsWith("[") && host.endsWith("]")) host = host.substring(1, host.length() - 1);
         if (host.isEmpty() || host.length() > 253 || host.matches(".*[\\s/@?#%\\\\].*"))
-            throw new IllegalArgumentException("请仅输入域名或 IP，不要粘贴订阅链接或凭据");
+            throw new IllegalArgumentException(DiagnosticText.text("diagnostic_624c9062b5"));
         if (host.contains(":")) {
             try {
                 if (InetAddress.getByName(host).getAddress().length != 16) throw new Exception();
                 return host;
             } catch (Exception e) {
-                throw new IllegalArgumentException("IPv6 地址格式不正确，请将端口填在单独输入框");
+                throw new IllegalArgumentException(DiagnosticText.text("diagnostic_0552629e2e"));
             }
         }
         if (host.matches("[0-9.]+")) {
             String[] pieces = host.split("\\.", -1);
-            if (pieces.length != 4) throw new IllegalArgumentException("IPv4 地址格式不正确");
+            if (pieces.length != 4) throw new IllegalArgumentException(DiagnosticText.text("diagnostic_0525c75b38"));
             for (String piece : pieces) {
                 if (piece.isEmpty() || piece.length() > 3 || Integer.parseInt(piece) > 255)
-                    throw new IllegalArgumentException("IPv4 地址格式不正确");
+                    throw new IllegalArgumentException(DiagnosticText.text("diagnostic_0525c75b38"));
             }
             return host;
         }
@@ -131,7 +134,7 @@ public final class Models {
             }
             return withoutDot;
         } catch (Exception e) {
-            throw new IllegalArgumentException("域名格式不正确");
+            throw new IllegalArgumentException(DiagnosticText.text("diagnostic_83dc48d1e6"));
         }
     }
 
@@ -179,27 +182,27 @@ public final class Models {
 
         public String conclusion() {
             for (Step step : steps) {
-                if (step.state == State.STALE) return step.code.message;
+                if (step.state == State.STALE) return step.code.message();
             }
-            for (Step step : steps) if (step.state == State.CANCELLED) return step.code.message;
+            for (Step step : steps) if (step.state == State.CANCELLED) return step.code.message();
             for (Step step : steps) {
-                if (step.state == State.BLOCKED) return step.code.message;
+                if (step.state == State.BLOCKED) return step.code.message();
             }
             for (Step step : steps) {
                 if (step.stage == Stage.PROXY && step.state == State.PASSED) {
                     boolean auxiliaryFailure = false;
                     for (Step auxiliary : steps) if (auxiliary.stage != Stage.PROXY && auxiliary.state == State.FAILED) auxiliaryFailure = true;
-                    String result = auxiliaryFailure ? "实际代理访问已验证；辅助探测存在差异，请展开查看两条路径的观测。" : Code.PROXY_OK.message;
+                    String result = auxiliaryFailure ? DiagnosticText.text("diagnostic_5f5dff1787") : Code.PROXY_OK.message();
                     return result;
                 }
             }
             for (Step step : steps) if (step.stage == Stage.PROXY && step.code == Code.PROXY_HTTP_STATUS) {
-                return "代理路径已取得 HTTP " + (step.httpStatus > 0 ? step.httpStatus : "未知状态") + " 响应，但未达到测试成功条件。可更换 HTTPS 目标复测，不能据此判定节点整体故障。";
+                return DiagnosticText.text("diagnostic_f90ceb9a5b") + (step.httpStatus > 0 ? step.httpStatus : DiagnosticText.text("diagnostic_ec0d9bdb00")) + DiagnosticText.text("diagnostic_664b29953e");
             }
             for (Step step : steps) if (step.stage == Stage.PROXY && step.state == State.FAILED &&
                 (step.code == Code.PROXY_CERTIFICATE || step.code == Code.TARGET_CERTIFICATE ||
                  step.code == Code.PROXY_QUIC_TIMEOUT || step.code == Code.PROXY_QUIC_TLS ||
-                 step.code == Code.PROXY_DNS || step.code == Code.PROXY_CHANNEL_TIMEOUT || step.code == Code.PROXY_CHANNEL_FAILED)) return step.code.message;
+                 step.code == Code.PROXY_DNS || step.code == Code.PROXY_CHANNEL_TIMEOUT || step.code == Code.PROXY_CHANNEL_FAILED)) return step.code.message();
             // A failed candidate address must not hide a later successful TCP attempt.
             boolean tcpPassed = false;
             for (Step step : steps) if (step.stage == Stage.TCP && step.state == State.PASSED) tcpPassed = true;
@@ -212,15 +215,15 @@ public final class Models {
                 if (step.stage == Stage.PROXY && (step.code == Code.PROXY_FAILED || step.code == Code.PROXY_TIMEOUT)) proxyFailure = step;
             }
             if (tcpPassed && !auxiliaryFailure && proxyFailure != null) {
-                return (tlsPassed ? "入口 TCP 与辅助 TLS 已通过，" : "入口 TCP 已连接，") +
-                    (proxyFailure.code == Code.PROXY_TIMEOUT ? "实际代理访问超时。" : "实际代理访问未完成。") +
-                    "可更换 HTTPS 目标复测，并核对节点参数与服务端日志；具体失败阶段仍未知。";
+                return (tlsPassed ? DiagnosticText.text("diagnostic_02615e55b8") : DiagnosticText.text("diagnostic_2e41f07e5b")) +
+                    (proxyFailure.code == Code.PROXY_TIMEOUT ? DiagnosticText.text("diagnostic_5db526b479") : DiagnosticText.text("diagnostic_82ad278750")) +
+                    DiagnosticText.text("diagnostic_1a914177ee");
             }
             for (Step step : steps) {
-                if (step.state == State.FAILED && !(step.stage == Stage.TCP && tcpPassed)) return step.code.message;
+                if (step.state == State.FAILED && !(step.stage == Stage.TCP && tcpPassed)) return step.code.message();
             }
-            for (Step step : steps) if (step.code == Code.DNS_ONLY) return "DNS 检查已完成；未执行 TCP、TLS 或代理访问。";
-            return "辅助探测已完成；代理通路仍未验证。";
+            for (Step step : steps) if (step.code == Code.DNS_ONLY) return DiagnosticText.text("diagnostic_dd748306b8");
+            return DiagnosticText.text("diagnostic_9ef0a6878b");
         }
     }
 }

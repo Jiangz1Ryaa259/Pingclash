@@ -8,6 +8,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NodeConnectivityTest {
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
     @Test fun certificatePolicyNeverBecomesConnectivityEvidenceOrLeaksAcrossNodes() {
         val policy = Models.Step(Models.Stage.POLICY, Models.State.SKIPPED, Models.Code.NODE_CERTIFICATE_UNVERIFIED, 0, "", 0)
         val success = Models.Step(Models.Stage.PROXY, Models.State.PASSED, Models.Code.PROXY_OK, 37, "", 0, 204)

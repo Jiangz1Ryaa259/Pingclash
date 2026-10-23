@@ -104,14 +104,14 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
                 drawLine(Color.White.copy(alpha=.34f),Offset(30.dp.toPx(),1.dp.toPx()),Offset(size.width-30.dp.toPx(),1.dp.toPx()),1.dp.toPx(),StrokeCap.Round)
             }
             Row(Modifier.fillMaxSize()) {
-                listOf("仪表盘","代理","配置","设置").forEachIndexed {index,label ->
+                listOf(tr(R.string.message_0853bf3c01),tr(R.string.message_5e84ea61e8),tr(R.string.message_148d195e21),tr(R.string.message_df3d58c7d8)).forEachIndexed {index,label ->
                     val chosen=selected==index
                     val tint by animateColorAsState(if(chosen) Mint else Muted,if(motion)tween(160) else snap(),label="navigation-tint")
                     Column(Modifier.weight(1f).fillMaxHeight().testTag("nav-$index")
                         .selectable(chosen,role=Role.Tab,onClick={if(index!=current){haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(index)}}),
                         horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp,Alignment.CenterVertically)) {
                         AppGlyph(listOf(12,14,7,3)[index],Modifier.size(23.dp),tint)
-                        Text(localize(label),fontSize=11.sp,lineHeight=15.sp,fontWeight=if(chosen)FontWeight.SemiBold else FontWeight.Normal,color=tint,maxLines=1)
+                        Text((label),fontSize=11.sp,lineHeight=15.sp,fontWeight=if(chosen)FontWeight.SemiBold else FontWeight.Normal,color=tint,maxLines=1)
                     }
                 }
             }
@@ -132,7 +132,7 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     val foreground=if(connected) MaterialTheme.colorScheme.onPrimary else Panel
     val ring by animateFloatAsState(if(connected) 1f else 0f,if(motion)tween(460) else snap(),label="vpn-ring")
     val haptic=LocalHapticFeedback.current
-    val state=localize(if(connected) "已连接" else if(working) "处理中" else "未连接")
+    val state=(if(connected) tr(R.string.message_5be0323e8a) else if(working) tr(R.string.message_694b71bc80) else tr(R.string.message_3d52574ce1))
     val powerSize=if(LocalDensity.current.fontScale>=1.6f) 178.dp else 142.dp
     Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)) {
         Box(Modifier.size(powerSize+20.dp),contentAlignment=Alignment.Center) {
@@ -155,7 +155,7 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
                 Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp,Alignment.CenterVertically)) {
                     if(working) CircularProgressIndicator(Modifier.size(34.dp),color=foreground,strokeWidth=2.dp)
                     else AppGlyph(0,Modifier.size(38.dp),foreground)
-                    Text(localize(label),Modifier.padding(horizontal=10.dp),textAlign=TextAlign.Center,style=MaterialTheme.typography.labelMedium)
+                    Text((label),Modifier.padding(horizontal=10.dp),textAlign=TextAlign.Center,style=MaterialTheme.typography.labelMedium)
                 }
             }
         }

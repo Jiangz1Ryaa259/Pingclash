@@ -16,7 +16,8 @@ import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class AdvancedSettingsTest {
-    @get:Rule val compose=createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     private fun root() {
         compose.onNodeWithTag("nav-3").performClick()
         compose.onNodeWithTag("tool-settings").performClick()
@@ -33,6 +34,7 @@ class AdvancedSettingsTest {
     @Test fun categoriesSaveEffectiveNetworkOptionsEncryptedAndSwitchLanguageAndTheme() {
         val app=compose.activity.application as PingClashApplication
         val repo=app.repository;val before=repo.data.value
+        val originalLanguage=UiStrings.preference()
         val device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         try {
             assertFalse(before.client.keepUsage);assertFalse(before.client.inspectConnections)
@@ -54,6 +56,7 @@ class AdvancedSettingsTest {
             compose.waitUntil(10000) {repo.data.value.client.theme=="dark"}
             compose.onNodeWithTag("choice-语言-en").performScrollTo().performClick()
             compose.waitUntil(10000) {repo.data.value.client.language=="en"}
+            compose.waitUntil(10000) {compose.onAllNodesWithText("Theme").fetchSemanticsNodes().isNotEmpty()}
             compose.onNodeWithText("Theme").assertIsDisplayed()
             compose.onNodeWithText("Language").assertIsDisplayed()
             captureSyntheticFixture(compose,device,"settings-english-dark.png")
@@ -67,6 +70,7 @@ class AdvancedSettingsTest {
             captureSyntheticFixture(compose,device,"settings-live.png")
         } finally {
             repo.clientSettings(before.client,before.dnsAddress,before.probeUrl)
+            UiStrings.apply(originalLanguage)
         }
     }
     @Test fun invalidRulesCannotMutateStorageAndOriginalRulesSurviveGroupChoices() {

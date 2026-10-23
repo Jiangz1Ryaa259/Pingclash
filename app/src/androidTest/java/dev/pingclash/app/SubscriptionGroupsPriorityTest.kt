@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SubscriptionGroupsPriorityTest {
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
     private fun fixture(default: String="B", members: List<String> = listOf("C","A","B")): String {
         val nodes=JSONArray()
         listOf("A","B","C").forEach { name -> nodes.put(JSONObject().put("name",name).put("type","trojan").put("server","example.invalid").put("port",443).put("password","synthetic-priority-fixture")) }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auto_reconnect">Reconnect automatically</string>
+    <string name="auto_reconnect_detail">Reconnect when the underlying network changes. Keep TUN active while waiting for a network. Explicit disconnect and revoked VPN permission stop reconnection.</string>
+    <string name="vpn_waiting_network">Waiting for a network · VPN traffic remains captured</string>
+    <string name="vpn_reconnecting">Network changed · Reconnecting VPN</string>
+    <string name="notification_settings">VPN notification settings</string>
+    <string name="background_settings">Background and always-on VPN</string>
+    <string name="background_detail">Android maintains the foreground VPN notification. Recent tasks now show the dashboard. If your system stops the service, review its battery settings or enable always-on VPN in Android settings. Lockdown can block traffic while VPN is unavailable.</string>
+</resources>

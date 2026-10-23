@@ -1,5 +1,7 @@
 # PingClash
 
+[![Build and verify](https://github.com/Jiangz1Ryaa259/Pingclash/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Jiangz1Ryaa259/Pingclash/actions/workflows/ci.yml)
+
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
 **Version: 0.1.0-beta.1 · Android 10+ · arm64-v8a / x86_64 · GPL-3.0-only**
@@ -12,6 +14,7 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - DNS over TCP / HTTPS, application routing, local outbound rules and live traffic information.
 - Standard Android `sh` terminal with PTY, keyboard input, pipes, redirection and Ctrl+C.
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
+- English / Simplified Chinese resources, Android 13+ system app-language settings, and automatic network reconnection with TUN retained during outages.
 
 ## 状态与边界
 
@@ -41,4 +44,14 @@ Synthetic emulator data only; no personal subscription or credentials are shown.
 
 ## Development status
 
-See the [checklist review](docs/hardening-review.md), [documentation index](docs/README.md) and [changelog](CHANGELOG.md). Provider support, automatic network reconnection and complete Android resource localization remain under development. The CI configuration and dependency-update proposals do not constitute a security certification.
+See the [checklist review](docs/hardening-review.md), [documentation index](docs/README.md) and [changelog](CHANGELOG.md). Remote providers, separate TCP latency cards, subscription quotas/custom User-Agent and QR import remain under development. The implemented feature subset and automated checks do not constitute a security certification.
+
+## 已测试环境
+
+| 环境 | 系统 | 已有证据 |
+| --- | --- | --- |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 26 项集成回归通过，包括后台断网保留 TUN、恢复连接、前台通知和最近任务配置 |
+
+GitHub CI 增加 API 31、33、34、35 的模拟器矩阵；请以对应提交的 Actions 结果为准，不能把工作流配置当成通过记录。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
+
+仪表盘会显示在最近任务中；Android 13+ 禁用该卡片的页面快照，终端和敏感页面继续保护截屏。最近任务卡片与前台 VPN 通知是两项独立功能，移除卡片不会自动断开 VPN。网络切换会重建出站连接；若希望系统杀进程期间也阻断直连，请参考[后台、始终开启 VPN 与锁定模式](docs/background-vpn.md)。

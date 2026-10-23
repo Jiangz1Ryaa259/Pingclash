@@ -14,6 +14,7 @@ data class ClientSettings(
     val showSpeed: Boolean=true, val showTraffic: Boolean=true, val showMemory: Boolean=true,
     val showService: Boolean=true, val notificationSpeed: Boolean=true,
     val probeTimeout: Int=5000, val probeConcurrency: Int=10, val unifiedDelay: Boolean=true, val delayUrl: String="",
+    val autoReconnect: Boolean=true,
 ) {
     fun json(): JSONObject = JSONObject().apply {
         put("mode",mode);put("mtu",mtu);put("ipv6",ipv6);put("udp",udp);put("lan",lan)
@@ -24,6 +25,7 @@ data class ClientSettings(
         put("showSpeed",showSpeed);put("showTraffic",showTraffic);put("showMemory",showMemory);put("showService",showService)
         put("notificationSpeed",notificationSpeed);put("probeTimeout",probeTimeout);put("probeConcurrency",probeConcurrency)
         put("probeSettingsVersion",2);put("unifiedDelay",unifiedDelay);put("delayUrl",delayUrl)
+        put("autoReconnect",autoReconnect)
     }
     companion object {
         fun read(p: JSONObject?): ClientSettings {
@@ -36,7 +38,7 @@ data class ClientSettings(
                 p.optString("dnsMode","tcp"),p.optString("dnsHttps",defaults.dnsHttps),p.optString("appMode","all"),(0 until packages.length()).map(packages::getString),
                 p.optBoolean("useProviderRules",true),p.optString("customRules"),p.optBoolean("inspectConnections"),p.optString("language","system"),p.optString("theme","system"),p.optBoolean("keepUsage"),
                 p.optBoolean("showSpeed",true),p.optBoolean("showTraffic",true),p.optBoolean("showMemory",true),p.optBoolean("showService",true),p.optBoolean("notificationSpeed",true),p.optInt("probeTimeout",5000),
-                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},p.optBoolean("unifiedDelay",true),p.optString("delayUrl"))
+                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},p.optBoolean("unifiedDelay",true),p.optString("delayUrl"),p.optBoolean("autoReconnect",true))
         }
     }
 }
@@ -47,7 +49,7 @@ data class LocalUsage(val uploaded: Long=0,val downloaded: Long=0,val seconds: L
 internal fun AppData.runtimeOptions(settings: ClientSettings=client): String {
     val rules=if(settings.mode=="rule") settings.customRules.lineSequence().map(String::trim).filter {it.isNotBlank()&&!it.startsWith("#")}.toList() +
         (if(settings.useProviderRules) activeProfile?.rules.orEmpty() else emptyList()) else emptyList()
-    if(settings.mode=="rule"&&settings.useProviderRules) require((activeProfile?.rulesOmitted?:0)==0) {"原配置存在超限或无效规则，不能启用规则模式"}
+    if(settings.mode=="rule"&&settings.useProviderRules) require((activeProfile?.rulesOmitted?:0)==0) {tr(R.string.message_c6d0075555)}
     return JSONObject().put("mode",settings.mode).put("mtu",settings.mtu).put("ipv6",settings.ipv6).put("udp",settings.udp).put("lan",settings.lan)
         .put("connectTimeout",settings.connectTimeout).put("udpTimeout",settings.udpTimeout).put("maxConnections",settings.maxConnections)
         .put("dnsMode",settings.dnsMode).put("dnsHttps",settings.dnsHttps).put("inspectConnections",settings.inspectConnections)
@@ -57,8 +59,8 @@ internal fun validateClientSettings(value: ClientSettings) {
     require(value.delayUrl.isEmpty() || value.delayUrl.length<=2048 && runCatching {
         val url=java.net.URI(value.delayUrl)
         url.scheme in listOf("http","https")&&!url.host.isNullOrBlank()&&url.rawUserInfo==null&&url.rawFragment==null&&(url.port==-1||url.port in 1..65535)
-    }.getOrDefault(false)) {"测速目标必须是无用户名和密码的 HTTP 或 HTTPS 地址"}
-    require(value.mode in listOf("global","rule","direct")&&value.mtu in 1280..9000&&value.lan in listOf("proxy","direct","block")&&value.connectTimeout in 3..60&&value.udpTimeout in 10..300&&value.maxConnections in 16..512&&value.dnsMode in listOf("tcp","https")) {"网络选项无效或超过限制"}
-    require(value.appMode in listOf("all","exclude","include")&&value.packages.size<=300&&value.packages.distinct().size==value.packages.size&&value.packages.all {it.length<=255&&it!="dev.pingclash.app"&&it.matches(Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+"))}&&(value.appMode!="include"||value.packages.isNotEmpty())) {"应用分流列表无效；仅代理模式至少选择一个应用"}
-    require(value.language in listOf("system","zh","en")&&value.theme in listOf("system","light","dark")&&value.customRules.toByteArray().size<=64*1024&&value.probeTimeout in 1000..20000&&value.probeConcurrency in 1..16) {"显示或测速选项无效或超过限制"}
+    }.getOrDefault(false)) {tr(R.string.message_c2461562e6)}
+    require(value.mode in listOf("global","rule","direct")&&value.mtu in 1280..9000&&value.lan in listOf("proxy","direct","block")&&value.connectTimeout in 3..60&&value.udpTimeout in 10..300&&value.maxConnections in 16..512&&value.dnsMode in listOf("tcp","https")) {tr(R.string.message_ac1ec3e9aa)}
+    require(value.appMode in listOf("all","exclude","include")&&value.packages.size<=300&&value.packages.distinct().size==value.packages.size&&value.packages.all {it.length<=255&&it!="dev.pingclash.app"&&it.matches(Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+"))}&&(value.appMode!="include"||value.packages.isNotEmpty())) {tr(R.string.message_e5eca6fb98)}
+    require(value.language in listOf("system","zh","en")&&value.theme in listOf("system","light","dark")&&value.customRules.toByteArray().size<=64*1024&&value.probeTimeout in 1000..20000&&value.probeConcurrency in 1..16) {tr(R.string.message_fef3d1894e)}
 }

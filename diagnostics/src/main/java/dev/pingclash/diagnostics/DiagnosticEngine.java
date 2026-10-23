@@ -31,7 +31,7 @@ public final class DiagnosticEngine {
     public Report run(Request request, BindingFactory factory, RunControl control, Observer observer) {
         long started = System.nanoTime();
         String timestamp = OffsetDateTime.now(ZoneOffset.UTC).toString();
-        String networkType = "未知";
+        String networkType = DiagnosticText.text("diagnostic_4d8c1c5b42");
         List<Step> steps = new ArrayList<>();
         Stage stage = Stage.NETWORK;
         long stageStart = started;

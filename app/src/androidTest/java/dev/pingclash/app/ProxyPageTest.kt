@@ -15,7 +15,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ProxyPageTest {
-    @get:Rule val compose=createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     @Test fun disjointGroupsKeepNestedCardsAndRootRouteWhileTabsSwipe() {
         val app=compose.activity.application as PingClashApplication
         val before=app.repository.data.value

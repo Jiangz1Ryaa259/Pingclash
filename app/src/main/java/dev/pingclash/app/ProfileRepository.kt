@@ -100,7 +100,7 @@ class ProfileRepository(context: Context) {
 
     @Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map<String, String>? = null): LocalProfile {
         ensureMutable()
-        require(name.isNotBlank() && name.length <= 100) { "请输入 1–100 字的资料名称" }
+        require(name.isNotBlank() && name.length <= 100) { tr(R.string.message_e97cd33442) }
         var parsed = JSONObject(Mobile.importProfile(text))
         val previousProfile = mutableData.value.profiles.firstOrNull { it.id == replaceId }
         var keptSelections = emptyMap<String, String>()
@@ -128,7 +128,7 @@ class ProfileRepository(context: Context) {
             parsed.optInt("unsupported"), parsed.optBoolean("routingIgnored"), rejectionCounts(parsed.optJSONObject("rejections")), parsed.optInt("verificationEnabled").coerceIn(0,500), importFieldCounts(parsed.optJSONObject("fieldIssues")), readGroups(parsed.optJSONArray("groups")), parsed.optInt("groupsUnsupported").coerceIn(0,64), parsed.optString("definition"),parsed.optBoolean("groupsDeclared"),keptSelections)
         val current = mutableData.value
         val existing = current.profiles.firstOrNull { it.id == replaceId }
-        require(existing != null || current.profiles.size < 20) { "最多保存 20 份资料" }
+        require(existing != null || current.profiles.size < 20) { tr(R.string.message_5cf607d225) }
         val updated = if (existing != null) current.profiles.map { if (it.id == replaceId) profile else it } else current.profiles + profile
         // Keep a refresh selection only when the complete node parameters still match.
         val previous = current.selected
@@ -170,7 +170,7 @@ class ProfileRepository(context: Context) {
         if(!group.supported) {
             val checked=JSONObject(Mobile.importProfile(definition.toString()))
             if(checked.optString("state")!="passed" || readGroups(checked.optJSONArray("groups")).none {it.name==groupName&&it.supported})
-                throw ProfileImportFailure("所选成员仍无法构建此策略组，原配置与选择已保留。")
+                throw ProfileImportFailure(tr(R.string.message_0a93b155bd))
         }
         return importProfile(profile.name,definition.toString(),profile.source,profile.id,explicitSelections=profile.userSelections+(groupName to choice))
     }
@@ -178,7 +178,7 @@ class ProfileRepository(context: Context) {
     @Synchronized fun reparse(profileId: String): LocalProfile {
         ensureMutable()
         val profile=mutableData.value.profiles.single {it.id==profileId}
-        require(profile.definition.isNotBlank()) {"此配置没有可重新解析的原始定义"}
+        require(profile.definition.isNotBlank()) {tr(R.string.message_37c135f051)}
         return importProfile(profile.name,profile.definition,profile.source,profile.id,explicitSelections=profile.userSelections)
     }
 
@@ -193,32 +193,34 @@ class ProfileRepository(context: Context) {
 
     @Synchronized fun settings(dns: String, probeUrl: String) {
         ensureMutable()
-        require(dns.isNotBlank() && dns.length <= 80) { "请输入 DNS IP，可附带端口" }
+        require(dns.isNotBlank() && dns.length <= 80) { tr(R.string.message_6fb64222da) }
         // Native validation also verifies the literal IP and port before establishing TUN.
-        require(validDns(dns)) { "DNS 仅支持有效 IP，可附带端口" }
-        require(probeUrl.length <= 2048 && validHttps(probeUrl)) { "测试目标必须是无用户名和密码的 HTTPS 地址" }
+        require(validDns(dns)) { tr(R.string.message_ebee841ef8) }
+        require(probeUrl.length <= 2048 && validHttps(probeUrl)) { tr(R.string.message_39eddf54bc) }
         commit(mutableData.value.copy(dnsAddress = dns, probeUrl = probeUrl))
     }
 
     @Synchronized fun clientSettings(value: ClientSettings,dns: String,probe: String) {
         ensureMutable();validateClientSettings(value)
-        require(dns.length<=80&&validDns(dns)) {"DNS 仅支持有效 IP，可附带端口"}
-        require(probe.length<=2048&&validHttps(probe)) {"测试目标必须是无用户名和密码的 HTTPS 地址"}
+        require(dns.length<=80&&validDns(dns)) {tr(R.string.message_ebee841ef8)}
+        require(probe.length<=2048&&validHttps(probe)) {tr(R.string.message_39eddf54bc)}
         val current=mutableData.value
         val reply=JSONObject(Mobile.validateRuntimeOptions(current.runtimeOptions(value)))
         if(reply.optString("state")!="passed") throw SettingsFailure(when(reply.optString("code")) {
-            "rule_unsupported" -> "第 ${reply.optInt("line")} 条规则类型暂未支持，请检查原配置规则或关闭合并"
-            "rule_invalid" -> "第 ${reply.optInt("line")} 条规则格式无效"
-            "rule_limit","rule_target_limit" -> "规则超过 2000 条或 16 个自定义出站目标的限制"
-            "rule_target_invalid" -> "规则引用的节点或策略组不可用"
-            else -> "网络选项或加密 DNS 地址无效"
+            "rule_unsupported" -> tr(R.string.message_4c3d16016b, reply.optInt("line"))
+            "rule_invalid" -> tr(R.string.message_0a99277bee, reply.optInt("line"))
+            "rule_limit","rule_target_limit" -> tr(R.string.message_1cbe37cb5f)
+            "rule_target_invalid" -> tr(R.string.message_d4bf946975)
+            else -> tr(R.string.message_6e7c33d963)
         })
         commit(current.copy(client=value,dnsAddress=dns,probeUrl=probe,usage=if(value.keepUsage)current.usage else LocalUsage()))
+        if(value.language!=current.client.language)UiStrings.apply(value.language)
     }
     @Synchronized fun appearance(language: String,theme: String) {
         val current=mutableData.value;check(!current.loadFailed)
         val value=current.client.copy(language=language,theme=theme);validateClientSettings(value)
         commit(current.copy(client=value))
+        UiStrings.apply(language)
     }
     @Synchronized fun resetUsage() {ensureMutable();commit(mutableData.value.copy(usage=LocalUsage()))}
     @Synchronized internal fun recordUsage(up: Long,down: Long,seconds: Long) {
@@ -227,25 +229,25 @@ class ProfileRepository(context: Context) {
         commit(current.copy(usage=LocalUsage(plus(current.usage.uploaded,up),plus(current.usage.downloaded,down),plus(current.usage.seconds,seconds),plus(current.usage.sessions,1))))
     }
     @Synchronized fun rename(id: String,name: String) {
-        ensureMutable();require(name.isNotBlank()&&name.length<=100) {"请输入 1–100 字的资料名称"}
+        ensureMutable();require(name.isNotBlank()&&name.length<=100) {tr(R.string.message_e97cd33442)}
         commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==id)it.copy(name=name.trim()) else it}))
     }
 
     @Synchronized fun acknowledgeCertificateNotice() {
         val current = mutableData.value
-        check(!current.loadFailed) { "本地资料读取失败，原文件已保留" }
+        check(!current.loadFailed) { tr(R.string.message_d372823dd0) }
         if (!current.certificateNoticeAcknowledged) commit(current.copy(certificateNoticeAcknowledged = true))
     }
 
     private fun ensureMutable() {
-        check(!mutableData.value.loadFailed) { "本地资料读取失败，原文件已保留" }
-        check(!VpnRuntime.state.value.active) { "请先断开 VPN 再修改资料" }
+        check(!mutableData.value.loadFailed) { tr(R.string.message_d372823dd0) }
+        check(!VpnRuntime.state.value.active) { tr(R.string.message_012c5c80c2) }
     }
 
     private fun commit(value: AppData) {
         synchronized(storageLock) {
         val plaintext = encode(value).toByteArray(Charsets.UTF_8)
-        require(plaintext.size <= 3 * 1024 * 1024) { "本地资料总量超过限制" }
+        require(plaintext.size <= 3 * 1024 * 1024) { tr(R.string.message_ec808f283f) }
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, secret(create = true))
         cipher.updateAAD(associated)
@@ -353,7 +355,7 @@ internal fun java.io.InputStream.readBytesLimited(maximum: Int): ByteArray {
     val output = java.io.ByteArrayOutputStream()
     val buffer = ByteArray(8192)
     while (true) { val count = read(buffer); if (count < 0) break
-        require(output.size() + count <= maximum) { "内容超过大小限制" }; output.write(buffer, 0, count)
+        require(output.size() + count <= maximum) { tr(R.string.message_f96a5b2b19) }; output.write(buffer, 0, count)
     }
     return output.toByteArray()
 }
@@ -361,11 +363,11 @@ internal fun java.io.InputStream.readBytesLimited(maximum: Int): ByteArray {
 internal object SubscriptionDownloader {
     private val timer = Executors.newSingleThreadScheduledExecutor { task -> Thread(task, "subscription-deadline").apply { isDaemon = true } }
     fun fetch(source: String): String {
-        require(validHttps(source)) { "订阅必须是 HTTPS 链接，且不能包含用户名或密码" }
+        require(validHttps(source)) { tr(R.string.message_0351397e06) }
         var address = URI(source)
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30)
         repeat(4) {
-            check(System.nanoTime() < deadline) { "订阅下载超时" }
+            check(System.nanoTime() < deadline) { tr(R.string.message_b6e30a8416) }
             val connection = address.toURL().openConnection() as HttpsURLConnection
             connection.instanceFollowRedirects = false
             connection.useCaches = false
@@ -378,8 +380,8 @@ internal object SubscriptionDownloader {
             try {
                 val status = connection.responseCode
                 if (status in listOf(301, 302, 303, 307, 308)) {
-                    address = address.resolve(connection.getHeaderField("Location") ?: throw IllegalStateException("订阅跳转缺少地址"))
-                    require(validHttps(address.toString())) { "订阅跳转地址不受支持" }
+                    address = address.resolve(connection.getHeaderField("Location") ?: throw IllegalStateException(tr(R.string.message_3a12c4343b)))
+                    require(validHttps(address.toString())) { tr(R.string.message_0fead32545) }
                 } else {
                     if (status != 200) throw SubscriptionHttpFailure(status.coerceIn(100, 599))
                     return connection.inputStream.use { it.readBytesLimited(2 * 1024 * 1024) }.toString(Charsets.UTF_8)
@@ -389,29 +391,29 @@ internal object SubscriptionDownloader {
                 throw failure
             } finally { expiry.cancel(false); connection.disconnect() }
         }
-        throw IllegalStateException("订阅跳转次数过多")
+        throw IllegalStateException(tr(R.string.message_617b8d3ad4))
     }
 }
 
 internal class SubscriptionHttpFailure(val status: Int) : java.io.IOException("subscription_http_status")
 
 internal class ProfileImportFailure(val publicMessage: String) : IllegalArgumentException("profile_import_failed")
-internal val rejectionLabels = linkedMapOf("resource_limit" to "配置总量超过本地限制", "security_policy" to "其他安全限制（旧记录）", "tls_policy" to "TLS 相关选项未兼容", "proxy_chain" to "拨号依赖未解析（缺少节点、循环或组类型未支持）", "replay_policy" to "启用了不接受的 0-RTT 选项", "plaintext_transport" to "远程连接缺少加密传输", "cipher_policy" to "加密算法或认证模式不符合要求", "udp_policy" to "暂不支持的远程 SOCKS UDP", "unsupported_protocol" to "暂不支持的协议", "invalid_parameters" to "参数或组合未被内核接受", "unsupported_fields" to "字段未兼容或值格式不符", "invalid_node" to "节点格式不完整")
+internal val rejectionLabels get() = linkedMapOf("resource_limit" to tr(R.string.message_dd78acd8da), "security_policy" to tr(R.string.message_013c8202d5), "tls_policy" to tr(R.string.message_08f09e82cc), "proxy_chain" to tr(R.string.message_af37f27d56), "replay_policy" to tr(R.string.message_3913485e58), "plaintext_transport" to tr(R.string.message_de9a8af39f), "cipher_policy" to tr(R.string.message_6178fccf0c), "udp_policy" to tr(R.string.message_9bf38eee01), "unsupported_protocol" to tr(R.string.message_e72cf6020d), "invalid_parameters" to tr(R.string.message_adbc2f44ed), "unsupported_fields" to tr(R.string.message_0357e0e899), "invalid_node" to tr(R.string.message_b41b084688))
 internal fun rejectionCounts(value: JSONObject?): Map<String, Int> = rejectionLabels.keys.mapNotNull { key ->
     value?.optInt(key, 0)?.takeIf { it in 1..500 }?.let { key to it }
 }.toMap()
-internal fun rejectionSummary(counts: Map<String, Int>): String = rejectionLabels.mapNotNull { (key, label) -> counts[key]?.let { "$label：$it 个节点" } }.joinToString("；")
+internal fun rejectionSummary(counts: Map<String, Int>): String = rejectionLabels.mapNotNull { (key, label) -> counts[key]?.let { trPlural(R.plurals.message_3d24641487, (it).toInt(), label, it) } }.joinToString("；")
 internal fun importFailureMessage(parsed: JSONObject): String = when (parsed.optString("code")) {
-    "subscription_html" -> "链接返回了网页，而不是订阅。请使用服务商提供的原始订阅地址，并检查是否需要登录或网页验证。"
-    "singbox_format" -> "这是 sing-box JSON 订阅。请在服务商处选择 Clash / Mihomo 格式，或使用通用 Base64 订阅。"
-    "provider_only" -> "配置只包含远程提供者，没有实际节点。请使用包含节点的 Clash / Mihomo 订阅。"
+    "subscription_html" -> tr(R.string.message_e29d5fc45c)
+    "singbox_format" -> tr(R.string.message_a2b5d9b0b1)
+    "provider_only" -> tr(R.string.message_f5457450b4)
     "no_supported_nodes" -> {
         val counts = rejectionCounts(parsed.optJSONObject("rejections"))
         val detail = rejectionSummary(counts) + importFieldSummary(importFieldCounts(parsed.optJSONObject("fieldIssues"))).takeIf { it.isNotBlank() }?.let { "。$it" }.orEmpty()
-        "没有可导入的节点。" + detail.takeIf { it.isNotBlank() }?.let { "$it。" }.orEmpty() +
-            "这不表示服务器证书无效。支持 Clash YAML / JSON、通用 Base64 和常见节点分享链接；可尝试更换订阅格式。"
+        tr(R.string.message_89d6350ff0) + detail.takeIf { it.isNotBlank() }?.let { "$it。" }.orEmpty() +
+            tr(R.string.message_a21f280989)
     }
-    else -> "未识别订阅内容，或内容超过限制。支持 Clash YAML / JSON、Base64 和常见节点分享链接；最多 2 MB、500 个节点。"
+    else -> tr(R.string.message_dc8618a067)
 }
 
 // Only a fixed schema vocabulary can be displayed; arbitrary JSON keys may contain secrets.
@@ -427,6 +429,6 @@ internal fun importFieldCounts(value: JSONObject?): Map<String, Int> {
 }
 internal fun importFieldSummary(issues: Map<String, Int>): String = issues.toSortedMap().entries.joinToString("；") { (key, count) ->
     val parts = key.split('.')
-    val field = when(parts[1]) { "parameters" -> "参数组合"; "structure" -> "结构或数据类型"; "protocol" -> "未知协议"; "other" -> "其他未识别字段"; else -> parts[1] }
-    "${if(parts[0] == "other") "其他" else parts[0].uppercase(java.util.Locale.ROOT)} · $field：$count 个节点"
+    val field = when(parts[1]) { "parameters" -> tr(R.string.message_0facf15a7b); "structure" -> tr(R.string.message_b4c7dabb18); "protocol" -> tr(R.string.message_3c54c5dcf5); "other" -> tr(R.string.message_588e7c7ede); else -> parts[1] }
+    trPlural(R.plurals.message_ab72fde8f0, (count).toInt(), if(parts[0] == "other") tr(R.string.message_d2909f1647) else parts[0].uppercase(java.util.Locale.ROOT), field, count)
 }

@@ -17,7 +17,8 @@ import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class GroupAvailabilityTest {
-    @get:Rule val compose=createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     private fun node(name: String)=JSONObject().put("name",name).put("type","anytls").put("server","example.invalid").put("port",443).put("password","availability-android-fixture")
     @Test fun mixed101And11SubscriptionKeepsSelectableGroupsAndLocalReparse() {
         val app=compose.activity.application as PingClashApplication

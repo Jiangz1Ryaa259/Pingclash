@@ -13,7 +13,7 @@ $keyStore = Join-Path $outputDirectory ('localhost-' + [guid]::NewGuid().ToStrin
 try {
     & keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -validity 2 -dname 'CN=localhost' -ext 'SAN=dns:localhost' -storetype PKCS12 -keystore $keyStore -storepass test-only -keypass test-only -noprompt
     if ($LASTEXITCODE -ne 0) { throw 'Test certificate generation failed.' }
-    & java '-Dfile.encoding=UTF-8' -cp $classDirectory dev.pingclash.diagnostics.CoreVerification $keyStore
+    & java '-Dfile.encoding=UTF-8' -cp $classDirectory dev.pingclash.diagnostics.CoreVerification $keyStore (Join-Path $projectRoot 'app\src\main\res\values-zh-rCN\diagnostics.xml')
     if ($LASTEXITCODE -ne 0) { throw 'Core verification failed.' }
 } finally {
     # Delete only the exact temporary file created above, inside our test output folder.

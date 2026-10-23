@@ -22,7 +22,7 @@ internal object ReportExporter {
                     .bufferedWriter(Charsets.UTF_8).use { it.write(markdown) }
             }.isSuccess
             withContext(Dispatchers.Main) {
-                Toast.makeText(app, if (saved) "报告已保存" else "报告未能保存，请重试", Toast.LENGTH_SHORT).show()
+                Toast.makeText(app, if (saved) tr(R.string.message_ca6e1092af) else tr(R.string.message_37e5395b04), Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -48,7 +48,7 @@ internal fun proxyTypeLabel(type: String) = when(type) {
 internal fun LocalProfile.displayGroups(): List<LocalGroup> {
     if(groups.isEmpty()) {
         if(hasSubscriptionGroups) return emptyList()
-        return listOf(LocalGroup("全部节点","nodes",nodes.map {it.name},"",true))
+        return listOf(LocalGroup(tr(R.string.message_e8f9f94b38),"nodes",nodes.map {it.name},"",true))
     }
     val hidden=runCatching {
         val raw=JSONObject(definition).optJSONArray("proxy-groups")
@@ -58,21 +58,21 @@ internal fun LocalProfile.displayGroups(): List<LocalGroup> {
 }
 internal fun LocalProfile.proxyDescription(name: String): String {
     nodes.firstOrNull {it.name==name}?.let {return proxyTypeLabel(it.type)}
-    val g=groups.firstOrNull {it.name==name} ?: return if(name in listOf("DIRECT","REJECT","COMPATIBLE")) name else "成员不可用"
-    return proxyTypeLabel(g.type)+when {g.type=="load-balance" -> " · 自动分配";g.selected.isEmpty() -> " · 自动选择";else -> "(${g.selected})"}
+    val g=groups.firstOrNull {it.name==name} ?: return if(name in listOf("DIRECT","REJECT","COMPATIBLE")) name else tr(R.string.message_454a00d476)
+    return proxyTypeLabel(g.type)+when {g.type=="load-balance" -> tr(R.string.message_4682046b69);g.selected.isEmpty() -> tr(R.string.message_d3d5aa4a3b);else -> "(${g.selected})"}
 }
 private fun groupProblem(reason: String)=when(reason) {
-    "resource_limit" -> "组依赖展开超过本地资源限制"
-    "remote_provider" -> "此组依赖尚未加载的远程节点提供者"
-    "group_filter" -> "此组的筛选表达式暂未兼容"
-    "group_url" -> "此组的测速地址格式无效"
-    "group_dependency" -> "此组存在缺失、重复或循环的成员依赖"
-    "group_node_unavailable" -> "当前选择的节点未通过配置校验，可改选可用成员"
-    "group_missing" -> "当前路径引用了不存在的成员，可在手动组改选其他可用成员"
-    "group_cycle" -> "当前路径存在循环依赖，可在手动组改选其他可用成员"
-    "group_duplicate" -> "当前路径的名称重复或与内置出站冲突"
-    "group_depth" -> "组依赖层级超过本地限制"
-    else -> "此组的类型或字段暂未兼容"
+    "resource_limit" -> tr(R.string.message_7f2e62ade8)
+    "remote_provider" -> tr(R.string.message_a4779d13c8)
+    "group_filter" -> tr(R.string.message_5ad0c892f4)
+    "group_url" -> tr(R.string.message_a7382629fe)
+    "group_dependency" -> tr(R.string.message_f5a0352ad8)
+    "group_node_unavailable" -> tr(R.string.message_8cb2ffe5a1)
+    "group_missing" -> tr(R.string.message_75c311d5d8)
+    "group_cycle" -> tr(R.string.message_426d30a04f)
+    "group_duplicate" -> tr(R.string.message_ea433ce167)
+    "group_depth" -> tr(R.string.message_2eb0e44e97)
+    else -> tr(R.string.message_6cb7de92ea)
 }
 
 @Composable internal fun ProxyScreen(data: AppData,locked: Boolean,model: AppViewModel,tests: ProxyTestState,onProfiles: () -> Unit,onDiagnosis: () -> Unit) {
@@ -90,30 +90,30 @@ private fun groupProblem(reason: String)=when(reason) {
         LaunchedEffect(pager.currentPage,groups.map {it.name}) {if(groups.isNotEmpty()) tabs.animateScrollToItem(pager.currentPage)}
         Column(Modifier.fillMaxSize().testTag("proxy-page")) {
             Row(Modifier.fillMaxWidth().padding(start=18.dp,end=12.dp,top=10.dp,bottom=12.dp),verticalAlignment=Alignment.CenterVertically) {
-                Text(localize("代理"),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+                Text((tr(R.string.message_5e84ea61e8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
                 Surface(shape=CircleShape,color=Panel.copy(alpha=.72f)) {
                     Row {
-                        IconButton({searching=!searching;if(!searching)query=""},Modifier.semantics {contentDescription="搜索代理"}) {AppGlyph(8,Modifier.size(23.dp))}
-                        IconButton({if(tests.running)model.cancelProxyTests() else if(profile!=null&&current!=null)model.testProxies(profile,current.proxies,current.name)},enabled=tests.running || profile!=null&&current?.proxies?.any {name ->profile.nodes.any {it.name==name}||profile.groups.any {it.name==name&&it.supported}}==true,modifier=Modifier.testTag("proxy-test-group").semantics {contentDescription=if(tests.running) "取消测速" else "测速当前组"}) {
+                        IconButton({searching=!searching;if(!searching)query=""},Modifier.semantics {contentDescription=tr(R.string.message_760585442e)}) {AppGlyph(8,Modifier.size(23.dp))}
+                        IconButton({if(tests.running)model.cancelProxyTests() else if(profile!=null&&current!=null)model.testProxies(profile,current.proxies,current.name)},enabled=tests.running || profile!=null&&current?.proxies?.any {name ->profile.nodes.any {it.name==name}||profile.groups.any {it.name==name&&it.supported}}==true,modifier=Modifier.testTag("proxy-test-group").semantics {contentDescription=if(tests.running) tr(R.string.message_916406aa08) else tr(R.string.message_58bf04c85f)}) {
                             if(tests.running) CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp) else ProxySymbol("bolt")
                         }
                     }
                 }
                 Box {
-                    IconButton({menu=true},Modifier.semantics {contentDescription="代理选项"}) {ProxySymbol("menu")}
+                    IconButton({menu=true},Modifier.semantics {contentDescription=tr(R.string.message_ab43f25026)}) {ProxySymbol("menu")}
                     DropdownMenu(menu,{menu=false}) {
-                        DropdownMenuItem({Text(localize("管理配置"))},{menu=false;onProfiles()})
-                        DropdownMenuItem({Text(if(current!=null&&data.selectedId==profile?.groupId(current.name)) "当前组已是主代理" else "设当前组为主代理")},{menu=false;if(profile!=null&&current!=null)model.selectMainGroup(profile,current)},enabled=!locked&&current?.supported==true&&current.type!="nodes",modifier=Modifier.testTag("group-main-${current?.name}"))
-                        if(current?.type in listOf("url-test","fallback")) DropdownMenuItem({Text(localize("恢复自动选择"))},{menu=false;model.selectGroup(requireNotNull(profile),requireNotNull(current),"")},enabled=!locked)
-                        DropdownMenuItem({Text(localize("诊断主代理"))},{menu=false;onDiagnosis()},enabled=data.selected!=null&&!tests.running)
+                        DropdownMenuItem({Text((tr(R.string.message_498958cf3d)))},{menu=false;onProfiles()})
+                        DropdownMenuItem({Text(if(current!=null&&data.selectedId==profile?.groupId(current.name)) tr(R.string.message_c63fdbd771) else tr(R.string.message_b718063f31))},{menu=false;if(profile!=null&&current!=null)model.selectMainGroup(profile,current)},enabled=!locked&&current?.supported==true&&current.type!="nodes",modifier=Modifier.testTag("group-main-${current?.name}"))
+                        if(current?.type in listOf("url-test","fallback")) DropdownMenuItem({Text((tr(R.string.message_5edc4aac67)))},{menu=false;model.selectGroup(requireNotNull(profile),requireNotNull(current),"")},enabled=!locked)
+                        DropdownMenuItem({Text((tr(R.string.message_33ff6d18e1)))},{menu=false;onDiagnosis()},enabled=data.selected!=null&&!tests.running)
                     }
                 }
             }
-            if(searching) OutlinedTextField(query,{if(it.length<=100)query=it},Modifier.fillMaxWidth().padding(horizontal=16.dp).padding(bottom=10.dp).testTag("proxy-search"),singleLine=true,shape=CircleShape,placeholder={Text(localize("搜索当前组"))},trailingIcon={TextButton({searching=false;query=""}){Text(localize("关闭"))}})
+            if(searching) OutlinedTextField(query,{if(it.length<=100)query=it},Modifier.fillMaxWidth().padding(horizontal=16.dp).padding(bottom=10.dp).testTag("proxy-search"),singleLine=true,shape=CircleShape,placeholder={Text((tr(R.string.message_9c9e5273fe)))},trailingIcon={TextButton({searching=false;query=""}){Text((tr(R.string.message_3fd47edce4)))}})
             if(profile==null || groups.isEmpty()) {
                 Column(Modifier.weight(1f).fillMaxWidth(),verticalArrangement=Arrangement.Center,horizontalAlignment=Alignment.CenterHorizontally) {
-                    AppGlyph(1,Modifier.size(44.dp),Mint);Spacer(Modifier.height(20.dp));Text(if(profile==null) "还没有代理配置" else "原配置的策略组不可用或已隐藏",style=MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(12.dp));FilledTonalButton(onProfiles) {Text(localize("添加或管理配置"))}
+                    AppGlyph(1,Modifier.size(44.dp),Mint);Spacer(Modifier.height(20.dp));Text(if(profile==null) tr(R.string.message_7799f870a9) else tr(R.string.message_7896373370),style=MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(12.dp));FilledTonalButton(onProfiles) {Text((tr(R.string.message_e6cb787107)))}
                 }
             } else {
                 Row(Modifier.fillMaxWidth().padding(bottom=8.dp),verticalAlignment=Alignment.CenterVertically) {
@@ -128,19 +128,19 @@ private fun groupProblem(reason: String)=when(reason) {
                             }
                         }
                     }
-                    IconButton({chooser=true},Modifier.padding(end=8.dp).background(Panel,CircleShape).semantics {contentDescription="全部策略组"}) {ProxySymbol("down")}
+                    IconButton({chooser=true},Modifier.padding(end=8.dp).background(Panel,CircleShape).semantics {contentDescription=tr(R.string.message_64a4fcdeb6)}) {ProxySymbol("down")}
                 }
                 if(tests.running) {
                     LinearProgressIndicator(progress={if(tests.total>0)tests.completed.toFloat()/tests.total else 0f},modifier=Modifier.fillMaxWidth().padding(horizontal=18.dp))
-                    Text("测速 ${tests.completed} / ${tests.total} · ${data.client.probeConcurrency} 路并发",Modifier.padding(horizontal=18.dp,vertical=4.dp),style=MaterialTheme.typography.labelSmall,color=Muted)
+                    Text(tr(R.string.message_3538e7b1a7, tests.completed, tests.total, data.client.probeConcurrency),Modifier.padding(horizontal=18.dp,vertical=4.dp),style=MaterialTheme.typography.labelSmall,color=Muted)
                 }
                 HorizontalPager(pager,Modifier.weight(1f).fillMaxWidth().testTag("strategy-pager"),key={groups[it].name},beyondViewportPageCount=0) {i ->
                     val group=groups[i]
                     val members=group.proxies.filter {query.isBlank()||it.contains(query,true)||profile.proxyDescription(it).contains(query,true)}
                     Column(Modifier.fillMaxSize()) {
                         if(!group.supported) Text(groupProblem(group.reason),Modifier.padding(horizontal=18.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)
-                        if(group.unavailable>0) Text("${group.unavailable} 个成员配置不可用，已隔离；不会替换为直连。其余成员可正常选择。",Modifier.padding(horizontal=18.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)
-                        if(members.isEmpty()) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center){Text(localize("当前组没有匹配的成员"),color=Muted)}
+                        if(group.unavailable>0) Text(trPlural(R.plurals.message_9854876d3b, (group.unavailable).toInt(), group.unavailable),Modifier.padding(horizontal=18.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)
+                        if(members.isEmpty()) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center){Text((tr(R.string.message_7f3c2f9e96)),color=Muted)}
                         else {
                             val columns=if(LocalDensity.current.fontScale>=1.6f) 1 else 2
                             LazyVerticalGrid(GridCells.Fixed(columns),modifier=Modifier.fillMaxSize().testTag("group-members-${group.name}"),contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=18.dp),horizontalArrangement=Arrangement.spacedBy(8.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -153,7 +153,7 @@ private fun groupProblem(reason: String)=when(reason) {
                                         tests.values[delayKey(profile.id,name,group.name)],Modifier.testTag("group-choice-${group.name}-$name"),
                                         onClick={when(group.type) {
                                             "nodes" -> node?.let {model.select(it.id)}
-                                            "load-balance" -> model.message("负载均衡组由内核分配连接，无需手动选择成员")
+                                            "load-balance" -> model.message(tr(R.string.message_42f6bdedaa))
                                             else -> model.selectGroup(profile,group,if(group.type!="select"&&group.selected==name) "" else name)
                                         }},
                                         onTest=if((node!=null||nested?.supported==true)&&!tests.running) {{model.testProxies(profile,listOf(name),group.name)}} else null,
@@ -165,9 +165,9 @@ private fun groupProblem(reason: String)=when(reason) {
                 }
             }
         }
-        if(chooser) AlertDialog(onDismissRequest={chooser=false},title={Text(localize("策略组"))},text={LazyColumn(Modifier.heightIn(max=420.dp)) {
+        if(chooser) AlertDialog(onDismissRequest={chooser=false},title={Text((tr(R.string.message_47d56387f5)))},text={LazyColumn(Modifier.heightIn(max=420.dp)) {
             items(groups.size) {i -> TextButton({chooser=false;scope.launch {pager.animateScrollToPage(i)}},Modifier.fillMaxWidth()) {Text(groups[i].name,Modifier.weight(1f),maxLines=2,overflow=TextOverflow.Ellipsis);if(i==pager.currentPage)Text("✓")}}
-        }},confirmButton={TextButton({chooser=false}){Text(localize("关闭"))}})
+        }},confirmButton={TextButton({chooser=false}){Text((tr(R.string.message_3fd47edce4)))}})
     }
 }
 
@@ -182,15 +182,15 @@ private fun groupProblem(reason: String)=when(reason) {
             }
             Row(Modifier.heightIn(min=26.dp),verticalAlignment=Alignment.CenterVertically) {
                 Text(description,Modifier.weight(1f),style=MaterialTheme.typography.bodySmall,color=Muted,maxLines=1,overflow=TextOverflow.Ellipsis)
-                if(onOpen!=null) Box(Modifier.size(26.dp).clickable(onClick=onOpen).semantics {contentDescription="打开 $name 策略组"},contentAlignment=Alignment.Center) {ProxySymbol("right",Modifier.size(16.dp))}
+                if(onOpen!=null) Box(Modifier.size(26.dp).clickable(onClick=onOpen).semantics {contentDescription=tr(R.string.message_73396c3856, name)},contentAlignment=Alignment.Center) {ProxySymbol("right",Modifier.size(16.dp))}
             }
-            Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription="测试 $name"},contentAlignment=Alignment.CenterStart) {
+            Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription=tr(R.string.message_e5cc5f1229, name)},contentAlignment=Alignment.CenterStart) {
                 when(delay?.state) {
                     "running" -> CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=1.5.dp)
                     "passed" -> Text("${delay.elapsedMs.coerceAtLeast(1)} ms",fontSize=12.sp,color=Success)
-                    "timeout" -> Text(localize("超时"),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
-                    "failed" -> Text(localize("失败"),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
-                    "busy" -> Text("稍后重试",fontSize=12.sp,color=Muted)
+                    "timeout" -> Text((tr(R.string.message_e512cf016f)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
+                    "failed" -> Text((tr(R.string.message_28384d7afd)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
+                    "busy" -> Text(tr(R.string.message_7b0fe85cc2),fontSize=12.sp,color=Muted)
                     else -> if(onTest!=null) ProxySymbol("bolt",Modifier.size(16.dp),Mint) else Text("—",fontSize=12.sp,color=Muted)
                 }
             }

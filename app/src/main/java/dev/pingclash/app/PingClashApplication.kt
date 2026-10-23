@@ -23,12 +23,16 @@ class PingClashApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        UiStrings.initialize(this)
+        dev.pingclash.diagnostics.DiagnosticText.install {key -> diagnosticResources[key]?.let {tr(it)}?:key}
+        dev.pingclash.diagnostics.DiagnosticText.setVersion(packageManager.getPackageInfo(packageName,0).versionName?:"development")
         nativeReady = runCatching {
             go.Seq.setContext(this)
             Mobile.setPlatform(AndroidCorePlatform(this))
             org.json.JSONObject(Mobile.info()).getString("engine") == "mihomo"
         }.getOrDefault(false)
         repository = ProfileRepository(this)
+        UiStrings.migrate(repository.data.value.client.language)
     }
 }
 
@@ -38,7 +42,7 @@ internal class AndroidCorePlatform(context: Application) : Platform {
         fun eligible(network: Network) = manager.getNetworkCapabilities(network)?.let {
             it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && !it.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
         } == true
-        PingVpnService.instance?.boundNetwork?.let { return it.takeIf(::eligible) }
+        PingVpnService.instance?.let { return it.boundNetwork?.takeIf(::eligible) }
         // Follow the current system route; never silently bypass another VPN or
         // choose a different physical network when the current one is absent.
         return manager.activeNetwork?.takeIf(::eligible)

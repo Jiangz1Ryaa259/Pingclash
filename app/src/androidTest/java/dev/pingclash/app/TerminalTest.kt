@@ -15,7 +15,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class TerminalTest {
-    @get:Rule val compose=createAndroidComposeRule<TerminalActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<TerminalActivity>()
     private val model get()=compose.activity.terminal
     @Before fun acceptExplicitNotice() {
         if(!model.noticeAccepted)compose.onNodeWithTag("terminal-notice-accept").performClick()

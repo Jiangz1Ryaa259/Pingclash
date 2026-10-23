@@ -119,9 +119,9 @@ internal class AndroidNetworkBinding private constructor(
                 }
                 val type = when {
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi-Fi"
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "蜂窝网络"
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "以太网"
-                    else -> "其他网络"
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> tr(R.string.message_2d05ff08f5)
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> tr(R.string.message_efe16032c9)
+                    else -> tr(R.string.message_45ff8362fe)
                 }
                 return AndroidNetworkBinding(manager, network, type)
             } catch (_: SecurityException) {

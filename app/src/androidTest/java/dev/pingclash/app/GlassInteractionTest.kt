@@ -16,7 +16,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class GlassInteractionTest {
-    @get:Rule val compose=createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
 
     @Test fun navigationDragCommitsOnceCancelRestoresAndSemanticsStaySelectable() {
         val device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())

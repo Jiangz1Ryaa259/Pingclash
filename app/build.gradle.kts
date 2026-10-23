@@ -20,6 +20,10 @@ android {
     }
 
     buildFeatures { compose = true }
+    bundle { language { enableSplit = false } }
+    lint {
+        error += setOf("MissingTranslation", "HardcodedText")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

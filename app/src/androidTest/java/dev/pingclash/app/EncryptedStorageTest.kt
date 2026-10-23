@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class EncryptedStorageTest {
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
     @Test fun tamperingFailsClosedAndDoesNotOverwriteEvidence() {
         val app = InstrumentationRegistry.getInstrumentation().targetContext
         val directory = File(app.cacheDir, "security-${UUID.randomUUID()}").apply { mkdirs() }

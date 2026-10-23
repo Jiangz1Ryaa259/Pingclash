@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.termux.terminal.TerminalSession
@@ -93,33 +92,33 @@ class TerminalActivity:ComponentActivity() {
     val revision=model.revision
     Column(Modifier.fillMaxSize().background(Color(0xff0c0e12)).safeDrawingPadding().imePadding()) {
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
-            TextButton(back) {Text("返回")}
-            TextButton(model::create,enabled=model.noticeAccepted&&model.sessions.size<3,modifier=Modifier.testTag("terminal-new")) {Text("新建终端")}
-            TextButton(model::closeCurrent,enabled=model.sessions.isNotEmpty()) {Text("关闭会话")}
+            TextButton(back) {Text(tr(R.string.message_572cf45ba4))}
+            TextButton(model::create,enabled=model.noticeAccepted&&model.sessions.size<3,modifier=Modifier.testTag("terminal-new")) {Text(tr(R.string.message_14ee5380fc))}
+            TextButton(model::closeCurrent,enabled=model.sessions.isNotEmpty()) {Text(tr(R.string.message_965df3bce4))}
         }
-        Text("标准 sh · 本应用权限 · 普通命令走系统网络",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)
+        Text(tr(R.string.message_b8b89f7925),Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)
         if(model.sessions.isEmpty()) {
             Column(Modifier.weight(1f).padding(24.dp),verticalArrangement=Arrangement.Center) {
-                Text("手机终端",style=MaterialTheme.typography.headlineMedium,color=Color.White)
+                Text(tr(R.string.message_ffa09539e0),style=MaterialTheme.typography.headlineMedium,color=Color.White)
                 Spacer(Modifier.height(16.dp))
-                Text("手动运行 Android 系统命令，支持管道、重定向和交互输入。输入 help 查看 shell 帮助，toybox 查看设备已有工具。\n\n命令与本应用具有相同权限，可能读写应用文件和访问网络。仅运行你理解的命令。历史与屏幕输出只在会话内存；退到后台会关闭会话。",color=Color.LightGray)
+                Text(tr(R.string.message_dd950864ba),color=Color.LightGray)
             }
         } else {
-            LazyRow {items(model.sessions.size) {i->FilterChip(model.selected==i,{model.selected=i},label={Text("sh ${i+1}"+(if(model.sessions[i].isRunning)"" else " · 已退出"))})}}
+            LazyRow {items(model.sessions.size) {i->FilterChip(model.selected==i,{model.selected=i},label={Text("sh ${i+1}"+(if(model.sessions[i].isRunning)"" else tr(R.string.message_4263ea7dfa)))})}}
             val session=model.sessions.getOrNull(model.selected)
             key(session) {
                 AndroidView(factory={context->TerminalView(context,null).apply {model.attach(this);session?.let {attachSession(it)};requestFocus()}},
                     update={v->model.view=v;if(revision>=0)v.onScreenUpdated()},modifier=Modifier.weight(1f).fillMaxWidth().testTag("terminal-view"))
             }
             LazyRow(Modifier.fillMaxWidth()) {
-                items(8) {i->val key=listOf("Ctrl+C","Tab","Esc","↑","↓","←","→","粘贴")[i]
+                items(8) {i->val key=listOf("Ctrl+C","Tab","Esc","↑","↓","←","→",tr(R.string.message_3351792674))[i]
                     TextButton({if(i==7)model.requestPaste() else model.send(listOf("\u0003","\t","\u001b","\u001b[A","\u001b[B","\u001b[D","\u001b[C")[i])},Modifier.testTag("terminal-key-$i")){Text(key)}
                 }
             }
         }
     }
-    if(!model.noticeAccepted) AlertDialog(onDismissRequest=back,title={Text(stringResource(R.string.terminal_warning_title))},text={Text(stringResource(R.string.terminal_warning_body))},
-        confirmButton={TextButton(model::acceptNotice,Modifier.testTag("terminal-notice-accept")){Text(stringResource(R.string.terminal_warning_accept))}},
-        dismissButton={TextButton(back){Text(stringResource(R.string.cancel))}})
-    model.paste?.let {text->AlertDialog(onDismissRequest={model.paste=null},title={Text("粘贴到终端")},text={Text("包含换行的文本可能立即执行命令。确认后原样粘贴 ${text.length} 个字符。")},confirmButton={TextButton({model.sessions.getOrNull(model.selected)?.emulator?.paste(text);model.paste=null}){Text("粘贴")}},dismissButton={TextButton({model.paste=null}){Text("取消")}})}
+    if(!model.noticeAccepted) AlertDialog(onDismissRequest=back,title={Text(tr(R.string.terminal_warning_title))},text={Text(tr(R.string.terminal_warning_body))},
+        confirmButton={TextButton(model::acceptNotice,Modifier.testTag("terminal-notice-accept")){Text(tr(R.string.terminal_warning_accept))}},
+        dismissButton={TextButton(back){Text(tr(R.string.cancel))}})
+    model.paste?.let {text->AlertDialog(onDismissRequest={model.paste=null},title={Text(tr(R.string.message_dfc1aad746))},text={Text(trPlural(R.plurals.message_54907f03b6, (text.length).toInt(), text.length))},confirmButton={TextButton({model.sessions.getOrNull(model.selected)?.emulator?.paste(text);model.paste=null}){Text(tr(R.string.message_3351792674))}},dismissButton={TextButton({model.paste=null}){Text(tr(R.string.message_2cd0f3be87))}})}
 }

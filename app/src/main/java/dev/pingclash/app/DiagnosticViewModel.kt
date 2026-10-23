@@ -22,16 +22,16 @@ data class DiagnosticUiState(
 )
 
 internal fun nodeConnectivitySummary(state: DiagnosticUiState, selectedId: String?): String {
-    if (selectedId == null || state.nodeId != selectedId) return "连通性：尚未测试"
-    if (state.running) return "连通性：测试中…"
-    val report = state.report ?: return "连通性：尚未测试"
-    if (report.steps.any { it.state == Models.State.STALE }) return "连通性：本次测试已失效"
-    if (report.steps.any { it.state in listOf(Models.State.CANCELLED, Models.State.BLOCKED) }) return "连通性：本次测试未完成"
+    if (selectedId == null || state.nodeId != selectedId) return tr(R.string.message_25700ce7d3)
+    if (state.running) return tr(R.string.message_2ac8fb70c7)
+    val report = state.report ?: return tr(R.string.message_25700ce7d3)
+    if (report.steps.any { it.state == Models.State.STALE }) return tr(R.string.message_7277c57f94)
+    if (report.steps.any { it.state in listOf(Models.State.CANCELLED, Models.State.BLOCKED) }) return tr(R.string.message_229d73083e)
     val proxy = report.steps.lastOrNull { it.stage == Models.Stage.PROXY }
     return when {
-        proxy?.state == Models.State.PASSED && proxy.code == Models.Code.PROXY_OK -> "连通性：本次访问成功 · ${proxy.elapsedMs} ms"
-        proxy?.state == Models.State.FAILED -> "连通性：本次访问未成功"
-        else -> "连通性：本次测试未完成"
+        proxy?.state == Models.State.PASSED && proxy.code == Models.Code.PROXY_OK -> tr(R.string.message_8a62417c01, proxy.elapsedMs)
+        proxy?.state == Models.State.FAILED -> tr(R.string.message_c81c76a181)
+        else -> tr(R.string.message_229d73083e)
     }
 }
 

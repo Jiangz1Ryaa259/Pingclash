@@ -36,7 +36,25 @@ public final class CoreVerification {
 
     interface Check { void run() throws Exception; }
 
+    private static void installResources(String path) throws Exception {
+        var factory=javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
+        factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        var elements=factory.newDocumentBuilder().parse(new java.io.File(path)).getElementsByTagName("string");
+        var values=new java.util.HashMap<String,String>();
+        for(int i=0;i<elements.getLength();i++) {
+            var item=(org.w3c.dom.Element)elements.item(i);
+            String value=item.getTextContent();
+            if(value.startsWith("\"")&&value.endsWith("\""))value=value.substring(1,value.length()-1);
+            value=value.replace("\\n","\n").replace("\\'","'").replace("\\\"","\"").replace("\\\\","\\");
+            values.put(item.getAttribute("name"),value);
+        }
+        DiagnosticText.install(key -> java.util.Objects.requireNonNull(values.get(key),"Missing diagnostic resource: "+key));
+    }
+
     public static void main(String[] args) throws Exception {
+        installResources(args[1]);
         check("reject subscription URL and credentials", () -> {
             rejects(() -> request("https://secret.invalid/?token=secret", 443, false, ""));
             rejects(() -> request("password@server.invalid", 443, false, ""));
@@ -207,7 +225,7 @@ public final class CoreVerification {
             require(text.contains("CORE_UNAVAILABLE") == false && text.contains("mihomo 尚未接入"), "missing honest limitation");
         });
 
-        if (args.length != 1) throw new IllegalArgumentException("Pass the test-only PKCS12 keystore path for TLS verification");
+        if (args.length != 2) throw new IllegalArgumentException("Pass the test-only PKCS12 and diagnostic resource paths");
         SSLContext trusted = context(args[0]);
         DiagnosticEngine tlsEngine = new DiagnosticEngine(new SocketProbe(trusted.getSocketFactory()), new CoreAdapter.Unavailable());
         check("real TLS handshake with hostname verification", () -> {
@@ -265,21 +283,21 @@ public final class CoreVerification {
                 Report report = new Report("run-01", "2026-10-22", "Wi-Fi", Arrays.asList(
                     new Step(Stage.TLS, State.FAILED, Code.TLS_FAILED, 1, "", 0),
                     new Step(Stage.PROXY, State.FAILED, code, 2, "", 0)), 3);
-                require(report.conclusion().equals(code.message), "specific actual failure hidden by auxiliary probe");
+                require(report.conclusion().equals(code.message()), "specific actual failure hidden by auxiliary probe");
             }
         });
         check("configured unverified node policy remains visible on successful reports", () -> {
             Report report = new Report("run-01", "2026-10-22", "Wi-Fi", Arrays.asList(
                 new Step(Stage.POLICY, State.SKIPPED, Code.NODE_CERTIFICATE_UNVERIFIED, 0, "", 0),
                 new Step(Stage.PROXY, State.PASSED, Code.PROXY_OK, 2, "", 0, 204)), 2);
-            require(report.conclusion().equals(Code.PROXY_OK.message), "certificate setting replaced connectivity outcome");
-            require(ReportFormatter.markdown(report).contains(Code.NODE_CERTIFICATE_UNVERIFIED.message), "policy omitted from report");
+            require(report.conclusion().equals(Code.PROXY_OK.message()), "certificate setting replaced connectivity outcome");
+            require(ReportFormatter.markdown(report).contains(Code.NODE_CERTIFICATE_UNVERIFIED.message()), "policy omitted from report");
         });
         check("changed configuration takes priority over internal cancellation", () -> {
             Report report = new Report("run-01", "2026-10-21", "Wi-Fi", Arrays.asList(
                 new Step(Stage.PROXY, State.CANCELLED, Code.CANCELLED, 1, "", 0),
                 new Step(Stage.PROXY, State.STALE, Code.CONFIG_CHANGED, 1, "", 0)), 2);
-            require(report.conclusion().equals(Code.CONFIG_CHANGED.message), "configuration invalidation reported as user cancellation");
+            require(report.conclusion().equals(Code.CONFIG_CHANGED.message()), "configuration invalidation reported as user cancellation");
         });
         System.out.println("PASS: " + passed + " core checks; all network tests used loopback only.");
     }

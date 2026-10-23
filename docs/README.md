@@ -3,6 +3,7 @@
 - [Build and verification](development.md)
 - [Review against the installation-readiness checklist](hardening-review.md)
 - [Terminal permissions and lifecycle](terminal.md)
+- [Background, network handoff and always-on VPN](background-vpn.md)
 - [Diagnostic evidence and limits](diagnostics.md)
 - [UI and interaction](ui-design.md)
 - [Validation history](security-testing.md)

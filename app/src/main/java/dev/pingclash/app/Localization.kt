@@ -1,62 +1,62 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package dev.pingclash.app
 
-import androidx.compose.runtime.Composable
+import android.app.Application
+import android.app.LocaleManager
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build
+import android.os.LocaleList
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import java.util.Locale
 
-internal val LocalUiLanguage=staticCompositionLocalOf {"zh"}
-@Composable internal fun localize(text: String): String=if(LocalUiLanguage.current=="en") english[text]?:text else text
-private val english=mapOf(
-    "实时速度 · 流量 · 内存 · 服务" to "Speed · traffic · memory · services","活动连接与关闭控制" to "Inspect and close active connections","语言、主题与仪表盘卡片" to "Languages, theme and dashboard cards",
-    "IPv6、UDP、MTU、超时与测速" to "IPv6, UDP, MTU, timeouts and testing","按应用选择代理范围" to "Select apps routed through the VPN","模式、订阅规则与自定义规则" to "Modes, provider rules and custom rules","代理、直连或阻断内网" to "Proxy, bypass or block LAN traffic",
-    "添加、刷新、重命名与导出" to "Import, update, rename and export","保留原分组与嵌套成员" to "Original groups and nested members","VPN 服务与任务控制" to "VPN service and task controls","仅本机累计用量，默认关闭" to "Local totals, disabled by default",
-    "分层探测与脱敏报告" to "Layered probes and redacted reports","本机加密与数据保留" to "Local encryption and data retention","版本、内核与开源声明" to "Version, core and licenses",
-    "条原规则" to "provider rules","条超限或无效" to "omitted or invalid","恢复默认设置" to "Restore defaults","代理内核" to "Proxy core",
-    "DNS 始终经过主代理，不因直连规则改用系统解析器。加密 DNS 校验 HTTPS 证书，不跟随重定向。节点入口和必要的引导解析可能使用系统网络。" to "DNS always uses the main proxy, including in direct mode. HTTPS DNS validates certificates and rejects redirects. Proxy entries and DNS service hostnames bootstrap through the system network.",
-    "应用的 UDP / TCP 53 请求统一交由此解析器处理。规则域名匹配使用本次 DNS 关联；应用自带 DoH 或共享 IP 无法可靠还原域名，可使用 IP / 端口规则。" to "UDP/TCP port 53 is handled by this resolver. Domain rules use session DNS associations; app-managed DoH and shared IPs can hide domains. Use IP/port rules when needed.",
-    "关闭 IPv6 时继续接管 IPv6 路由并阻断转发，避免绕过 VPN。" to "Disabled IPv6 remains captured and is blocked instead of bypassing the VPN.",
-    "仅主动测速或诊断时访问测试目标。自动策略组仍按原组测试配置执行。" to "The target is contacted only for manual tests and diagnostics. Automatic groups retain their own health-check settings.",
-    "覆盖私有 IP、回环和链路本地单播地址。内网选项优先于出站规则；默认经过主代理。直连仍经受保护的底层网络，不开放 LAN 监听端口。组播和未指定地址始终阻断。" to "Covers private, loopback and link-local unicast addresses. LAN policy precedes rules; proxy is the default. Direct uses protected underlying sockets without opening LAN listeners. Multicast and unspecified addresses are always blocked.",
-    "直连模式会绕过代理服务器。全局代理忽略出站规则；规则模式按自定义规则、订阅原规则、主代理的顺序匹配。" to "Direct mode bypasses the proxy server. Global mode ignores rules. Rule mode evaluates custom rules, provider rules, then the main proxy.",
-    "支持 DOMAIN、DOMAIN-SUFFIX、DOMAIN-KEYWORD、IP-CIDR、IP-CIDR6、DST-PORT、NETWORK、MATCH。出站可填 PROXY、DIRECT、REJECT 或原配置的节点 / 策略组名称。最多 2000 条、16 个额外出站；不兼容的规则会阻止启用，绝不静默忽略。GEOSITE、GEOIP、RULE-SET 和逻辑规则尚未执行。" to "Supports DOMAIN, DOMAIN-SUFFIX, DOMAIN-KEYWORD, IP-CIDR, IP-CIDR6, DST-PORT, NETWORK and MATCH. Targets: PROXY, DIRECT, REJECT or a profile node/group. Limit: 2,000 rules and 16 additional targets. Unsupported rules prevent activation. GEOSITE, GEOIP, RULE-SET and logical rules are not implemented.",
-    "默认关闭。开启后仅在断开时加密保存累计字节、时长和会话数；不保存域名、IP、应用历史。强制结束或系统杀进程可能丢失本次计数。关闭后清除历史累计值。" to "Disabled by default. When enabled, only aggregate bytes, duration and session count are encrypted on disconnect. No domain, IP or app history. Forced termination may lose the current session. Disabling clears saved totals.",
-    "常开 VPN 和阻止未经过 VPN 的连接由 Android 系统管理。应用不自行授予权限，不开放远程控制 API；仅在系统常开 VPN 已获授权时接受系统启动。" to "Android manages always-on VPN and blocking non-VPN traffic. No self-granted permissions, remote control API or automatic boot connection.",
-    "没有遥测、广告、设备标识或远程崩溃上报。配置与偏好通过 Android Keystore 加密保存，禁用云备份和迁移。服务状态、实时曲线和活动连接仅存于内存。" to "No telemetry, ads, device identifiers or remote crash reports. Profiles and preferences use Android Keystore encryption with backup and migration disabled. Live status, charts and active connections stay in memory.",
-    "默认不记录连接目标。开启后仅保留活动连接的 IP / 域名；连接结束或服务停止即删除，不写报告或日志。目标、规则编辑与明文配置页面禁止截屏；普通页面允许截屏。" to "Destination recording is off by default. When enabled, active destinations are held only until the connection ends or service stops. Never logged or exported in reports. Destinations, rule editors and plaintext profile pages block screenshots; ordinary pages allow capture.",
-    "订阅更新、测速、解析 DNS 和代理连接会联系对应服务。订阅和网站 TLS 始终校验；节点证书策略沿用原订阅，首次提示后不常驻。" to "Updates, tests, DNS and proxy connections contact their respective services. Subscription and website TLS is always verified. Node certificate policy follows the subscription with a one-time notice.",
-    "配置仅在本机解密；未开放外部控制端口或后台遥测接口。" to "Profiles are decrypted only locally. No external controller or telemetry endpoint.",
-    "将重置网络与显示偏好、应用分流、自定义规则及本机累计用量；保留已导入配置。" to "Reset network/display preferences, per-app routing, custom rules and usage totals. Imported profiles are retained.",
-    "导出文件包含完整节点凭据，不受本机密钥保护。请选择可信保存位置，不会自动上传或发送。导出原节点、分组和规则，不导出订阅链接或应用偏好。" to "The exported file contains credentials outside device-key protection. Choose a trusted destination; nothing is uploaded or sent automatically. Exports original nodes, groups and rules, without subscription URLs or app preferences.",
-    "本次结论" to "Result","当前检查节点" to "Proxy being tested","当前组没有匹配的成员" to "No matching members in this group","地址、SNI、节点名、端口、订阅链接与凭据已省略。" to "Addresses, SNI, names, ports, subscription URLs and credentials are omitted.",
-    "管理配置" to "Manage profiles","恢复自动选择" to "Restore automatic selection","取消本次诊断" to "Cancel diagnostics","搜索当前组" to "Search this group","添加或管理配置" to "Add or manage profiles","添加配置" to "Add profile",
-    "条原规则" to "provider rules","脱敏报告预览" to "Redacted report preview","诊断控制台" to "Diagnostic console","诊断主代理" to "Diagnose main proxy","正在导入…" to "Importing…","执行" to "Run","分享" to "Share","保存 .md" to "Save .md",
-    "连接不顺畅？逐步查找原因" to "Trace connection issues step by step","选择配置后，在代理页切换策略组与节点。" to "Choose a profile, then switch groups and proxies on the Proxies page.","选择一种方式，开始导入。" to "Choose an import method.","让连接从这里开始" to "Start your connection here","删除此配置？" to "Delete this profile?","失败" to "Failed","超时" to "Timeout",
-    "仪表盘" to "Dashboard","代理" to "Proxies","配置" to "Profiles","设置" to "Settings","诊断" to "Diagnostics",
-    "工具" to "Tools","返回" to "Back","保存设置" to "Save settings","保存" to "Save","取消" to "Cancel","关闭" to "Close","知道了" to "OK",
-    "语言与外观" to "Language & appearance","跟随系统" to "System default","简体中文" to "简体中文","英语" to "English","浅色" to "Light","深色" to "Dark","语言" to "Language","主题" to "Theme",
-    "网络与连接" to "Network & connection","应用分流" to "Per-app VPN","出站规则" to "Outbound rules","内网" to "Local network","控制" to "Controls","使用情况" to "Usage",
-    "实时状态" to "Live status","连接管理" to "Connections","隐私与安全" to "Privacy & security","关于与许可" to "About & licenses",
-    "实时速度" to "Live speed","上传" to "Upload","下载" to "Download","本次流量" to "Session traffic","已上传" to "Uploaded","已下载" to "Downloaded","连接时长" to "Duration","连接总数" to "Total connections",
-    "最近 60 秒，仅本机内存" to "Last 60 seconds, memory only","统计应用转发的有效载荷，不含协议封装；不是运营商账单。" to "Forwarded payload only, excluding protocol overhead; not carrier billing.",
-    "服务状态" to "Service status","VPN 服务" to "VPN service","运行中" to "Running","已停止" to "Stopped","正在启动" to "Starting","发生错误" to "Error",
-    "出站模式" to "Routing mode","全局代理" to "Global proxy","规则" to "Rules","直连" to "Direct","代理全部流量" to "Proxy all traffic",
-    "活动连接" to "Active connections","DNS 查询" to "DNS queries","策略阻断" to "Policy blocks","转发异常" to "Forwarding failures","策略组" to "Proxy groups",
-    "内存信息" to "Memory","应用 PSS" to "App PSS","Java 堆" to "Java heap","Go 堆" to "Go heap","Go 协程" to "Go routines","系统可用内存" to "System available memory","实时读取本机内存，不采集其他应用使用记录。" to "Local memory snapshots; no other-app usage history is collected.",
-    "重启连接" to "Reconnect","断开连接" to "Disconnect","前往连接" to "Open dashboard","关闭全部连接" to "Close all connections","取消诊断与测速" to "Cancel diagnostics & tests","系统 VPN 设置" to "System VPN settings","系统电池设置" to "System battery settings",
-    "全部代理" to "All apps","排除选中应用" to "Exclude selected apps","仅代理选中应用" to "Only selected apps","搜索应用" to "Search apps","添加包名" to "Add package name","应用包名" to "Package name","添加" to "Add","移除" to "Remove",
-    "连接超时（秒）" to "Connect timeout (seconds)","UDP 空闲超时（秒）" to "UDP idle timeout (seconds)","最大活动连接" to "Max active connections","启用 IPv6" to "Enable IPv6","启用 UDP" to "Enable UDP",
-    "代理内网" to "Proxy LAN","内网直连" to "Direct LAN","阻断内网" to "Block LAN","模式" to "Mode","加密 DNS 地址" to "Encrypted DNS URL","诊断测试目标" to "Diagnostic test URL","VPN DNS" to "VPN DNS",
-    "本机累计用量" to "Local usage totals","在本机保存累计用量" to "Keep aggregate usage on this device","清除累计用量" to "Clear usage totals","累计上传" to "Total uploaded","累计下载" to "Total downloaded","累计时长" to "Total duration","累计会话" to "Total sessions",
-    "仪表盘卡片" to "Dashboard cards","显示速度图" to "Show speed chart","显示本次流量" to "Show session traffic","显示内存" to "Show memory","显示服务状态" to "Show service status","通知栏显示速度" to "Show speed in notification",
-    "合并订阅原规则" to "Include provider rules","自定义规则优先于订阅规则" to "Custom rules precede provider rules","自定义规则" to "Custom rules","查看原规则" to "View provider rules","规则格式" to "Rule format",
-    "测速超时（毫秒）" to "Test timeout (milliseconds)","测速并发" to "Concurrent tests","显示连接目标（仅本次会话内存）" to "Show destinations (session memory only)",
-    "没有活动连接" to "No active connections","关闭此连接" to "Close connection","未记录目标" to "Destination not recorded","应用始终排除自身，不申请读取全体应用权限；仅列出可见的启动应用，也可手填包名。" to "PingClash excludes itself. No permission to enumerate all installed apps; visible launcher apps and manual package names are supported.",
-    "先断开 VPN，再修改转发设置。" to "Disconnect the VPN before changing forwarding settings.","未保存" to "Unsaved","已保存" to "Saved","隐私默认" to "Private by default",
-    "节点证书校验提示" to "Node certificate policy","知道了，不再提醒" to "Understood, do not remind again","未连接" to "Disconnected","已连接" to "Connected","处理中" to "Working",
-    "添加订阅" to "Add subscription","导入文件" to "Import file","更新" to "Update","删除" to "Delete","使用配置" to "Use profile","查看代理" to "Open proxies","重命名" to "Rename","导出配置" to "Export profile",
-    "节点配置" to "Node configuration","导入" to "Import","名称（可选）" to "Name (optional)","节点 JSON / Clash YAML" to "Node JSON / Clash YAML","连接诊断" to "Connection diagnostics","诊断此节点" to "Diagnose proxy","预览脱敏报告" to "Preview redacted report",
-    "建立 VPN 连接" to "Connect VPN","VPN 隧道已建立" to "VPN tunnel established","连接已开启" to "Connection enabled","尚未连接" to "Not connected","正在连接" to "Connecting","正在断开" to "Disconnecting",
-    "你的连接，一目了然" to "Your connection at a glance","VPN 连接" to "VPN connection","当前节点" to "Current proxy","尚未选择节点" to "No proxy selected","选择节点" to "Select proxy","添加第一个订阅" to "Add first subscription",
-    "添加订阅，选择一个节点" to "Add a profile and choose a proxy","准备就绪，轻点即可连接" to "Ready when you are",
-    "资料仅存本机 · 无使用情况收集" to "Data stays on this device · No telemetry","配置名称" to "Profile name","分组：订阅原配置" to "Groups: provider configuration","分组：未提供，展示全部节点" to "No groups provided: all proxies view",
-)
+// The composition key also invalidates pre-Android-13 resource consumers when
+// the encrypted in-app language preference changes.
+internal val LocalUiLanguage=staticCompositionLocalOf {"system"}
+
+internal object UiStrings {
+    private lateinit var app: Application
+    private var legacyLanguage by mutableStateOf("system")
+    @Volatile private var cached: Pair<String,Resources>?=null
+    fun initialize(application: Application) { app=application }
+    fun migrate(language: String) {
+        legacyLanguage=language
+        if(Build.VERSION.SDK_INT>=33) {
+            val flags=app.getSharedPreferences("ui_locales",0)
+            if(!flags.getBoolean("migrated",false)) {
+                val manager=app.getSystemService(LocaleManager::class.java)
+                if(manager.applicationLocales.isEmpty&&language!="system")apply(language)
+                flags.edit().putBoolean("migrated",true).apply()
+            }
+        }
+    }
+    fun preference(): String=if(Build.VERSION.SDK_INT>=33) {
+        when(app.getSystemService(LocaleManager::class.java).applicationLocales.get(0)?.language) {"zh"->"zh";"en"->"en";else->"system"}
+    } else legacyLanguage
+    fun apply(language: String) {
+        require(language in listOf("system","zh","en"))
+        legacyLanguage=language;cached=null
+        if(Build.VERSION.SDK_INT>=33)app.getSystemService(LocaleManager::class.java).applicationLocales=
+            LocaleList.forLanguageTags(when(language){"zh"->"zh-CN";"en"->"en";else->""})
+    }
+    fun resources(): Resources {
+        val base=app.resources
+        val key=(if(Build.VERSION.SDK_INT>=33)"android" else legacyLanguage)+":"+base.configuration.hashCode()
+        cached?.takeIf {it.first==key}?.let {return it.second}
+        val language=if(Build.VERSION.SDK_INT>=33)preference() else legacyLanguage
+        val value=if(language=="system")base else app.createConfigurationContext(Configuration(base.configuration).apply {
+            setLocales(LocaleList(Locale.forLanguageTag(if(language=="zh")"zh-CN" else "en")))
+        }).resources
+        cached=key to value
+        return value
+    }
+}
+internal fun tr(@StringRes id: Int,vararg args: Any?): String=
+    if(args.isEmpty())UiStrings.resources().getString(id) else UiStrings.resources().getString(id,*args)
+internal fun trPlural(@PluralsRes id: Int,quantity: Int,vararg args: Any?): String=
+    UiStrings.resources().getQuantityString(id,quantity,*args)

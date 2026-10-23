@@ -36,7 +36,17 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(AndroidJUnit4::class)
 class ClientIntegrationTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose = createAndroidComposeRule<MainActivity>()
+
+    private fun tcpAcceptors(): Set<String> {
+        val device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val tables=device.executeShellCommand("cat /proc/net/tcp /proc/net/tcp6")
+        assertTrue("Test shell cannot inspect socket table",tables.contains("local_address"))
+        return tables.lineSequence().map {it.trim().split(Regex("\\s+"))}.filter {
+            it.size>7&&it[3]=="0A"&&it[7]==android.os.Process.myUid().toString()
+        }.map {it[1]}.toSet()
+    }
 
     @Test fun importEncryptProbeEstablishVPNForwardSeparateUIDAndStop() {
         val app = compose.activity.application as PingClashApplication
@@ -45,6 +55,9 @@ class ClientIntegrationTest {
         assertTrue("Ordinary page blocks screenshots", compose.activity.window.attributes.flags and android.view.WindowManager.LayoutParams.FLAG_SECURE == 0)
         assertTrue(JSONObject(Mobile.info()).getBoolean("vpnAvailable"))
         ControlledServers().use { fixture ->
+            val baselineAcceptors=tcpAcceptors()
+            assertTrue("Socket inspection did not find the fixture",baselineAcceptors.isNotEmpty())
+            assertTrue("A test fixture bound outside loopback",baselineAcceptors.all {it.substringBefore(":") in setOf("0100007F","00000000000000000000000001000000","0000000000000000FFFF00000100007F")})
             val name = "本地端到端测试"
             val config = JSONObject().put("type", "socks5").put("name", "本地 SOCKS5")
                 .put("server", "127.0.0.1").put("port", fixture.socks.localPort)
@@ -76,6 +89,8 @@ class ClientIntegrationTest {
             approveSyntheticVpn(device,compose)
             compose.waitUntil(20_000) { VpnRuntime.state.value.phase in listOf("established", "error") }
             assertEquals(VpnRuntime.state.value.message, "established", VpnRuntime.state.value.phase)
+            assertEquals("Starting VPN introduced a TCP listener",baselineAcceptors,tcpAcceptors())
+            assertTrue("VPN foreground notification missing",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1&&it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT!=0})
             compose.waitForIdle()
             compose.onNodeWithText("VPN 隧道已建立").assertIsDisplayed()
             captureSyntheticFixture(compose, device, "connection-light.png")
@@ -143,7 +158,7 @@ class ClientIntegrationTest {
 }
 
 /** Only whitelisted loopback services are reachable; no real subscription is used. */
-private class ControlledServers : Closeable {
+internal class ControlledServers : Closeable {
     private val loopback = InetAddress.getByName("127.0.0.1")
     val http = ServerSocket(0, 16, loopback)
     val dns = ServerSocket(0, 16, loopback)

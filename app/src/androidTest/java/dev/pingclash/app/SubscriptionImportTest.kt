@@ -66,7 +66,8 @@ private class SubscriptionFixture : Closeable {
 
 @RunWith(AndroidJUnit4::class)
 class SubscriptionImportTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
+    @get:Rule(order=1) val compose = createAndroidComposeRule<MainActivity>()
     @Test fun mixedSubscriptionRetainsAllThirtyTwoVlessNodesWithLegacyPlaceholders() {
         val app = compose.activity.application as PingClashApplication
         val nodes = org.json.JSONArray()

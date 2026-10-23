@@ -38,12 +38,16 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(android.os.Build.VERSION.SDK_INT>=33)setRecentsScreenshotEnabled(false)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(0xFFF7F8FA.toInt(), 0xFF0C0E12.toInt()),
         )
         setContent {
-            val data by (application as PingClashApplication).repository.data.collectAsStateWithLifecycle()
+            val stored by (application as PingClashApplication).repository.data.collectAsStateWithLifecycle()
+            val configuration=androidx.compose.ui.platform.LocalConfiguration.current
+            val preference=if(android.os.Build.VERSION.SDK_INT>=33)UiStrings.preference() else stored.client.language
+            val data=stored.copy(client=stored.client.copy(language=preference))
             val systemLanguage=androidx.compose.ui.platform.LocalConfiguration.current.locales[0].language
             val language=if(data.client.language=="system") {if(systemLanguage=="zh")"zh" else "en"} else data.client.language
             CompositionLocalProvider(LocalUiLanguage provides language) {
@@ -90,49 +94,49 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
             }
             Column(Modifier.weight(1f)) {
                 Text("PingClash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("连接诊断实验室", color = Muted, style = MaterialTheme.typography.labelMedium)
+                Text(tr(R.string.message_e0693379bd), color = Muted, style = MaterialTheme.typography.labelMedium)
             }
-            Text("0.2 · 辅助探测", color = Mint, style = MaterialTheme.typography.labelMedium)
+            Text(tr(R.string.message_79c06d301b), color = Mint, style = MaterialTheme.typography.labelMedium)
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("让连接问题，\n有迹可循。", fontSize = 34.sp, lineHeight = 43.sp, fontWeight = FontWeight.Bold)
-            Text("从域名解析到 TLS，一步一步确认连接在哪里停下。", color = Muted, lineHeight = 23.sp)
+            Text(tr(R.string.message_a1ebf712be), fontSize = 34.sp, lineHeight = 43.sp, fontWeight = FontWeight.Bold)
+            Text(tr(R.string.message_8cc06bb4cd), color = Muted, lineHeight = 23.sp)
         }
 
         Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(24.dp)) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("探测目标", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("直连辅助探测", color = Mint, style = MaterialTheme.typography.labelMedium)
+                    Text(tr(R.string.message_100d9e4baf), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(tr(R.string.message_b089c998f6), color = Mint, style = MaterialTheme.typography.labelMedium)
                 }
                 OutlinedTextField(
                     host, { host = it; error = null }, Modifier.fillMaxWidth(),
-                    enabled = !state.running, singleLine = true, label = { Text("服务器域名 / IP") },
-                    placeholder = { Text("填写你要检查的服务器") },
-                    supportingText = { Text("仅填写地址，无需密码或订阅链接") },
+                    enabled = !state.running, singleLine = true, label = { Text(tr(R.string.message_9e5175a63b)) },
+                    placeholder = { Text(tr(R.string.message_6c8b8a3572)) },
+                    supportingText = { Text(tr(R.string.message_baac1eb8e6)) },
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         port, { if (it.length <= 5 && it.all(Char::isDigit)) port = it }, Modifier.width(110.dp),
-                        enabled = !state.running, singleLine = true, label = { Text("端口") },
+                        enabled = !state.running, singleLine = true, label = { Text(tr(R.string.message_e71ac32b54)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
                     Column(Modifier.weight(1f)) {
-                        Text("TLS 握手", fontWeight = FontWeight.Medium)
-                        Text("始终校验证书", color = Muted, style = MaterialTheme.typography.labelSmall)
+                        Text(tr(R.string.message_2159b45cbe), fontWeight = FontWeight.Medium)
+                        Text(tr(R.string.message_5ba569f731), color = Muted, style = MaterialTheme.typography.labelSmall)
                     }
                     Switch(useTls, { useTls = it }, enabled = !state.running)
                 }
                 if (useTls) {
                     OutlinedTextField(
                         sni, { sni = it }, Modifier.fillMaxWidth(), enabled = !state.running,
-                        singleLine = true, label = { Text("SNI / 证书主机名（可选）") },
-                        placeholder = { Text("留空则使用上面的地址") },
+                        singleLine = true, label = { Text(tr(R.string.message_2bd95a750b)) },
+                        placeholder = { Text(tr(R.string.message_b85a766c4c)) },
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(Models.Family.AUTO to "自动", Models.Family.IPV4 to "IPv4", Models.Family.IPV6 to "IPv6")
+                    listOf(Models.Family.AUTO to tr(R.string.message_7eb336e42c), Models.Family.IPV4 to "IPv4", Models.Family.IPV6 to "IPv6")
                         .forEach { (option, label) ->
                             FilterChip(family == option, { family = option }, label = { Text(label) }, enabled = !state.running)
                         }
@@ -141,7 +145,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                 Button(
                     onClick = {
                         try {
-                            val number = port.toIntOrNull() ?: throw IllegalArgumentException("请输入有效端口")
+                            val number = port.toIntOrNull() ?: throw IllegalArgumentException(tr(R.string.message_0ff53da1e7))
                             val request = Models.Request(host, number, useTls, sni, family)
                             error = null
                             model.start(request)
@@ -151,21 +155,21 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                     },
                     enabled = !state.running,
                     modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(16.dp),
-                ) { Text(if (state.running) "正在收集连接证据…" else "开始诊断", fontWeight = FontWeight.Bold) }
+                ) { Text(if (state.running) tr(R.string.message_113a2e4325) else tr(R.string.message_5ce51775a0), fontWeight = FontWeight.Bold) }
                 if (state.running) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
-                    TextButton(onClick = model::cancel, modifier = Modifier.align(Alignment.CenterHorizontally)) { Text("取消本次诊断") }
+                    TextButton(onClick = model::cancel, modifier = Modifier.align(Alignment.CenterHorizontally)) { Text(tr(R.string.message_e831d49866)) }
                 }
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("证据时间线", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("${state.steps.count { it.state == Models.State.PASSED }} 项通过", color = Muted, style = MaterialTheme.typography.labelMedium)
+                Text(tr(R.string.message_73cf02b62d), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(trPlural(R.plurals.message_7ae041d629, (state.steps.count { it.state == Models.State.PASSED }).toInt(), state.steps.count { it.state == Models.State.PASSED }), color = Muted, style = MaterialTheme.typography.labelMedium)
             }
             if (state.steps.isEmpty()) {
-                Text("运行一次诊断后，这里会显示每一步的真实结果。", color = Muted, lineHeight = 23.sp)
+                Text(tr(R.string.message_a9fd59d7ab), color = Muted, lineHeight = 23.sp)
             } else {
                 state.steps.forEach { StepCard(it) }
             }
@@ -174,31 +178,31 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
         state.report?.let { report ->
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), shape = RoundedCornerShape(22.dp)) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("本次结论", color = Mint, fontWeight = FontWeight.Bold)
+                    Text(tr(R.string.message_98369d4ab0), color = Mint, fontWeight = FontWeight.Bold)
                     Text(report.conclusion(), lineHeight = 24.sp)
                     Text("${report.networkType} · ${report.elapsedMs} ms", color = Muted, style = MaterialTheme.typography.labelMedium)
-                    OutlinedButton(onClick = { showReport = true }) { Text("预览脱敏报告") }
+                    OutlinedButton(onClick = { showReport = true }) { Text(tr(R.string.message_e89513334b)) }
                 }
             }
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("辅助探测的范围", fontWeight = FontWeight.Medium)
-            Text("本页检查 DNS、TCP 和系统 TLS。实际代理访问请使用节点诊断；无法仅凭这些结果确认基站拦截。", color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 21.sp)
-            Text("本地执行 · 报告默认脱敏 · 无需 root", color = Mint, style = MaterialTheme.typography.labelSmall)
+            Text(tr(R.string.message_4dea405f22), fontWeight = FontWeight.Medium)
+            Text(tr(R.string.message_1383e06670), color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 21.sp)
+            Text(tr(R.string.message_c1129dfc0f), color = Mint, style = MaterialTheme.typography.labelSmall)
         }
     }
 
     if (showReport && state.report != null) {
         val report = requireNotNull(state.report)
-        val markdown = remember(report) { ReportFormatter.markdown(report) }
+        val markdown = remember(report,UiStrings.resources().configuration.locales.toLanguageTags()) { ReportFormatter.markdown(report) }
         AlertDialog(
             onDismissRequest = { showReport = false },
-            title = { Text("脱敏报告预览") },
+            title = { Text(tr(R.string.message_423dd8c4db)) },
             text = {
                 Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
-                    Text("已省略域名、IP、SNI、端口及原始错误消息。", color = Mint)
+                    Text(tr(R.string.message_e4933fa179), color = Mint)
                     Spacer(Modifier.height(16.dp))
                     Text(markdown, style = MaterialTheme.typography.bodySmall)
                 }
@@ -207,17 +211,17 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                 TextButton(onClick = {
                     pendingExport = markdown
                     saveReport.launch("PingClash-${report.runId.take(8)}.md")
-                }) { Text("保存 .md") }
+                }) { Text(tr(R.string.message_e7a44965ac)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_SUBJECT, "PingClash 脱敏诊断报告")
+                        putExtra(Intent.EXTRA_SUBJECT, tr(R.string.message_20b6001a93))
                         putExtra(Intent.EXTRA_TEXT, markdown)
                     }
-                    context.startActivity(Intent.createChooser(intent, "分享诊断报告"))
-                }) { Text("分享") }
+                    context.startActivity(Intent.createChooser(intent, tr(R.string.message_bdb39a7662)))
+                }) { Text(tr(R.string.message_7e564575eb)) }
             },
         )
     }
@@ -238,12 +242,12 @@ internal fun StepCard(step: Models.Step) {
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(step.stage.title, fontWeight = FontWeight.SemiBold)
-                    Text(step.state.title, color = color, style = MaterialTheme.typography.labelMedium)
+                    Text(step.stage.title(), fontWeight = FontWeight.SemiBold)
+                    Text(step.state.title(), color = color, style = MaterialTheme.typography.labelMedium)
                 }
-                Text(step.code.message, color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 20.sp)
+                Text(step.code.message(), color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 20.sp)
                 if (step.attempt > 0) {
-                    Text("${step.addressFamily} · 尝试 ${step.attempt} · ${step.elapsedMs} ms", color = Muted, style = MaterialTheme.typography.labelSmall)
+                    Text(tr(R.string.message_18f7273d32, step.addressFamily, step.attempt, step.elapsedMs), color = Muted, style = MaterialTheme.typography.labelSmall)
                 }
                 if (step.attempt == 0 && step.elapsedMs > 0) Text("${step.elapsedMs} ms", color = Muted, style = MaterialTheme.typography.labelSmall)
                 if (step.httpStatus > 0) Text("HTTP ${step.httpStatus}", color = color, style = MaterialTheme.typography.labelMedium)
