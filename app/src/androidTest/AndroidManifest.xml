@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application android:name="android.app.Application">
+        <!-- Separate UID: this peer's traffic must enter the VPN, unlike the owner app. -->
+        <activity android:name="dev.pingclash.test.PeerActivity" android:exported="true" />
+    </application>
+</manifest>
