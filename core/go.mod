@@ -7,7 +7,7 @@ require (
 	github.com/metacubex/quic-go v0.61.1-0.20260727080200-2548683b76f4
 	github.com/metacubex/sing v0.5.8
 	github.com/metacubex/sing-tun v0.4.27
-	github.com/miekg/dns v1.1.63
+	github.com/miekg/dns v1.1.73
 	github.com/sirupsen/logrus v1.9.4
 	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/mobile v0.0.0-20261011034528-197770444867
