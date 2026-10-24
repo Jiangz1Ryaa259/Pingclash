@@ -267,14 +267,26 @@ class SubscriptionImportTest {
     @Test fun systemDarkThemeAndLargeTextRemainUsable() {
         val device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         try {
+            val beforeNight=compose.activity
             device.executeShellCommand("cmd uimode night yes")
-            compose.waitUntil(10000) { compose.activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES }
+            compose.waitUntil(10000) {runCatching {
+                val activity=compose.activity
+                activity!==beforeNight && activity.lifecycle.currentState==androidx.lifecycle.Lifecycle.State.RESUMED &&
+                    activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK==android.content.res.Configuration.UI_MODE_NIGHT_YES
+            }.getOrDefault(false)}
+            compose.waitForIdle()
             compose.onNodeWithTag("nav-0").performClick()
             captureSyntheticFixture(compose,device,"connection-dark.png")
+            val beforeFont=compose.activity
             device.executeShellCommand("settings put system font_scale 1.3")
-            compose.waitUntil(10000) { compose.activity.resources.configuration.fontScale > 1.2f }
+            compose.waitUntil(10000) {runCatching {
+                val activity=compose.activity
+                activity!==beforeFont && activity.lifecycle.currentState==androidx.lifecycle.Lifecycle.State.RESUMED && activity.resources.configuration.fontScale>1.2f
+            }.getOrDefault(false)}
+            compose.waitForIdle()
             compose.onNodeWithTag("nav-3").performClick()
-        compose.onNodeWithTag("tool-settings").performClick()
+            compose.waitUntil(10000) {compose.onAllNodesWithTag("tool-settings").fetchSemanticsNodes().isNotEmpty()}
+            compose.onNodeWithTag("tool-settings").performClick()
             compose.onNodeWithText("跟随系统").assertIsDisplayed()
             captureSyntheticFixture(compose,device,"settings-dark-large.png")
         } finally {

@@ -50,9 +50,11 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 26 项集成回归通过，无跳过；含真实安全窗口、跨 UID 转发和网络恢复 |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 26 项集成回归通过，包括后台断网保留 TUN、恢复连接、前台通知和最近任务配置 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 当前签名候选 APK 29 项回归通过，无跳过；含 Doze、跨 UID 转发、重连与 providers 更新 |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 同一签名候选 APK 29 项回归通过，无跳过；含 UA/配额、TCP、终端及后台 VPN |
 
-GitHub CI 的 Android 12、13、14、15 / API 31、33、34、35 矩阵各 26 项全部通过，无跳过，包含受控 DNS 与跨 UID HTTP 转发：[运行记录](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40009562806)。对应应用与测试代码提交为 `daa738faf3de72548e59a6d3ad61acf0ba72e0b4`。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
+此前基线 GitHub CI 的 Android 12、13、14、15 / API 31、33、34、35 矩阵各 26 项全部通过，无跳过，包含受控 DNS 与跨 UID HTTP 转发：[运行记录](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40009562806)。对应应用与测试代码提交为 `daa738faf3de72548e59a6d3ad61acf0ba72e0b4`。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
 
 仪表盘会显示在最近任务中；Android 13+ 禁用该卡片的页面快照，终端和敏感页面继续保护截屏。最近任务卡片与前台 VPN 通知是两项独立功能，移除卡片不会自动断开 VPN。网络切换会重建出站连接；若希望系统杀进程期间也阻断直连，请参考[后台、始终开启 VPN 与锁定模式](docs/background-vpn.md)。
+
+本轮 HTTP providers、UA/配额及 TCP 指标的源码与验证见 [PR #14](https://github.com/Jiangz1Ryaa259/Pingclash/pull/14) 和[验证记录](docs/security-testing.md)。既有 Release APK 尚未更新。
