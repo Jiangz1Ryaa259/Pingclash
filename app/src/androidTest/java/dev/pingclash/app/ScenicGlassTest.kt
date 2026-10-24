@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
@@ -29,6 +30,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -81,6 +84,40 @@ class ScenicGlassTest {
         assertTrue("Last action is hidden by glass",last.fetchSemanticsNode().boundsInRoot.bottom<=nav.top)
         last.performClick();compose.runOnIdle {assertEquals(1,clicks)}
         captureSyntheticFixture(compose,device,"glass-large-font-clearance.png")
+    }
+
+    @Test fun dashboardScrollDrivesSurfaceToUnderwaterScene() {
+        val scale=device.executeShellCommand("settings get global animator_duration_scale").trim()
+        try {
+            device.executeShellCommand("settings put global animator_duration_scale 1")
+            compose.mainClock.autoAdvance=false
+            compose.runOnUiThread {compose.activity.setContent {
+                PingClashTheme("dark") {
+                    CompositionLocalProvider(LocalMotionAllowed provides true) {
+                        ScenicFrame(0,"ocean",Build.VERSION.SDK_INT==31,{}) {
+                            Box(Modifier.fillMaxSize().statusBarsPadding()) {
+                                DashboardScreen(DashboardState(AppData(),VpnUiState(),DiagnosticUiState(),
+                                    ProxyTestState(),true,false),DashboardActions({}, {}, {}, {}))
+                            }
+                        }
+                    }
+                }
+            }}
+            compose.mainClock.advanceTimeBy(64)
+            captureSyntheticFixture(compose,device,"immersive-surface.png")
+            compose.onNodeWithTag("dashboard").performSemanticsAction(SemanticsActions.ScrollBy) {it(0f,1800f)}
+            compose.mainClock.advanceTimeBy(128)
+            compose.waitUntil(5000) {
+                compose.mainClock.advanceTimeBy(32)
+                compose.onNodeWithTag("ocean-backdrop").fetchSemanticsNode().config[SceneDiveProgress]>.7f
+            }
+            captureSyntheticFixture(compose,device,"immersive-depth.png")
+        } finally {
+            compose.mainClock.autoAdvance=true
+            val command=if(scale=="null")"settings delete global animator_duration_scale"
+                else "settings put global animator_duration_scale $scale"
+            device.executeShellCommand(command)
+        }
     }
 
     @Test fun idleWavesActuallyMoveAndReducedMotionFreezesSceneWhileCloudsAndNoneAreSelectable() {

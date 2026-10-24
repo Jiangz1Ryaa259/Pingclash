@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Beta.3/build 21 replaces illustrated scenery with local photographic ocean and cloud assets, native mesh motion and a scroll-linked underwater transition.
+- Simplify the photographic home layout, retain clear connection evidence, and add a dashboard immersion regression test.
+
 - Prepare beta.2/build 20 with package-derived version labels, local ocean/cloud scenery and foreground ambient motion.
 - Replace the tinted bottom bar with sibling-source Haze blur on Android 12+, opaque older-API/privacy fallback and Reduce transparency.
 - Preserve scrolling clearance, protected-window timing and existing routing; add pixel-level blur, actual-motion and large-font layout regressions.

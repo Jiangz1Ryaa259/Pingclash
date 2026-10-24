@@ -1,29 +1,21 @@
-# Scenery, glass and interaction
+# Full-screen photographic scenery and native UI
 
-The current source is 0.1.0-beta.2, build 20. Both the home header and About page read the package version/build instead of a hardcoded label. Earlier beta.1 previews shared build 19; their small control changes were difficult to distinguish.
+The current source is 0.1.0-beta.3, build 21. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer.
 
-## Backgrounds
+## Scene and interaction
 
-Home defaults to an illustrated ocean: sky, sun/moon, drifting cloud silhouettes, a horizon, reflections and moving wave crests. Clouds and a plain background are alternate choices in Settings → Language and appearance. Artwork is local Canvas geometry, not a downloaded image or weather feed. Retained paths are reused, and animated state is read in the drawing phase.
+The local surface, underwater and cloud PNGs in `drawable-nodpi` were created for this app using the built-in imagegen tool. Their original prompts and paths are recorded in [scene-assets.md](scene-assets.md). No artwork or video frames were taken from the user's reference. There is no runtime image host, weather feed, extra resolver, telemetry or new permission.
 
-Ambient scenery now moves while the home page is foreground-visible, including while disconnected. Reduce effects, Android animator settings, touch exploration and leaving the foreground stop decorative movement. This intentionally replaces the earlier connecting-only animation. Other pages use neutral surfaces. Scenery and Reduce transparency are persisted with existing encrypted settings, without changing subscription or routing state.
+Scenery occupies the complete root behind system insets, content and navigation. On Home, scrolling drives the ocean surface/underwater crossfade and a small camera offset. Retained 16-by-28 bitmap meshes produce subtle refraction and cloud drift; no bitmap is allocated or captured each frame. This is photographic 2.5D composition, not live ocean simulation or video scrubbing. Other pages tint the scene for readable controls and retain their chosen theme.
 
-## Real glass
+Home uses light text and dark translucent control surfaces to keep the image visible. The connection state, selected node, primary action and compact URL measurement lead the hierarchy. The diagnostic path and telemetry remain available below; no success, traffic or latency is synthesized. Plain background mode retains the classic layout. Photos do not establish a network connection.
 
-`ScenicFrame` hosts the source content and navigation as siblings. The source fills the screen and the navigation overlays it; the navigation itself is excluded from the source. Each scrolling page/grid receives bottom content padding for the navigation height and system inset, so its final action remains reachable while intermediate rows can pass underneath the glass.
+Foreground lifecycle, Reduce effects, system motion settings and touch exploration control decorative motion. Reduced effects also stop scroll-linked camera movement. A plain background and Reduce transparency remain available. The scene settings retain existing encrypted storage and do not change subscriptions or routes.
 
-Haze and haze-materials are pinned to 1.6.8, with Compose BOM 2025.06.01 (UI/runtime/foundation 1.8.3; Material3 remains 1.3.2). The older 1.5.4 default disabled blur on API 31; the 1.6 compatibility implementation restores it with pre-draw invalidation. See the [pinned Android implementation](https://github.com/chrisbanes/haze/blob/1.6.8/haze/src/androidMain/kotlin/dev/chrisbanes/haze/HazeEffectNode.android.kt). Navigation uses a 20 dp blur and light/dark tints, with a thin highlight and a spring-driven selection capsule. Labels use high-contrast black/white. This is background blur, not Apple's refraction renderer.
+## Glass and privacy
 
-Android 10–11, Reduce transparency and protected windows use a fully opaque fallback. `SecurePage` disables source sampling while protection is active, including the existing replacement-frame delay. Haze's source is detached in the background. The terminal is a separate activity with no shared navigation/source, so its AndroidView does not enter this effect.
+The content source and navigation are siblings under `ScenicFrame`; the bar is excluded from its own source. Haze and haze-materials stay at 1.6.8 with Compose BOM 2025.06.01. Navigation uses 20 dp blur, contrasting labels and a spring-driven capsule. It is background diffusion, not Apple's optical refraction renderer.
 
-Sampling uses transient app-owned graphics layers; production code does not invoke screen-capture APIs, save sampled pixels or upload them. New libraries add no telemetry, image service or permission. Existing backup, storage and sensitive-window rules remain in place.
+Android 10–11, Reduce transparency and protected windows use an opaque fallback. Source sampling stops during `FLAG_SECURE` protection, including the replacement-frame delay, and when the window leaves the foreground. The terminal is in a separate activity and is outside this source. Transient app-owned graphics layers are not exported or uploaded.
 
-## Controls and evidence
-
-The dashboard still separates native URL latency from TCP reachability. Its device/DNS/node/web path reflects the selected node's last diagnostic evidence; VPN establishment does not mark unmeasured stages successful. Unknown timeouts remain incomplete. Semantic status colors are paired with text.
-
-Switches retain a single accessible whole-row action, cancellation and disabled/RTL behavior. The VPN glyph uses official graphics-shapes Morph; only working states rotate. Reduced motion applies to both controls. Type uses system sans-serif/CJK fallback and tabular figures.
-
-`ScenicGlassTest` / `FrameGlassProbe` sample a controlled stripe source through the actual rendered bar: a real blur must remove high-frequency detail while remaining visibly translucent. It also checks the opaque fallback, protected-window source shutdown, large-font final-action clearance, actual idle-frame changes and frozen reduced-motion frames. Other UI, privacy and VPN regressions remain enabled. Tests/screenshots/video use only dedicated cleared AVDs and synthetic or empty configurations; they are not observations of a personal subscription.
-
-The real-render probe advances frames and polls with a five-second deadline instead of requiring Espresso global idleness. API 31 Haze deliberately invalidates on pre-draw; other Espresso functional fixtures on that API use Reduce transparency, while this dedicated probe keeps real blur enabled and checks actual pixels. The older-API fallback is tested separately.
+Every scrolling page/grid reserves navigation clearance, including large fonts. The actual source-sampling probe checks rendered stripe pixels and opaque fallback with bounded frame polling; API 31's pre-draw invalidation is tested without relying on Espresso global idleness. An additional test drives the real dashboard's scroll action and observes the background depth state. Existing VPN, import, privacy and interaction regressions remain enabled.

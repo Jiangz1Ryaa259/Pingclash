@@ -27,10 +27,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,22 +51,32 @@ internal data class DashboardActions(
 )
 
 @Composable internal fun DashboardScreen(state: DashboardState, actions: DashboardActions) {
+    val scroll=rememberScrollState()
+    val depth=LocalSceneDepth.current
+    val immersive=LocalImmersiveScene.current
+    val motion=LocalMotionAllowed.current
+    val travel=with(LocalDensity.current) {LocalConfiguration.current.screenHeightDp.dp.toPx()*.6f}
+    LaunchedEffect(scroll,immersive,motion,travel) {
+        snapshotFlow {scroll.value}.collectLatest {
+            depth.floatValue=if(immersive&&motion)(it/travel).coerceIn(0f,1f) else 0f
+        }
+    }
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp)
+        Modifier.fillMaxSize().verticalScroll(scroll).padding(horizontal = 24.dp, vertical = 16.dp)
             .padding(bottom=LocalNavigationClearance.current)
             .testTag("dashboard"), verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("PingClash", style = MaterialTheme.typography.headlineMedium)
-                Text(tr(R.string.ui_dashboard_subtitle), color = Muted, style = MaterialTheme.typography.bodySmall)
-                Text(buildIdentity(),color=Muted,style=MaterialTheme.typography.labelSmall)
+                Text("PingClash", style = MaterialTheme.typography.titleLarge)
+                Text(buildIdentity(),color=if(immersive)Color.White else Muted,
+                    style=MaterialTheme.typography.labelSmall)
             }
             Text(tr(when (state.data.client.mode) {
                 "rule" -> R.string.message_1123245d1b
                 "direct" -> R.string.message_b06325c566
                 else -> R.string.message_f1880deaae
-            }), color = Muted, style = MaterialTheme.typography.labelMedium)
+            }), color = if(immersive)Color.White else Muted, style = MaterialTheme.typography.labelMedium)
         }
         if (!state.ready || state.data.loadFailed) {
             Surface(color = MaterialTheme.colorScheme.errorContainer, shape = UiCorners.Card) {
@@ -69,8 +84,7 @@ internal data class DashboardActions(
                     Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
             }
         }
-        if(state.data.client.scene!="none")Spacer(Modifier.height(96.dp))
-        ConnectionPanel(state, actions)
+        if(immersive)ImmersiveDashboardHero(state,actions) else ConnectionPanel(state, actions)
         CurrentRoute(state, actions.nodes)
         DashboardTelemetry(state.data.client, state.vpn)
         Text(tr(R.string.ui_diagnostic_boundary), color = Muted, style = MaterialTheme.typography.bodySmall)
@@ -125,20 +139,20 @@ internal data class DashboardActions(
     }
 }
 
-private fun measurementEnabled(state: DashboardState): Boolean {
+internal fun measurementEnabled(state: DashboardState): Boolean {
     val usable = state.ready && state.data.selected != null
     val blocked = listOf(state.busy, state.diagnosis.running, state.tests.running,
         state.vpn.phase in setOf("connecting", "stopping")).any { it }
     return usable && !blocked
 }
 
-private fun connectionControlEnabled(state: DashboardState): Boolean {
+internal fun connectionControlEnabled(state: DashboardState): Boolean {
     val usable = state.ready && !state.data.loadFailed && !state.busy
     val testing = state.diagnosis.running || state.tests.running
     return usable && (state.vpn.active || !testing)
 }
 
-@Composable private fun ConnectionBadge(vpn: VpnUiState) {
+@Composable internal fun ConnectionBadge(vpn: VpnUiState) {
     val color = when (vpn.phase) {
         "established" -> Success
         "error" -> MaterialTheme.colorScheme.error
@@ -165,7 +179,7 @@ private fun connectionControlEnabled(state: DashboardState): Boolean {
     Text(data.selected?.type?.uppercase().orEmpty(), color = Muted, style = MaterialTheme.typography.bodySmall)
 }
 
-@Composable private fun UrlMeasurement(delay: ProxyDelay?, modifier: Modifier) {
+@Composable internal fun UrlMeasurement(delay: ProxyDelay?, modifier: Modifier) {
     Column(modifier.padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         if (delay?.state == "passed") {
             val tone = latencyColor(delay.elapsedMs)
@@ -189,7 +203,7 @@ private fun connectionControlEnabled(state: DashboardState): Boolean {
 
 @Composable private fun CurrentRoute(state: DashboardState, onNodes: () -> Unit) {
     val enabled = !state.vpn.active && !state.tests.running && !state.diagnosis.running && !state.busy
-    Surface(shape = UiCorners.Card, color = Panel.copy(alpha = .96f)) {
+    Surface(shape = UiCorners.Card, color = Panel.copy(alpha = if(LocalImmersiveScene.current).86f else .96f)) {
         Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(enabled = enabled, onClick = onNodes)
             .padding(16.dp), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -205,7 +219,7 @@ private fun connectionControlEnabled(state: DashboardState): Boolean {
     }
 }
 
-@Composable private fun connectLabel(state: DashboardState): String = tr(when {
+@Composable internal fun connectLabel(state: DashboardState): String = tr(when {
     state.vpn.phase == "connecting" -> R.string.ui_cancel_connection
     state.vpn.phase == "stopping" -> R.string.message_b8d23e6673
     state.vpn.active -> R.string.message_a33f380476

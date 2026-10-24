@@ -4,6 +4,8 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.3/build 21 uses full-screen local photographic ocean/cloud layers with scroll-linked immersion and native mesh motion. It is not a realtime 3D ocean or video scrubber. Assets and prompts are documented; no reference-video frames, image downloads or new permissions are included.
+
 - Beta.2/build 20 has visible package-derived version labels, local ocean/cloud scenes and actual sibling-source navigation blur. Android 10–11, protected windows and Reduce transparency use an opaque fallback; ambient motion stops in the background or with reduced effects. Scrolling content has explicit navigation clearance.
 
 - Replace the dashboard with a quiet sea palette, native URL readout and evidence-based device/DNS/node/web path. Add optional dynamic colors, Reduce effects, grouped settings and accessible controls. No image download or telemetry is introduced; navigation sampling stays in transient, app-owned graphics layers.

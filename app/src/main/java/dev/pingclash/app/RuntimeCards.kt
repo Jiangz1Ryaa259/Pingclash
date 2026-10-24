@@ -21,7 +21,8 @@ internal fun formatBytes(value: Long): String {
 }
 internal fun durationText(seconds: Long)="%02d:%02d:%02d".format(Locale.ROOT,seconds/3600,seconds/60%60,seconds%60)
 @Composable internal fun SettingsCard(content: @Composable ColumnScope.()->Unit) {
-    Surface(Modifier.fillMaxWidth(),shape=UiCorners.Card,color=Panel) {
+    Surface(Modifier.fillMaxWidth(),shape=UiCorners.Card,
+        color=Panel.copy(alpha=if(LocalImmersiveScene.current).86f else 1f)) {
         Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp),content=content)
     }
 }

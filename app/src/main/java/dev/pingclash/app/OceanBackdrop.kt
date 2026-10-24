@@ -10,7 +10,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -18,8 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -27,29 +28,47 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
 internal val DecorativeEffectRunning = SemanticsPropertyKey<Boolean>("DecorativeEffectRunning")
+internal val SceneDiveProgress = SemanticsPropertyKey<Float>("SceneDiveProgress")
 internal const val CONNECTION_TINT_ALPHA = .94f
 internal const val NAV_SELECTOR_EDGE_ALPHA = .8f
 
 @Composable internal fun rememberForeground(): Boolean =
     LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState().value == Lifecycle.State.RESUMED
 
-/** Local scene geometry; motion runs only on the visible, foreground home page. */
+/** Local photographic layers with bounded mesh refraction and scroll-linked immersion. */
 @Composable internal fun OceanBackdrop(tone: TrailTone,connecting: Boolean,modifier: Modifier=Modifier,
     scene: String="ocean") {
     if(scene=="none")return
-    val animate=LocalMotionAllowed.current&&rememberForeground()
+    val motion=LocalMotionAllowed.current
+    val animate=motion&&rememberForeground()
     val phase: State<Float> = if (animate) {
         rememberInfiniteTransition(label = "ocean-drift").animateFloat(
             0f,1f,infiniteRepeatable(tween(if(connecting)36000 else 60000,easing=LinearEasing)),label="ocean-phase",
         )
     } else remember {mutableFloatStateOf(0f)}
-    val dark = MaterialTheme.colorScheme.background.luminance() < .5f
-    val colors = oceanWaveColors(dark,tone)
-    val paths=remember {List(3){Path()}}
-    val cloud=remember {sceneCloudPath()}
-    Canvas(modifier.testTag("ocean-backdrop").semantics { this[DecorativeEffectRunning] = animate }) {
-        drawSceneSky(dark,phase.value,scene=="clouds",cloud)
-        if(scene!="clouds")drawSceneOcean(dark,phase.value,colors,paths)
+    val resources=LocalContext.current.resources
+    val surface=remember(resources,scene) {
+        PhotographicScene(android.graphics.BitmapFactory.decodeResource(resources,
+            if(scene=="clouds")R.drawable.clouds_v3 else R.drawable.ocean_surface_v3),scene=="clouds")
+    }
+    val underwater=remember(resources,scene) {
+        if(scene=="clouds")null else PhotographicScene(
+            android.graphics.BitmapFactory.decodeResource(resources,R.drawable.ocean_depth_v3))
+    }
+    val depth=LocalSceneDepth.current
+    Canvas(modifier.testTag("ocean-backdrop").semantics {
+        this[DecorativeEffectRunning] = animate;this[SceneDiveProgress]=depth.floatValue
+    }) {
+        val dive=if(motion)depth.floatValue.coerceIn(0f,1f) else 0f
+        val blend=(dive*dive*(3-2*dive)).coerceIn(0f,1f)
+        val frame=SceneFrame(size.width,size.height,phase.value,dive)
+        drawIntoCanvas {canvas ->
+            surface.draw(canvas.nativeCanvas,frame)
+            underwater?.draw(canvas.nativeCanvas,frame,blend)
+        }
+        drawRect(Brush.verticalGradient(listOf(Color(0xA6000A12),Color(0x0A00101C),Color(0x80000712)),
+            startY=0f,endY=size.height))
+        if(tone==TrailTone.FAILED)drawRect(Color.Black.copy(alpha=.06f))
     }
 }
 

@@ -10,6 +10,7 @@
 - [Background, network handoff and always-on VPN](background-vpn.md)
 - [Diagnostic evidence and limits](diagnostics.md)
 - [UI and interaction](ui-design.md)
+- [Local photographic assets and generation prompts](scene-assets.md)
 - [Validation history](security-testing.md)
 - [Privacy](../PRIVACY.md)
 - [Security boundaries](../SECURITY.md)
