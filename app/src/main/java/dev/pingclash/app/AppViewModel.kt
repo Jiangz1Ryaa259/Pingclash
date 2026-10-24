@@ -151,9 +151,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun delete(id: String) = operation { app.repository.delete(id); tr(R.string.message_df12a31f25) }
     fun settings(dns: String, target: String) = operation { app.repository.settings(dns, target); tr(R.string.message_bd03c0aad7) }
     fun clientSettings(value: ClientSettings,dns: String,target: String)=operation {app.repository.clientSettings(value,dns,target);""}
-    fun appearance(language: String,theme: String,dynamicColor: Boolean?=null,reduceEffects: Boolean?=null) {
+    fun appearance(language: String,theme: String,dynamicColor: Boolean?=null,reduceEffects: Boolean?=null,
+        scenery: ScenePreferenceChange?=null) {
         viewModelScope.launch(Dispatchers.IO) {
-            runCatching {app.repository.appearance(language,theme,dynamicColor,reduceEffects)}
+            runCatching {app.repository.appearance(language,theme,dynamicColor,reduceEffects,scenery)}
                 .onFailure {message(tr(R.string.message_c7acc6686e))}
         }
     }

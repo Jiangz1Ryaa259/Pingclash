@@ -12,10 +12,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Android build or verification failed.' }
     $output = Join-Path $projectRoot 'dist'
     New-Item -ItemType Directory -Path $output -Force | Out-Null
-    $apk = Join-Path $output 'PingClash-0.1.0-beta.1-dev.apk'
+    $metadata=Get-Content -LiteralPath (Join-Path $projectRoot 'app\build\outputs\apk\debug\output-metadata.json') -Raw | ConvertFrom-Json
+    $version=$metadata.elements[0].versionName
+    if($version -notmatch '\A[0-9A-Za-z.+-]{1,60}\z'){throw 'Invalid APK version name'}
+    $apk=Join-Path $output ('PingClash-'+$version+'-dev.apk')
     Copy-Item -LiteralPath (Join-Path $projectRoot 'app\build\outputs\apk\debug\app-debug.apk') -Destination $apk -Force
     $digest = (Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText($apk + '.sha256', "$digest  PingClash-0.1.0-beta.1-dev.apk`n", [Text.Encoding]::ASCII)
+    [IO.File]::WriteAllText($apk+'.sha256',$digest+'  '+[IO.Path]::GetFileName($apk)+"`n",[Text.Encoding]::ASCII)
     Write-Output "APK: $apk"
     Write-Output "SHA256: $digest"
 } finally { Pop-Location }

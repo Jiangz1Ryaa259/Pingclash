@@ -144,7 +144,11 @@ private fun groupProblem(reason: String)=when(reason) {
                         if(members.isEmpty()) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center){Text((tr(R.string.message_7f3c2f9e96)),color=Muted)}
                         else {
                             val columns=if(LocalDensity.current.fontScale>=1.6f) 1 else 2
-                            LazyVerticalGrid(GridCells.Fixed(columns),modifier=Modifier.fillMaxSize().testTag("group-members-${group.name}"),contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=18.dp),horizontalArrangement=Arrangement.spacedBy(8.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                            LazyVerticalGrid(GridCells.Fixed(columns),modifier=Modifier.fillMaxSize()
+                                .testTag("group-members-${group.name}"),contentPadding=PaddingValues(
+                                start=16.dp,end=16.dp,top=4.dp,bottom=LocalNavigationClearance.current+18.dp),
+                                horizontalArrangement=Arrangement.spacedBy(8.dp),
+                                verticalArrangement=Arrangement.spacedBy(8.dp)) {
                                 items(members,key={it}) {name ->
                                     val node=profile.nodes.firstOrNull {it.name==name}
                                     val nested=profile.groups.firstOrNull {it.name==name}

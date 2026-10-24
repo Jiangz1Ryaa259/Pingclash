@@ -1,33 +1,29 @@
-# UI and interaction
+# Scenery, glass and interaction
 
-The Compose interface uses a custom sea-toned light/dark `ColorScheme`, system sans-serif/CJK fonts, five type sizes and tabular numeric figures. Dynamic wallpaper color is optional on Android 12+. Shape tokens use 8 dp inputs, 14 dp content containers, 24 dp sheets and fully rounded navigation/action capsules.
+The current source is 0.1.0-beta.2, build 20. Both the home header and About page read the package version/build instead of a hardcoded label. Earlier beta.1 previews shared build 19; their small control changes were difficult to distinguish.
 
-## First screen
+## Backgrounds
 
-The dashboard puts connection control, the selected route and the last native Mihomo URL measurement first. Its device → DNS → node entry → web path shows the most recent diagnostic evidence for the selected node. Establishing Android's VPN interface never makes these stages pass automatically. Missing, skipped, incomplete and stale evidence remain distinct; an unclassified timeout does not invent a failed network layer.
+Home defaults to an illustrated ocean: sky, sun/moon, drifting cloud silhouettes, a horizon, reflections and moving wave crests. Clouds and a plain background are alternate choices in Settings → Language and appearance. Artwork is local Canvas geometry, not a downloaded image or weather feed. Retained paths are reused, and animated state is read in the drawing phase.
 
-Fast/elevated/high labels accompany green/amber/red measurements. The 150/400 ms display thresholds describe one result, not a quality guarantee. TCP reachability and URL availability remain separate measurements. Configurations, groups, detailed service/memory information and network settings remain available from their existing pages.
+Ambient scenery now moves while the home page is foreground-visible, including while disconnected. Reduce effects, Android animator settings, touch exploration and leaving the foreground stop decorative movement. This intentionally replaces the earlier connecting-only animation. Other pages use neutral surfaces. Scenery and Reduce transparency are persisted with existing encrypted settings, without changing subscription or routing state.
 
-Related settings share neutral containers and dividers. Proxy tabs preserve the supported subscription's original order and direct members, including nested groups; appearance changes do not regroup subscriptions. The current configuration row opens existing selection controls and never activates an unconfirmed deep-link import.
+## Real glass
 
-## Surfaces and motion
+`ScenicFrame` hosts the source content and navigation as siblings. The source fills the screen and the navigation overlays it; the navigation itself is excluded from the source. Each scrolling page/grid receives bottom content padding for the navigation height and system inset, so its final action remains reachable while intermediate rows can pass underneath the glass.
 
-Three local Canvas sine layers sit behind the dashboard. They require no image downloads, screen capture or blur bitmap cache. Other pages stay neutral. The navigation bar uses a 92% tinted surface, fine edge and spring-driven capsule; it deliberately uses no blur. Dragging previews the capsule, release commits one navigation change, and cancellation leaves the page unchanged. Tap and accessibility selection remain available.
+Haze and haze-materials are pinned to 1.6.8, with Compose BOM 2025.06.01 (UI/runtime/foundation 1.8.3; Material3 remains 1.3.2). The older 1.5.4 default disabled blur on API 31; the 1.6 compatibility implementation restores it with pre-draw invalidation. See the [pinned Android implementation](https://github.com/chrisbanes/haze/blob/1.6.8/haze/src/androidMain/kotlin/dev/chrisbanes/haze/HazeEffectNode.android.kt). Navigation uses a 20 dp blur and light/dark tints, with a thin highlight and a spring-driven selection capsule. Labels use high-contrast black/white. This is background blur, not Apple's refraction renderer.
 
-The connect button has a mild 0.97 press scale, ripple and a short state transition. Decorative wave movement and outward rings run only while connecting and foreground-visible. Idle screens have no permanent looping decoration. Android animator scale, touch exploration and the in-app Reduce effects preference disable decorative motion. These preferences are persisted in existing encrypted local storage; no new permissions or telemetry are added.
+Android 10–11, Reduce transparency and protected windows use a fully opaque fallback. `SecurePage` disables source sampling while protection is active, including the existing replacement-frame delay. Haze's source is detached in the background. The terminal is a separate activity with no shared navigation/source, so its AndroidView does not enter this effect.
 
-Default palette tests check text contrast of at least 4.5:1 over each tinted wave combination, and switch/navigation outlines of at least 3:1. These checks do not certify every wallpaper-derived dynamic palette. Switches expose a whole-row switch role with at least a 48 dp target. Large fonts expand navigation and use a two-column diagnostic path and vertically arranged measurements; content remains scrollable.
+Sampling uses transient app-owned graphics layers; production code does not invoke screen-capture APIs, save sampled pixels or upload them. New libraries add no telemetry, image service or permission. Existing backup, storage and sensitive-window rules remain in place.
 
-## Verification and previews
+## Controls and evidence
 
-`OceanDesignTest` covers actual palette tokens, diagnostic evidence mapping, encrypted motion preferences, system animation disabling, theme foreground inheritance, light/dark/large-font layouts and accessible controls. Existing `GlassInteractionTest` retains release/cancel, accessibility selection and cancelled power-press checks. Full VPN and privacy integration tests remain enabled.
+The dashboard still separates native URL latency from TCP reachability. Its device/DNS/node/web path reflects the selected node's last diagnostic evidence; VPN establishment does not mark unmeasured stages successful. Unknown timeouts remain incomplete. Semantic status colors are paired with text.
 
-README screenshots use synthetic emulator fixtures. Their node names, speeds, 84 ms measurement and passing path illustrate layout and are not observations of a real subscription. Screenshot capture exists only in the test APK; the production app does not collect or upload screenshots.
+Switches retain a single accessible whole-row action, cancellation and disabled/RTL behavior. The VPN glyph uses official graphics-shapes Morph; only working states rotate. Reduced motion applies to both controls. Type uses system sans-serif/CJK fallback and tabular figures.
 
-## Switch and connection-control motion
+`ScenicGlassTest` / `FrameGlassProbe` sample a controlled stripe source through the actual rendered bar: a real blur must remove high-frequency detail while remaining visibly translucent. It also checks the opaque fallback, protected-window source shutdown, large-font final-action clearance, actual idle-frame changes and frozen reduced-motion frames. Other UI, privacy and VPN regressions remain enabled. Tests/screenshots/video use only dedicated cleared AVDs and synthetic or empty configurations; they are not observations of a personal subscription.
 
-Settings switches now use a passive Canvas thumb inside the existing accessible 48 dp whole-row switch. Position, pressure and color use short finite spring/tween transitions; the thumb briefly stretches during travel or press, and local highlights provide a glass-like edge without captured blur. Cancellation never commits a setting. The visual mirrors in RTL, follows externally committed state and snaps when reduced effects or background visibility disables motion.
-
-The VPN glyph uses the official AndroidX graphics-shapes 1.0.1 `Morph` between a circle and rounded rectangle. Only connection work rotates it; idle/established states have no loop. Button text contrast is checked over intermediate background colors. Material3 remains at the existing 1.3.2 version; this implementation does not depend on Material3 1.4 Expressive APIs.
-
-`SwitchAnimationTest` checks cancelled presses, rapid reversals with a controlled frame clock, disabled input and synthetic RTL/reduced-motion layouts. The normal VPN action and connection permission flow remain unchanged.
+The real-render probe advances frames and polls with a five-second deadline instead of requiring Espresso global idleness. API 31 Haze deliberately invalidates on pre-draw; other Espresso functional fixtures on that API use Reduce transparency, while this dedicated probe keeps real blur enabled and checks actual pixels. The older-API fallback is tested separately.

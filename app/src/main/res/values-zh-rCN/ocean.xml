@@ -31,6 +31,6 @@
     <string name="ui_dynamic_color">跟随系统配色</string>
     <string name="ui_dynamic_color_detail">需要 Android 12 或以上；关闭时使用海色主题。</string>
     <string name="ui_reduce_effects">减少效果</string>
-    <string name="ui_reduce_effects_detail">关闭装饰性波纹和动效；同时遵循系统动画及无障碍设置。</string>
+    <string name="ui_reduce_effects_detail">让海浪与云朵静止，并关闭装饰动效；同时遵循系统动画及无障碍设置。</string>
     <string name="ui_traffic_overview">实时流量</string>
 </resources>

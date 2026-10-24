@@ -260,11 +260,14 @@ class ProfileRepository(context: Context) {
         if(value.language!=current.client.language)UiStrings.apply(value.language)
     }
     @Synchronized fun appearance(language: String,theme: String,
-        dynamicColor: Boolean?=null,reduceEffects: Boolean?=null) {
+        dynamicColor: Boolean?=null,reduceEffects: Boolean?=null,
+        scenery: ScenePreferenceChange?=null) {
         val current=mutableData.value;check(!current.loadFailed)
         val value=current.client.copy(language=language,theme=theme,
             dynamicColor=dynamicColor?:current.client.dynamicColor,
-            reduceEffects=reduceEffects?:current.client.reduceEffects)
+            reduceEffects=reduceEffects?:current.client.reduceEffects,
+            scene=scenery?.scene?:current.client.scene,
+            reduceTransparency=scenery?.reduceTransparency?:current.client.reduceTransparency)
         validateClientSettings(value)
         commit(current.copy(client=value))
         UiStrings.apply(language)

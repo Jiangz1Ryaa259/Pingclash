@@ -48,12 +48,14 @@ internal data class DashboardActions(
 @Composable internal fun DashboardScreen(state: DashboardState, actions: DashboardActions) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp)
+            .padding(bottom=LocalNavigationClearance.current)
             .testTag("dashboard"), verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text("PingClash", style = MaterialTheme.typography.headlineMedium)
                 Text(tr(R.string.ui_dashboard_subtitle), color = Muted, style = MaterialTheme.typography.bodySmall)
+                Text(buildIdentity(),color=Muted,style=MaterialTheme.typography.labelSmall)
             }
             Text(tr(when (state.data.client.mode) {
                 "rule" -> R.string.message_1123245d1b
@@ -67,6 +69,7 @@ internal data class DashboardActions(
                     Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
             }
         }
+        if(state.data.client.scene!="none")Spacer(Modifier.height(96.dp))
         ConnectionPanel(state, actions)
         CurrentRoute(state, actions.nodes)
         DashboardTelemetry(state.data.client, state.vpn)

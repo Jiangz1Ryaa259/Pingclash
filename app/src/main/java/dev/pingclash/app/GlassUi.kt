@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -63,10 +64,9 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     return enabled&&!reduceEffects
 }
 
-// Translucent material with a fine highlight. It does not screenshot or copy the
-// page into a blur bitmap, so protected rules and credentials never enter a cache.
+// Real sibling-source blur on supported devices, with an opaque-tint fallback.
 @Suppress("MagicNumber")
-@Composable internal fun GlassNavigation(selected: Int,onSelect: (Int)->Unit) {
+@Composable internal fun GlassNavigation(selected: Int,modifier: Modifier=Modifier,onSelect: (Int)->Unit) {
     val motion=LocalMotionAllowed.current
     val current by rememberUpdatedState(selected)
     val select by rememberUpdatedState(onSelect)
@@ -74,15 +74,18 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     var dragPosition by remember {mutableStateOf<Float?>(null)}
     val position by animateFloatAsState(dragPosition?:selected.toFloat(),
         animationSpec=if(motion&&dragPosition==null) spring(dampingRatio=.86f,stiffness=550f) else snap(),label="glass-navigation-position")
-    val panel=Panel;val line=MaterialTheme.colorScheme.outlineVariant;val accent=MaterialTheme.colorScheme.primaryContainer
-    val edge=Mint
+    val dark=Ink.luminance()<.5f
+    val foreground=navLabelColor(dark)
+    val line=if(dark)Color.White.copy(alpha=.24f) else Color.Black.copy(alpha=.12f)
+    val accent=Color.White.copy(alpha=if(dark).10f else .30f)
+    val blur=LocalNavHaze.current!=null
     val fontScale=LocalDensity.current.fontScale
-    val height=if(fontScale>=1.6f) (43+36*fontScale).dp else 72.dp
-    BoxWithConstraints(Modifier.navigationBarsPadding().padding(horizontal=18.dp,vertical=10.dp).fillMaxWidth()
-        .height(height).testTag("glass-navigation")) {
+    val height=navigationHeight()
+    BoxWithConstraints(modifier.navigationBarsPadding().padding(horizontal=18.dp,vertical=12.dp).fillMaxWidth()
+        .height(height).testTag("glass-navigation").semantics {this[NavBlurEnabled]=blur}) {
         val cellWidth=with(LocalDensity.current) {maxWidth.toPx()/4f}
-        Box(Modifier.fillMaxSize().graphicsLayer {shadowElevation=2.dp.toPx();shape=UiCorners.Pill;clip=false}
-            .clip(UiCorners.Pill).background(panel.copy(alpha=NAV_TINT_ALPHA))
+        Box(Modifier.fillMaxSize().graphicsLayer {shadowElevation=4.dp.toPx();shape=UiCorners.Pill;clip=false}
+            .clip(UiCorners.Pill).navGlassMaterial()
             .pointerInput(cellWidth) {
                 detectHorizontalDragGestures(
                     onDragStart={dragPosition=current.toFloat()},
@@ -93,11 +96,11 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
             }) {
             Canvas(Modifier.matchParentSize()) {
                 val inset=5.dp.toPx();val w=size.width/4f
-                drawRoundRect(line.copy(alpha=.8f),cornerRadius=CornerRadius(size.height/2f),style=Stroke(1.dp.toPx()))
+                drawRoundRect(line,cornerRadius=CornerRadius(size.height/2f),style=Stroke(1.dp.toPx()))
                 val x=position*w+inset
                 drawRoundRect(accent,Offset(x,inset),Size(w-inset*2,size.height-inset*2),
                     CornerRadius((size.height-inset*2)/2f))
-                drawRoundRect(edge.copy(alpha=NAV_SELECTOR_EDGE_ALPHA),Offset(x,inset),
+                drawRoundRect(foreground.copy(alpha=NAV_SELECTOR_EDGE_ALPHA),Offset(x,inset),
                     Size(w-inset*2,size.height-inset*2),
                     CornerRadius((size.height-inset*2)/2f),style=Stroke(1.dp.toPx()))
                 drawLine(Color.White.copy(alpha=.34f),Offset(30.dp.toPx(),1.dp.toPx()),Offset(size.width-30.dp.toPx(),1.dp.toPx()),1.dp.toPx(),StrokeCap.Round)
@@ -105,7 +108,7 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
             Row(Modifier.fillMaxSize()) {
                 listOf(tr(R.string.message_0853bf3c01),tr(R.string.message_5e84ea61e8),tr(R.string.message_148d195e21),tr(R.string.message_df3d58c7d8)).forEachIndexed {index,label ->
                     val chosen=selected==index
-                    val tint by animateColorAsState(if(chosen) Mint else Muted,if(motion)tween(160) else snap(),label="navigation-tint")
+                    val tint=foreground
                     Column(Modifier.weight(1f).fillMaxHeight().testTag("nav-$index")
                         .selectable(chosen,role=Role.Tab,onClick={if(index!=current){haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(index)}}),
                         horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp,Alignment.CenterVertically)) {

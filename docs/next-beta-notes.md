@@ -4,7 +4,9 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
-- Replace the dashboard with a quiet sea palette, native URL readout and evidence-based device/DNS/node/web path. Add optional dynamic colors, Reduce effects, grouped settings and accessible controls. No image download, captured blur or telemetry is introduced.
+- Beta.2/build 20 has visible package-derived version labels, local ocean/cloud scenes and actual sibling-source navigation blur. Android 10–11, protected windows and Reduce transparency use an opaque fallback; ambient motion stops in the background or with reduced effects. Scrolling content has explicit navigation clearance.
+
+- Replace the dashboard with a quiet sea palette, native URL readout and evidence-based device/DNS/node/web path. Add optional dynamic colors, Reduce effects, grouped settings and accessible controls. No image download or telemetry is introduced; navigation sampling stays in transient, app-owned graphics layers.
 
 - Confirm `clash://install-config?url=...&name=...` before downloading. Show the source host, require HTTPS, reject ambiguous parameters and sanitize bounded names. Imported configurations stay inactive until a separate explicit selection, including the first profile and after restarting.
 - Add a detekt baseline gate to CI. Existing style findings are recorded; new findings fail the build. CI never regenerates the baseline.

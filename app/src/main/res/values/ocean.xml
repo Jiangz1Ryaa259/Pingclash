@@ -31,6 +31,6 @@
     <string name="ui_dynamic_color">Use system colors</string>
     <string name="ui_dynamic_color_detail">Android 12 or later. Turn off to use the ocean palette.</string>
     <string name="ui_reduce_effects">Reduce effects</string>
-    <string name="ui_reduce_effects_detail">Disable decorative waves and motion. System animation and accessibility preferences also apply.</string>
+    <string name="ui_reduce_effects_detail">Keep waves and clouds still and disable decorative motion. System animation and accessibility preferences also apply.</string>
     <string name="ui_traffic_overview">Live traffic</string>
 </resources>

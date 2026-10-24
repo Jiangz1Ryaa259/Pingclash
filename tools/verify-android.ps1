@@ -30,7 +30,10 @@ if(($avdName -join "`n") -notmatch '(?m)^PingClash_API35\s*$'){throw 'Refusing t
 $appApk=Join-Path $projectRoot 'app\build\outputs\apk\debug\app-debug.apk'
 $testApk=Join-Path $projectRoot 'app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk'
 if($Release){
-    $appApk=Join-Path $projectRoot 'dist\PingClash-0.1.0-beta.1.apk'
+    $metadata=Get-Content -LiteralPath (Join-Path $projectRoot 'app\build\outputs\apk\release\output-metadata.json') -Raw | ConvertFrom-Json
+    $version=$metadata.elements[0].versionName
+    if($version -notmatch '\A[0-9A-Za-z.+-]{1,60}\z'){throw 'Invalid release version name'}
+    $appApk=Join-Path $projectRoot ('dist\PingClash-'+$version+'.apk')
     $testApk=Join-Path $projectRoot 'app\build\outputs\apk\androidTest\release\app-release-androidTest.apk'
     $signedTest=Join-Path $projectRoot '.tools\native\app-release-test.apk'
     $key=Join-Path $projectRoot '.tools\signing\pingclash-release.p12'

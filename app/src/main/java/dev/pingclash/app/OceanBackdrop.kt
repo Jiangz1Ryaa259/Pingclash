@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -25,53 +25,37 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import kotlin.math.PI
-import kotlin.math.sin
 
 internal val DecorativeEffectRunning = SemanticsPropertyKey<Boolean>("DecorativeEffectRunning")
-internal const val NAV_TINT_ALPHA = .92f
 internal const val CONNECTION_TINT_ALPHA = .94f
 internal const val NAV_SELECTOR_EDGE_ALPHA = .8f
 
 @Composable internal fun rememberForeground(): Boolean =
     LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState().value == Lifecycle.State.RESUMED
 
-/** No bitmap, screen capture, network input, or work outside the visible dashboard. */
-@Composable internal fun OceanBackdrop(tone: TrailTone, connecting: Boolean, modifier: Modifier = Modifier) {
-    val animate = connecting && LocalMotionAllowed.current && rememberForeground()
+/** Local scene geometry; motion runs only on the visible, foreground home page. */
+@Composable internal fun OceanBackdrop(tone: TrailTone,connecting: Boolean,modifier: Modifier=Modifier,
+    scene: String="ocean") {
+    if(scene=="none")return
+    val animate=LocalMotionAllowed.current&&rememberForeground()
     val phase: State<Float> = if (animate) {
         rememberInfiniteTransition(label = "ocean-drift").animateFloat(
-            0f, (2 * PI).toFloat(), infiniteRepeatable(tween(14000, easing = LinearEasing)), label = "ocean-phase",
+            0f,1f,infiniteRepeatable(tween(if(connecting)36000 else 60000,easing=LinearEasing)),label="ocean-phase",
         )
-    } else remember { mutableStateOf(0f) }
+    } else remember {mutableFloatStateOf(0f)}
     val dark = MaterialTheme.colorScheme.background.luminance() < .5f
     val colors = oceanWaveColors(dark,tone)
+    val paths=remember {List(3){Path()}}
+    val cloud=remember {sceneCloudPath()}
     Canvas(modifier.testTag("ocean-backdrop").semantics { this[DecorativeEffectRunning] = animate }) {
-        colors.forEachIndexed { index, color ->
-            val base = size.height * (.42f + index * .17f)
-            val amplitude = size.height * (.025f + index * .009f)
-            val path = Path().apply {
-                moveTo(0f, size.height)
-                var x = 0f
-                while (x < size.width) {
-                    val angle = x / size.width * PI * (1.15f + index * .15f) + phase.value + index
-                    lineTo(x, base + amplitude * sin(angle).toFloat())
-                    x += 12f * density
-                }
-                lineTo(size.width, base + amplitude * sin(PI * (1.15f + index * .15f) + phase.value + index).toFloat())
-                lineTo(size.width, size.height)
-                close()
-            }
-            drawPath(path, color)
-        }
+        drawSceneSky(dark,phase.value,scene=="clouds",cloud)
+        if(scene!="clouds")drawSceneOcean(dark,phase.value,colors,paths)
     }
 }
 
 internal fun oceanWaveColors(dark: Boolean,tone: TrailTone): List<Color> = when (tone) {
-        TrailTone.FAILED -> if (dark) listOf(0xFF282930, 0xFF343039, 0xFF40323C)
-            else listOf(0xFFEEE9E7, 0xFFE8DEDC, 0xFFDFD4D4)
-        TrailTone.INCOMPLETE -> if (dark) listOf(0xFF292F2D, 0xFF353B33, 0xFF424438)
-            else listOf(0xFFF0EDDF, 0xFFE9E5D1, 0xFFDFDDC7)
-        else -> if (dark) listOf(0xFF1A3038, 0xFF213E45, 0xFF2C4B50)
-            else listOf(0xFFE4EFED, 0xFFD4E6E2, 0xFFC2DCD7)
+        TrailTone.FAILED,TrailTone.INCOMPLETE -> if(dark)listOf(0xFF234C65,0xFF173D57,0xFF0E3048)
+            else listOf(0xFF76C1DE,0xFF358FB6,0xFF0F648F)
+        else -> if(dark)listOf(0xFF234E6C,0xFF16425F,0xFF0A2F4C)
+            else listOf(0xFF5FB9DA,0xFF2189B4,0xFF08618C)
     }.map(::Color)

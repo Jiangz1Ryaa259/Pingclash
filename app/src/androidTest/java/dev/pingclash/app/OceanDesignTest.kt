@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ColorScheme
@@ -66,9 +67,6 @@ class OceanDesignTest {
             val backgrounds = TrailTone.entries.flatMap { oceanWaveColors(dark, it) }
             assertGlassContrast(scheme, backgrounds, texts)
             assertTrue(contrast(scheme.onPrimary, scheme.primary) >= 4.5)
-            val selector = scheme.primary.copy(alpha = NAV_SELECTOR_EDGE_ALPHA).compositeOver(scheme.primaryContainer)
-            assertTrue("Selected navigation capsule is not distinguishable",
-                contrast(selector, scheme.primaryContainer) >= 3)
             assertTrue("Switch off outline is not visible", contrast(scheme.outline, scheme.surfaceVariant) >= 3)
             assertTrue(contrast(scheme.onSurfaceVariant, scheme.surfaceVariant) >= 3)
             for (sample in 0..20) {
@@ -118,15 +116,18 @@ class OceanDesignTest {
                 }
             }
             compose.waitUntil(5000) { effectRunning() }
-            app.repository.appearance("zh", "light", reduceEffects = true, dynamicColor = true)
+            app.repository.appearance("zh", "light", reduceEffects = true, dynamicColor = true,
+                scenery=ScenePreferenceChange(scene="clouds",reduceTransparency=true))
             compose.waitUntil(5000) { !effectRunning() }
             val restored = ProfileRepository(app).data.value.client
             assertTrue(restored.reduceEffects); assertTrue(restored.dynamicColor)
+            assertEquals("clouds",restored.scene);assertTrue(restored.reduceTransparency)
             device.executeShellCommand("settings put global animator_duration_scale 0")
             app.repository.appearance("zh", "light", reduceEffects = false)
             compose.waitUntil(5000) { !effectRunning() }
         } finally {
-            app.repository.appearance(before.language, before.theme, before.dynamicColor, before.reduceEffects)
+            app.repository.appearance(before.language,before.theme,before.dynamicColor,before.reduceEffects,
+                ScenePreferenceChange(before.scene,before.reduceTransparency))
             val command = if (originalScale == "null") "settings delete global animator_duration_scale"
                 else "settings put global animator_duration_scale $originalScale"
             device.executeShellCommand(command)
@@ -206,13 +207,10 @@ class OceanDesignTest {
                 isAppearanceLightStatusBars = !dark; isAppearanceLightNavigationBars = !dark
             }
         }
-        Box(Modifier.fillMaxSize().background(Ink)) {
-            OceanBackdrop(TrailTone.PASSED, false, Modifier.fillMaxSize())
-            Scaffold(containerColor = Color.Transparent, bottomBar = { GlassNavigation(0) {} }) { padding ->
-                Box(Modifier.fillMaxSize().padding(padding)) {
-                    DashboardScreen(DashboardState(data, vpn, diagnosis, tests, true, false),
-                        DashboardActions({}, {}, {}, {}))
-                }
+        ScenicFrame(0,"ocean",android.os.Build.VERSION.SDK_INT==31,{}) {
+            Box(Modifier.fillMaxSize().statusBarsPadding()) {
+                DashboardScreen(DashboardState(data,vpn,diagnosis,tests,true,false),
+                    DashboardActions({}, {}, {}, {}))
             }
         }
     }
@@ -225,10 +223,14 @@ private fun step(stage: Models.Stage, state: Models.State, code: Models.Code) =
     Models.Step(stage, state, code, 84, "", 0)
 
 private fun assertGlassContrast(scheme: ColorScheme, backgrounds: List<Color>, texts: List<Color>) {
-    for (background in backgrounds) {
-        for (alpha in listOf(NAV_TINT_ALPHA, CONNECTION_TINT_ALPHA)) {
-            val tint = scheme.surface.copy(alpha = alpha).compositeOver(background)
-            texts.forEach { assertTrue("Glass text contrast below 4.5:1", contrast(it, tint) >= 4.5) }
-        }
+    val dark=scheme.background.luminance()<.5f
+    for (background in backgrounds+listOf(Color.Black,Color.White)) {
+        val panel=scheme.surface.copy(alpha=CONNECTION_TINT_ALPHA).compositeOver(background)
+        texts.forEach {assertTrue("Connection panel text contrast below 4.5:1",contrast(it,panel)>=4.5)}
+        val glass=scheme.surface.copy(alpha=navTintAlpha(dark)).compositeOver(background)
+        assertTrue("Glass label contrast below 4.5:1",contrast(navLabelColor(dark),glass)>=4.5)
+        val capsule=Color.White.copy(alpha=if(dark).10f else .30f).compositeOver(glass)
+        val edge=navLabelColor(dark).copy(alpha=NAV_SELECTOR_EDGE_ALPHA).compositeOver(capsule)
+        assertTrue("Selected capsule outline is not distinguishable",contrast(edge,capsule)>=3)
     }
 }

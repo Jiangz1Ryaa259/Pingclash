@@ -90,12 +90,11 @@ import org.json.JSONObject
     val locked = ui.busy || vpn.active || diagnosis.running || tests.running
     val motion=rememberMotionAllowed(data.client.reduceEffects)
     CompositionLocalProvider(LocalMotionAllowed provides motion) {
-    Box(Modifier.fillMaxSize().background(Ink)) {
-    if(tab==0)OceanBackdrop(dashboardTone(data,vpn,diagnosis),vpn.phase=="connecting",Modifier.fillMaxSize())
-    Scaffold(containerColor = Color.Transparent, snackbarHost = { SnackbarHost(snackbar) }, bottomBar = {
-        GlassNavigation(tab) {tab=it}
+    ScenicFrame(tab,data.client.scene,data.client.reduceTransparency,onSelect={tab=it}) {
+    Scaffold(containerColor = Color.Transparent,contentWindowInsets=WindowInsets(0,0,0,0),snackbarHost = {
+        Box(Modifier.padding(bottom=LocalNavigationClearance.current)) {SnackbarHost(snackbar)}
     }) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        Box(Modifier.fillMaxSize().padding(padding).statusBarsPadding()) {
             AnimatedContent(tab, transitionSpec = {
                 if(motion) {
                     val direction=if(targetState>initialState) 1 else -1
@@ -140,7 +139,9 @@ import org.json.JSONObject
 
 
 @Composable private fun Page(title: String, subtitle: String, content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
+        .padding(horizontal=20.dp,vertical=16.dp).padding(bottom=LocalNavigationClearance.current),
+        verticalArrangement=Arrangement.spacedBy(20.dp)) {
         Column(Modifier.padding(top=8.dp,bottom=4.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
             Text((title),style=MaterialTheme.typography.headlineLarge,letterSpacing=(-.6).sp)
             if(subtitle.isNotBlank()) Text((subtitle),color=Muted,style=MaterialTheme.typography.bodyMedium)

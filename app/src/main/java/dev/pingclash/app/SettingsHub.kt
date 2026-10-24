@@ -53,7 +53,9 @@ import org.json.JSONArray
     val titles=mapOf("live" to tr(R.string.message_caaf859d56),"connections" to tr(R.string.message_fc16aec85d),"dns" to "DNS","network" to tr(R.string.message_03fae6b449),"apps" to tr(R.string.message_d8618b5e19),"rules" to tr(R.string.message_beae79496b),"lan" to tr(R.string.message_4f8389a45d),"appearance" to tr(R.string.message_f3d6b6c03b),"usage" to tr(R.string.message_e7370f8097),"control" to tr(R.string.message_4f51d0285e),"privacy" to tr(R.string.message_58e6ce61a6),"about" to tr(R.string.message_495dc9e725))
     val dirty=draft!=data.client||dns!=data.dnsAddress||target!=data.probeUrl
     key(page) {
-        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(horizontal=20.dp,vertical=12.dp).testTag("settings-page"),verticalArrangement=Arrangement.spacedBy(16.dp)) {
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
+            .padding(horizontal=20.dp,vertical=12.dp).padding(bottom=LocalNavigationClearance.current)
+            .testTag("settings-page"),verticalArrangement=Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically) {
                 if(page.isNotEmpty()) TextButton({page=""},Modifier.testTag("settings-back")){Text((tr(R.string.message_572cf45ba4)))}
                 Text((titles[page]?:tr(R.string.message_df3d58c7d8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
@@ -159,6 +161,17 @@ import org.json.JSONArray
                             model.appearance(data.client.language,data.client.theme,reduceEffects=it)
                         }
                         Text(tr(R.string.ui_reduce_effects_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+                        Choices(tr(R.string.ui_scene),data.client.scene,listOf(
+                            "ocean" to tr(R.string.ui_scene_ocean),"clouds" to tr(R.string.ui_scene_clouds),
+                            "none" to tr(R.string.ui_scene_none)),true) {
+                            model.appearance(data.client.language,data.client.theme,
+                                scenery=ScenePreferenceChange(scene=it))
+                        }
+                        SettingSwitch(tr(R.string.ui_reduce_transparency),data.client.reduceTransparency,true) {
+                            model.appearance(data.client.language,data.client.theme,
+                                scenery=ScenePreferenceChange(reduceTransparency=it))
+                        }
+                        Text(tr(R.string.ui_transparency_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
                     }
                     SettingsCard {
                         Text((tr(R.string.message_02ae2080b8)),style=MaterialTheme.typography.titleMedium)
@@ -308,7 +321,7 @@ private data class ConnectionRow(val id: Long,val network: String,val route: Str
     var license by remember {mutableStateOf<String?>(null)}
     SettingsCard {
         Text("PingClash",style=MaterialTheme.typography.titleLarge)
-        Text("0.1.0-beta.1 · GPL-3.0",color=Muted)
+        Text(buildIdentity()+" · GPL-3.0",color=Muted)
         StatLine(tr(R.string.message_3b50348ec3),if(ready)"mihomo v1.19.32" else "—")
         Text((tr(R.string.message_0fce3b3509)),color=Muted,style=MaterialTheme.typography.bodySmall)
         listOf("NOTICE.md","GPL-3.0.txt","Apache-2.0.txt").forEach {file -> TextButton({license=file}) {Text(file)}}
