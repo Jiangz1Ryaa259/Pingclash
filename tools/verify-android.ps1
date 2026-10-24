@@ -105,7 +105,7 @@ if(($result -join "`n") -notmatch 'OK \([1-9][0-9]* tests?\)'){
 }
 if($fixtureStats.peerRequests -lt 1 -or $fixtureStats.dnsQueries -lt 1){throw 'Hysteria VPN did not relay peer HTTP and DNS through the selected node.'}
 if($Visuals){
-    foreach($file in @('connection-light.png','nodes-light.png','node-policy-light.png','strategy-groups.png','proxy-grid-light.png','proxy-group-region.png','proxy-grid-dark.png','proxy-grid-large.png','certificate-notice.png','import-error-light.png','settings-light.png','connection-dark.png','settings-dark-large.png','settings-dns.png','settings-english-dark.png','settings-live.png','minimal-home-light.png','group-availability.png','delay-compatibility.png')){
+    foreach($file in @('ocean-home-light.png','ocean-home-dark.png','ocean-home-large.png','connection-light.png','nodes-light.png','node-policy-light.png','strategy-groups.png','proxy-grid-light.png','proxy-group-region.png','proxy-grid-dark.png','proxy-grid-large.png','certificate-notice.png','import-error-light.png','settings-light.png','connection-dark.png','settings-dark-large.png','settings-dns.png','settings-english-dark.png','settings-live.png','minimal-home-light.png','group-availability.png','delay-compatibility.png')){
         & $adb -s $serial pull ('/sdcard/Android/data/dev.pingclash.app/files/'+$file) (Join-Path $output $file)
         if($LASTEXITCODE -ne 0){throw 'Synthetic visual capture missing.'}
     }

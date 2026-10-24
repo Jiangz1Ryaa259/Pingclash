@@ -15,6 +15,7 @@ data class ClientSettings(
     val showService: Boolean=true, val notificationSpeed: Boolean=true,
     val probeTimeout: Int=5000, val probeConcurrency: Int=10, val unifiedDelay: Boolean=true, val delayUrl: String="",
     val autoReconnect: Boolean=true,
+    val dynamicColor: Boolean=false, val reduceEffects: Boolean=false,
 ) {
     fun json(): JSONObject = JSONObject().apply {
         put("mode",mode);put("mtu",mtu);put("ipv6",ipv6);put("udp",udp);put("lan",lan)
@@ -26,6 +27,7 @@ data class ClientSettings(
         put("notificationSpeed",notificationSpeed);put("probeTimeout",probeTimeout);put("probeConcurrency",probeConcurrency)
         put("probeSettingsVersion",2);put("unifiedDelay",unifiedDelay);put("delayUrl",delayUrl)
         put("autoReconnect",autoReconnect)
+        put("dynamicColor",dynamicColor);put("reduceEffects",reduceEffects)
     }
     companion object {
         fun read(p: JSONObject?): ClientSettings {
@@ -38,7 +40,9 @@ data class ClientSettings(
                 p.optString("dnsMode","tcp"),p.optString("dnsHttps",defaults.dnsHttps),p.optString("appMode","all"),(0 until packages.length()).map(packages::getString),
                 p.optBoolean("useProviderRules",true),p.optString("customRules"),p.optBoolean("inspectConnections"),p.optString("language","system"),p.optString("theme","system"),p.optBoolean("keepUsage"),
                 p.optBoolean("showSpeed",true),p.optBoolean("showTraffic",true),p.optBoolean("showMemory",true),p.optBoolean("showService",true),p.optBoolean("notificationSpeed",true),p.optInt("probeTimeout",5000),
-                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},p.optBoolean("unifiedDelay",true),p.optString("delayUrl"),p.optBoolean("autoReconnect",true))
+                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},
+                    p.optBoolean("unifiedDelay",true),p.optString("delayUrl"),p.optBoolean("autoReconnect",
+                    true),p.optBoolean("dynamicColor"),p.optBoolean("reduceEffects"))
         }
     }
 }

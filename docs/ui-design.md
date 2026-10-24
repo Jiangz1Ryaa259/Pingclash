@@ -1,15 +1,25 @@
-# current beta 界面与交互
+# UI and interaction
 
-current beta 重画本地图标，统一 24 单位网格、1.7 单位描边、圆角端点与连接，使用缓存的 Compose ImageVector。仪表盘 / 代理 / 配置 / 设置分别使用仪表、分层、折角文件和齿轮；设置类别按实际功能区分，不再大量复用地球或齿轮。图标不重复朗读按钮文字，可访问标签由原交互控件保留。
+The Compose interface uses a custom sea-toned light/dark `ColorScheme`, system sans-serif/CJK fonts, five type sizes and tabular numeric figures. Dynamic wallpaper color is optional on Android 12+. Shape tokens use 8 dp inputs, 14 dp content containers, 24 dp sheets and fully rounded navigation/action capsules.
 
-桌面图标为蓝底白色圆角 P，与通知图标统一。使用 Android 自适应背景 / 前景和单色层，前景留在安全区域内；实现依据 [Android 自适应图标文档](https://developer.android.com/develop/ui/compose/system/icon_design_adaptive)。所有路径由本项目绘制，不下载图标、引入图标 SDK 或修改连接逻辑。
+## First screen
 
-依据设计参考的 Minimalism 风格图，使用系统无衬线字体、黑白灰层次、蓝色强调和细轮廓图标。借鉴 iPhone 的留白、分组和浮动导航，以及 Android 的状态按钮、触觉反馈与权限流程；不打包 Apple 字体、图标或第三方客户端素材。
+The dashboard puts connection control, the selected route and the last native Mihomo URL measurement first. Its device → DNS → node entry → web path shows the most recent diagnostic evidence for the selected node. Establishing Android's VPN interface never makes these stages pass automatically. Missing, skipped, incomplete and stale evidence remain distinct; an unclassified timeout does not invent a failed network layer.
 
-- 普通页面以内容为主，白色 / 中性深灰卡片和细边框建立层级。代理组保留订阅原始顺序、直接成员与嵌套引用；选中态使用轻蓝底色和轮廓，搜索、测速、配置操作继续使用原逻辑。
-- 底部导航使用半透明渐变、高光与弹簧位移形成玻璃质感。拖动时只有指示块跟手，松手提交一次切页，取消不切页；也支持点击与无障碍选择。页面短距离滑移与淡入，策略组仍由自己的横向分页响应，不叠加整页滑动手势。
-- 首页电源控制按压缩放、松手回弹，真实服务 established 后才转蓝、变形并完成外环。connecting / stopping 保留进度指示；connecting 可停止，stopping 禁止重复点击。VPN 隧道建立不等于节点或所有目标均已验证，连通性仍通过用户主动诊断判断。
-- 读取 Android 的动画缩放与触摸探索设置，关闭动画或启用触摸探索时取消装饰性位移、回弹和颜色补间。没有空闲时永久循环装饰动画。大字体扩展电源控制与导航高度，代理网格在字体放大时改成单列。
-- 玻璃效果直接绘制渐变和高光，不捕获页面、建立模糊位图缓存或读取屏幕；不是 Apple Liquid Glass 渲染器。敏感窗口保护、一次性证书提示、加密资料和路由边界保持原逻辑。系统偏好监听仅在界面组合存活时存在，不发送网络请求、不新增权限。
+Fast/elevated/high labels accompany green/amber/red measurements. The 150/400 ms display thresholds describe one result, not a quality guarantee. TCP reachability and URL availability remain separate measurements. Configurations, groups, detailed service/memory information and network settings remain available from their existing pages.
 
-验证入口：`GlassInteractionTest` 检查导航松手提交、取消回退、无障碍选择、取消电源按压不启动 VPN，以及系统动画切换；原有真 VPN / 分组 / 加密 / 大字体 / 深色测试一起执行。
+Related settings share neutral containers and dividers. Proxy tabs preserve the supported subscription's original order and direct members, including nested groups; appearance changes do not regroup subscriptions. The current configuration row opens existing selection controls and never activates an unconfirmed deep-link import.
+
+## Surfaces and motion
+
+Three local Canvas sine layers sit behind the dashboard. They require no image downloads, screen capture or blur bitmap cache. Other pages stay neutral. The navigation bar uses a 92% tinted surface, fine edge and spring-driven capsule; it deliberately uses no blur. Dragging previews the capsule, release commits one navigation change, and cancellation leaves the page unchanged. Tap and accessibility selection remain available.
+
+The connect button has a mild 0.97 press scale, ripple and a short state transition. Decorative wave movement and outward rings run only while connecting and foreground-visible. Idle screens have no permanent looping decoration. Android animator scale, touch exploration and the in-app Reduce effects preference disable decorative motion. These preferences are persisted in existing encrypted local storage; no new permissions or telemetry are added.
+
+Default palette tests check text contrast of at least 4.5:1 over each tinted wave combination, and switch/navigation outlines of at least 3:1. These checks do not certify every wallpaper-derived dynamic palette. Switches expose a whole-row switch role with at least a 48 dp target. Large fonts expand navigation and use a two-column diagnostic path and vertically arranged measurements; content remains scrollable.
+
+## Verification and previews
+
+`OceanDesignTest` covers actual palette tokens, diagnostic evidence mapping, encrypted motion preferences, system animation disabling, theme foreground inheritance, light/dark/large-font layouts and accessible controls. Existing `GlassInteractionTest` retains release/cancel, accessibility selection and cancelled power-press checks. Full VPN and privacy integration tests remain enabled.
+
+README screenshots use synthetic emulator fixtures. Their node names, speeds, 84 ms measurement and passing path illustrate layout and are not observations of a real subscription. Screenshot capture exists only in the test APK; the production app does not collect or upload screenshots.

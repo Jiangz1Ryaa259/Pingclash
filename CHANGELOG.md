@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Redesign the dashboard around connection control, native URL latency and a truthful four-stage diagnostic path.
+- Add custom light/dark sea palettes, tabular typography, a tinted sliding navigation capsule, grouped settings and accessible whole-row switches.
+- Make dynamic wallpaper colors optional; persist Reduce effects locally and stop decorative loops outside foreground connection attempts.
+- Add four UI/evidence/contrast regressions and synthetic light/dark/large-font previews; retain existing VPN/privacy coverage.
+
 - Confirm HTTPS `clash://install-config` requests and persist imported profiles as inactive until a separate explicit selection.
 - Add a detekt baseline CI gate and mark UDP-only TCP metrics as `N/A (UDP)` before testing.
 - Add a 14-case public-example-derived provider corpus with explicit accepted/rejected outcomes, canary privacy regressions and strict diagnostic metadata formatting.

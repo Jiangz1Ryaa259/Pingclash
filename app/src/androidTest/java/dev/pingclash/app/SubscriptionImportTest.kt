@@ -306,6 +306,8 @@ internal fun captureSyntheticFixture(compose: AndroidComposeTestRule<*, MainActi
     compose.runOnUiThread {activity.window.decorView.invalidate()}
     compose.waitForIdle(); device.waitForIdle(1000); Thread.sleep(300)
     check(device.takeScreenshot(File(activity.getExternalFilesDir(null), name)))
+    val evidence=File(activity.getExternalFilesDir(null),"synthetic-test-evidence").apply {mkdirs()}
+    File(activity.getExternalFilesDir(null),name).copyTo(File(evidence,name),overwrite=true)
 }
 
 /** Consent is scoped to the verified project emulator and synthetic VPN fixture. */

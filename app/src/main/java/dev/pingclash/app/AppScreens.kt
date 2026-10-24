@@ -88,9 +88,11 @@ import org.json.JSONObject
     }
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { requestVpn() }
     val locked = ui.busy || vpn.active || diagnosis.running || tests.running
-    val motion=rememberMotionAllowed()
+    val motion=rememberMotionAllowed(data.client.reduceEffects)
     CompositionLocalProvider(LocalMotionAllowed provides motion) {
-    Scaffold(containerColor = Ink, snackbarHost = { SnackbarHost(snackbar) }, bottomBar = {
+    Box(Modifier.fillMaxSize().background(Ink)) {
+    if(tab==0)OceanBackdrop(dashboardTone(data,vpn,diagnosis),vpn.phase=="connecting",Modifier.fillMaxSize())
+    Scaffold(containerColor = Color.Transparent, snackbarHost = { SnackbarHost(snackbar) }, bottomBar = {
         GlassNavigation(tab) {tab=it}
     }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
@@ -102,12 +104,16 @@ import org.json.JSONObject
                 } else fadeIn(snap()) togetherWith fadeOut(snap())
             }, modifier=Modifier.fillMaxSize().clip(RoundedCornerShape(0.dp)),label = "main-navigation") { page ->
                 when (page) {
-                    0 -> ConnectionScreen(data, vpn, diagnosis, model.nativeReady, ui.busy, onNodes = { tab = 1 }, onDiagnose = { tab = 3;tool=0; model.diagnose() }) {
+                    0 -> DashboardScreen(DashboardState(data,vpn,diagnosis,tests,model.nativeReady,ui.busy),
+                        DashboardActions(nodes={tab=if(data.activeProfile==null)2 else 1},
+                            diagnose={tab=3;tool=0;model.diagnose()},test={data.activeProfile?.let {profile ->
+                                data.selected?.let {model.testProxies(profile,listOf(it.name))}
+                            }},connect={
                         if (vpn.active) { model.cancelDiagnosis(); VpnRuntime.disconnect(context) }
-                        else if (data.selected == null) tab = 1
+                        else if (data.selected == null) tab = if(data.activeProfile==null)2 else 1
                         else if (Build.VERSION.SDK_INT >= 33 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                         else requestVpn()
-                    }
+                    }))
                     1 -> ProxyScreen(data,locked,model,tests,onProfiles={tab=2},onDiagnosis={tab=3;tool=0;model.diagnose()})
                     2 -> ProfilesScreen(data,locked,model,ui) {tab=1}
                     else -> Column(Modifier.fillMaxSize()) {
@@ -121,6 +127,7 @@ import org.json.JSONObject
                 }
             }
         }
+    }
     }
     }
     if (!data.loadFailed && !data.certificateNoticeAcknowledged && data.selected?.certificateVerificationSkipped == true) {
@@ -143,65 +150,17 @@ import org.json.JSONObject
     }
 }
 @Composable private fun Tile(content: @Composable ColumnScope.() -> Unit) {
-    Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(22.dp),border=BorderStroke(.7.dp,MaterialTheme.colorScheme.outlineVariant),colors=CardDefaults.cardColors(containerColor=Panel)) {
+    Card(Modifier.fillMaxWidth(),shape=UiCorners.Card,border=BorderStroke(.7.dp,MaterialTheme.colorScheme.outlineVariant),
+        colors=CardDefaults.cardColors(containerColor=Panel)) {
         Column(Modifier.padding(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp),content=content)
     }
 }
-@Composable private fun SectionLabel(text: String) { Text((text),Modifier.padding(start=4.dp),color=Muted,style=MaterialTheme.typography.labelLarge) }
 @Composable private fun IconBadge(index: Int) {
     Box(Modifier.size(44.dp).background(MaterialTheme.colorScheme.primaryContainer,RoundedCornerShape(14.dp)),contentAlignment=Alignment.Center) { AppGlyph(index,tint=Mint) }
 }
 @Composable private fun IssueBanner(text: String) {
-    Surface(color=MaterialTheme.colorScheme.errorContainer,shape=RoundedCornerShape(16.dp)) {
+    Surface(color=MaterialTheme.colorScheme.errorContainer,shape=UiCorners.Compact) {
         Text(text,Modifier.fillMaxWidth().padding(16.dp),color=MaterialTheme.colorScheme.onErrorContainer,style=MaterialTheme.typography.bodyMedium)
-    }
-}
-
-@Composable private fun ConnectionScreen(data: AppData,vpn: VpnUiState,diagnosis: DiagnosticUiState,ready: Boolean,busy: Boolean,onNodes: () -> Unit,onDiagnose: () -> Unit,onConnect: () -> Unit) {
-    Page("PingClash",tr(R.string.message_05fe638db2)) {
-        if(!ready||data.loadFailed) IssueBanner(if(!ready) tr(R.string.message_0fef4c3028) else tr(R.string.message_9e30b1eb6a))
-        Card(shape=RoundedCornerShape(28.dp),border=BorderStroke(.7.dp,MaterialTheme.colorScheme.outlineVariant),colors=CardDefaults.cardColors(containerColor=Panel)) {
-            Column(Modifier.fillMaxWidth().padding(22.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(18.dp)) {
-                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
-                    Text((tr(R.string.message_38854bf43e)),color=Muted,style=MaterialTheme.typography.labelLarge)
-                    Surface(color=MaterialTheme.colorScheme.surfaceVariant,shape=CircleShape) { Row(Modifier.padding(horizontal=10.dp,vertical=6.dp),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
-                        Box(Modifier.size(6.dp).background(if(vpn.phase=="established") Success else Muted,CircleShape));Text((if(vpn.phase=="established") tr(R.string.message_5be0323e8a) else if(vpn.active) tr(R.string.message_694b71bc80) else tr(R.string.message_3d52574ce1)),style=MaterialTheme.typography.labelSmall)
-                    } }
-                }
-                VpnPowerControl(vpn.phase,ready&&!data.loadFailed&&!busy&&(!diagnosis.running||vpn.active),
-                    if(vpn.active) tr(R.string.message_a33f380476) else if(data.selected==null) {if(data.nodes.isEmpty()) tr(R.string.message_40b1401f0d) else tr(R.string.message_86b4062627)} else tr(R.string.message_beecafaf89),onConnect)
-                Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                    Text((if(vpn.phase=="established") tr(R.string.message_5d1cd38e0d) else if(vpn.phase=="connecting") tr(R.string.message_694186911a) else if(vpn.phase=="stopping") tr(R.string.message_b8d23e6673) else tr(R.string.message_93ae902da0)),style=MaterialTheme.typography.titleLarge)
-                    Text((if(vpn.phase=="established") tr(R.string.message_35f7d981fb) else if(data.selected==null) tr(R.string.message_ef50e7f638) else tr(R.string.message_05d0b75302)),color=Muted,style=MaterialTheme.typography.bodyMedium)
-                }
-                if(vpn.phase=="error") IssueBanner(vpn.message)
-            }
-        }
-        SectionLabel(tr(R.string.message_13aa8a49e0))
-        Tile {
-            Row(Modifier.fillMaxWidth().clickable(enabled=!vpn.active,onClick=onNodes),horizontalArrangement=Arrangement.spacedBy(14.dp),verticalAlignment=Alignment.CenterVertically) {
-                IconBadge(1)
-                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
-                    Text(data.selected?.name?:tr(R.string.message_71cb1d7ea6),style=MaterialTheme.typography.titleMedium,maxLines=1,overflow=TextOverflow.Ellipsis)
-                    Text(data.selected?.type?.uppercase()?:tr(R.string.message_4a403931f2),color=Muted,style=MaterialTheme.typography.bodySmall)
-                }
-                AppGlyph(5,tint=Muted)
-            }
-        }
-        RuntimeCards(data,vpn)
-        Tile {
-            Row(horizontalArrangement=Arrangement.spacedBy(14.dp),verticalAlignment=Alignment.CenterVertically) {
-                IconBadge(2)
-                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text((tr(R.string.message_75793291b7)),style=MaterialTheme.typography.titleMedium);Text((tr(R.string.message_3d68b50722)),color=Muted,style=MaterialTheme.typography.bodySmall) }
-            }
-            diagnosis.report?.let { Text(it.conclusion(),color=Muted,style=MaterialTheme.typography.bodyMedium) }
-            FilledTonalButton(onClick=onDiagnose,enabled=ready&&data.selected!=null&&!diagnosis.running&&!busy,modifier=Modifier.fillMaxWidth()) { Text((tr(R.string.message_625924befc))) }
-        }
-        Row(Modifier.padding(horizontal=4.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            AppGlyph(6,Modifier.size(17.dp),Muted)
-            Text((tr(R.string.message_be0ea23874)),color=Muted,style=MaterialTheme.typography.bodySmall)
-        }
-        if(vpn.failures>0) Text(trPlural(R.plurals.message_b4e092f3e3, (vpn.failures).toInt(), vpn.failures),color=Warning,style=MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -240,7 +199,7 @@ import org.json.JSONObject
         }
         if(data.profiles.size>1) LazyRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) { items(data.profiles,key={it.id}) { profile -> FilterChip(viewed?.id==profile.id,{viewedProfile=profile.id},label={Text(profile.name,maxLines=1)}) } }
         viewed?.let { profile ->
-            Card(shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=Panel)) {
+            Card(shape=UiCorners.Card,colors=CardDefaults.cardColors(containerColor=Panel)) {
                 Column(Modifier.fillMaxWidth()) {
                     Row(Modifier.padding(start=20.dp,end=8.dp,top=12.dp,bottom=10.dp),verticalAlignment=Alignment.CenterVertically) {
                         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {Text(profile.name,fontWeight=FontWeight.SemiBold,maxLines=1,overflow=TextOverflow.Ellipsis);Text(trPlural(R.plurals.message_36f0a655c4, (profile.nodes.size).toInt(), profile.nodes.size, if(profile.source==null) tr(R.string.message_a74010990f) else tr(R.string.message_cf8efc450f)),color=Muted,style=MaterialTheme.typography.bodySmall)}
@@ -299,10 +258,16 @@ import org.json.JSONObject
             }
             OutlinedTextField(content,{if(it.length<=2*1024*1024)content=it},Modifier.testTag("subscription-content").fillMaxWidth().heightIn(min=if(subscription)60.dp else 120.dp,max=220.dp),enabled=!ui.busy,
                 label={Text(if(subscription)tr(R.string.message_6a113a5edf) else tr(R.string.message_f77aab4c7a))},placeholder={Text(if(subscription)"https://example.com/subscribe" else tr(R.string.message_57f2275452))},
-                shape=RoundedCornerShape(16.dp),singleLine=subscription,visualTransformation=if(subscription&&!visible)PasswordVisualTransformation()else VisualTransformation.None,
+                shape=UiCorners.Compact,singleLine=subscription,
+                visualTransformation=if(subscription&&!visible)PasswordVisualTransformation()
+                    else VisualTransformation.None,
                 trailingIcon=if(subscription){{TextButton({visible=!visible}){Text(if(visible)tr(R.string.message_145219e726) else tr(R.string.message_4e1449e7d5))}}}else null,
                 keyboardOptions=KeyboardOptions(autoCorrectEnabled=false,keyboardType=if(subscription)KeyboardType.Uri else KeyboardType.Text,imeAction=if(subscription)ImeAction.Next else ImeAction.Default))
-            OutlinedTextField(name,{if(it.length<=100)name=it},Modifier.fillMaxWidth(),enabled=!ui.busy,singleLine=true,shape=RoundedCornerShape(16.dp),label={Text((tr(R.string.message_091a5b5cb6)))},placeholder={Text(if(subscription)tr(R.string.message_79aad303b1) else tr(R.string.message_e406825e0a))})
+            OutlinedTextField(name,{if(it.length<=100)name=it},Modifier.fillMaxWidth(),
+                enabled=!ui.busy,singleLine=true,shape=UiCorners.Compact,
+                label={Text((tr(R.string.message_091a5b5cb6)))},
+                placeholder={Text(if(subscription)tr(R.string.message_79aad303b1)
+                    else tr(R.string.message_e406825e0a))})
             if(subscription) OutlinedTextField(userAgent,{if(it.length<=256){userAgent=it;onUserAgent(it)}},Modifier.fillMaxWidth().testTag("subscription-ua"),singleLine=true,enabled=!ui.busy,isError=!validSubscriptionUa(userAgent),label={Text(tr(R.string.subscription_ua))})
             ui.importIssue?.let { Box(Modifier.bringIntoViewRequester(errorLocation)){IssueBanner(it)} }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { AppGlyph(6,Modifier.size(18.dp),Muted);Text((tr(R.string.message_8e3b073b9e)),color=Muted,style=MaterialTheme.typography.bodySmall) }

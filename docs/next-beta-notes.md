@@ -4,6 +4,8 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Replace the dashboard with a quiet sea palette, native URL readout and evidence-based device/DNS/node/web path. Add optional dynamic colors, Reduce effects, grouped settings and accessible controls. No image download, captured blur or telemetry is introduced.
+
 - Confirm `clash://install-config?url=...&name=...` before downloading. Show the source host, require HTTPS, reject ambiguous parameters and sanitize bounded names. Imported configurations stay inactive until a separate explicit selection, including the first profile and after restarting.
 - Add a detekt baseline gate to CI. Existing style findings are recorded; new findings fail the build. CI never regenerates the baseline.
 - Label TCP latency for Hysteria2/TUIC as `N/A (UDP)` before testing.

@@ -176,7 +176,10 @@ private fun groupProblem(reason: String)=when(reason) {
 @Composable private fun ProxyCard(name: String,description: String,udpOnly: Boolean,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,tcp: ProxyDelay?,modifier: Modifier,onClick: () -> Unit,onTest: (() -> Unit)?,onTcpTest: (() -> Unit)?,onOpen: (() -> Unit)?) {
     val background by animateColorAsState(if(chosen) MaterialTheme.colorScheme.primaryContainer.copy(alpha=.65f) else Panel,
         if(LocalMotionAllowed.current)tween(180) else snap(),label="proxy-selection")
-    Surface(shape=RoundedCornerShape(22.dp),color=background,border=BorderStroke(if(chosen)1.dp else .7.dp,if(chosen)Mint.copy(alpha=.5f) else MaterialTheme.colorScheme.outlineVariant),modifier=modifier.fillMaxWidth().semantics {selected=chosen}.clickable(enabled=enabled,onClick=onClick)) {
+    Surface(shape=UiCorners.Card,color=background,border=BorderStroke(if(chosen)1.dp else .7.dp,
+        if(chosen)Mint.copy(alpha=.5f) else MaterialTheme.colorScheme.outlineVariant),
+        modifier=modifier.fillMaxWidth().semantics {selected=chosen}.clickable(enabled=enabled,
+        onClick=onClick)) {
         Column(Modifier.padding(horizontal=14.dp,vertical=13.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment=Alignment.Top,horizontalArrangement=Arrangement.spacedBy(4.dp)) {
                 Text(name,Modifier.weight(1f).heightIn(min=48.dp),fontSize=16.sp,lineHeight=23.sp,maxLines=2,overflow=TextOverflow.Ellipsis,color=if(enabled)MaterialTheme.colorScheme.onSurface else Muted)
@@ -190,7 +193,8 @@ private fun groupProblem(reason: String)=when(reason) {
             Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription=tr(R.string.message_e5cc5f1229, name)},contentAlignment=Alignment.CenterStart) {
                 when(delay?.state) {
                     "running" -> CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=1.5.dp)
-                    "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),fontSize=12.sp,color=Success)
+                    "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),
+                        style=MaterialTheme.typography.bodySmall,color=latencyColor(delay.elapsedMs))
                     "timeout" -> Text((tr(R.string.message_e512cf016f)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "failed" -> Text((tr(R.string.message_28384d7afd)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "busy" -> Text(tr(R.string.message_7b0fe85cc2),fontSize=12.sp,color=Muted)
