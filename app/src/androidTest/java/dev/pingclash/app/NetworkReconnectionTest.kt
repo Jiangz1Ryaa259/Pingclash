@@ -53,6 +53,21 @@ class NetworkReconnectionTest {
                 val activityInfo=app.packageManager.getActivityInfo(compose.activity.componentName,0)
                 assertEquals("Dashboard excluded from recents",0,activityInfo.flags and android.content.pm.ActivityInfo.FLAG_EXCLUDE_FROM_RECENTS)
                 device.pressHome()
+                val dozeEnabled=device.executeShellCommand("dumpsys deviceidle enabled").trim()=="1"
+                try {
+                    device.executeShellCommand("dumpsys deviceidle enable")
+                    device.executeShellCommand("dumpsys battery unplug")
+                    device.executeShellCommand("dumpsys deviceidle force-idle")
+                    assertTrue("Doze was not entered",device.executeShellCommand("dumpsys deviceidle get deep").contains("IDLE"))
+                    assertTrue("Doze closed TUN",tun.fileDescriptor.valid())
+                    assertTrue("Doze removed foreground notification",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1})
+                } finally {
+                    device.executeShellCommand("dumpsys deviceidle unforce")
+                    device.executeShellCommand("dumpsys battery reset")
+                    if(!dozeEnabled)device.executeShellCommand("dumpsys deviceidle disable")
+                    device.executeShellCommand("input keyevent 224")
+                    device.executeShellCommand("input keyevent 82")
+                }
                 device.executeShellCommand("svc wifi disable")
                 device.executeShellCommand("svc data disable")
                 compose.waitUntil(25000) {service.boundNetwork==null&&VpnRuntime.state.value.phase=="connecting"}

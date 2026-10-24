@@ -132,6 +132,7 @@ class PingVpnService : VpnService() {
             check(app.nativeReady) { "native_unavailable" }
             stage = "permission"
             check(prepare(this) == null) { "vpn_permission_required" }
+            app.repository.applyPendingProviders()
             val data = app.repository.data.value
             val node = data.selected ?: error("node_required")
             stage = "configuration"

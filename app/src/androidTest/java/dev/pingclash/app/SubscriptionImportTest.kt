@@ -21,8 +21,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Public, synthetic fixture key only. It is in androidTest assets, never the main APK. */
-private class SubscriptionFixture : Closeable {
+internal class SubscriptionFixture : Closeable {
     val requests = AtomicInteger()
+    val bodies=java.util.concurrent.ConcurrentHashMap<String,String>()
+    val statuses=java.util.concurrent.ConcurrentHashMap<String,Int>()
+    val captured=java.util.concurrent.CopyOnWriteArrayList<Map<String,String>>()
+    var quotaHeader: String?=null
+    fun address(path: String)="https://127.0.0.1:${socket.localPort}$path"
+
     private val workers = Executors.newFixedThreadPool(3)
     private val previousFactory = HttpsURLConnection.getDefaultSSLSocketFactory()
     private val socket: ServerSocket
@@ -55,14 +61,17 @@ private class SubscriptionFixture : Closeable {
                         val reader = it.getInputStream().bufferedReader()
                         val first = reader.readLine() ?: return@use
                         var total = first.length
-                        while (true) { val line = reader.readLine() ?: break; total += line.length; require(total < 32768); if (line.isEmpty()) break }
+                        val headers=mutableMapOf<String,String>()
+                        while (true) { val line = reader.readLine() ?: break; total += line.length; require(total < 32768); if (line.isEmpty()) break;val pair=line.split(':',limit=2);if(pair.size==2)headers[pair[0].lowercase()]=pair[1].trim() }
+                        captured.add(headers)
+                        val path=first.split(' ').getOrNull(1)?.substringBefore('?').orEmpty()
                         requests.incrementAndGet()
                         val redirect = first.contains(" /redirect")
                         val html = first.contains(" /html")
                         val raw = "anytls://fixture-password@example.invalid:443?sni=example.invalid&insecure=1#HK%20AnyTLS"
-                        val body = if (html) "<!doctype html><html>login page</html>" else Base64.encodeToString(raw.toByteArray(), Base64.NO_WRAP)
+                        val body = bodies[path] ?: if (html) "<!doctype html><html>login page</html>" else Base64.encodeToString(raw.toByteArray(), Base64.NO_WRAP)
                         val response = if (redirect) "HTTP/1.1 302 Found\r\nLocation: /subscribe\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
-                        else "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: ${body.toByteArray().size}\r\nConnection: close\r\n\r\n$body"
+                        else "HTTP/1.1 ${statuses[path]?:200} OK\r\n"+(quotaHeader?.let {q->"subscription-userinfo: $q\r\n"}?:"")+"Content-Type: text/plain; charset=utf-8\r\nContent-Length: ${body.toByteArray().size}\r\nConnection: close\r\n\r\n$body"
                         it.getOutputStream().write(response.toByteArray()); it.getOutputStream().flush()
                     }
                 }

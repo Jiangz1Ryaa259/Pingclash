@@ -45,6 +45,10 @@ class TerminalTest {
         command("printf 'AFTER_%s\\n' INTERRUPT")
         compose.waitUntil(5000) {output().contains("AFTER_INTERRUPT")}
         assertTrue(compose.activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE!=0)
+        command("exit 23")
+        awaitText("会话已结束：23")
+        assertFalse(output().contains("press Enter"))
+        assertEquals(23,model.sessions.first().exitStatus)
         compose.runOnUiThread {model.closeCurrent()}
         assertEquals(0,model.sessions.size)
     }

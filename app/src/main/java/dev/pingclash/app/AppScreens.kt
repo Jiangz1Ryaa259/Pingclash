@@ -206,6 +206,9 @@ import org.json.JSONObject
 }
 
 @Composable private fun ProfilesScreen(data: AppData,locked: Boolean,model: AppViewModel,ui: AppUiState,onProxies: () -> Unit) {
+    var uaProfile by remember {mutableStateOf<LocalProfile?>(null)}
+    var uaText by remember {mutableStateOf(DEFAULT_SUBSCRIPTION_UA)}
+    var importUa by remember {mutableStateOf(DEFAULT_SUBSCRIPTION_UA)}
     var rename by remember {mutableStateOf<LocalProfile?>(null)}
     var export by remember {mutableStateOf<LocalProfile?>(null)}
     var renameText by remember {mutableStateOf("")}
@@ -245,6 +248,9 @@ import org.json.JSONObject
                         TextButton({delete=profile},enabled=!locked) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}
                     }
                     Text(if(profile.hasSubscriptionGroups) tr(R.string.message_5076fa3a21) else tr(R.string.message_c7fab0a4c0),Modifier.padding(horizontal=20.dp,vertical=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)
+                    SubscriptionDetails(profile)
+                    if(profile.remote!=null)TextButton({model.refreshProviders(profile)},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)){Text(tr(R.string.provider_refresh))}
+                    if(profile.source!=null) TextButton({uaProfile=profile;uaText=profile.userAgent},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)) {Text(tr(R.string.subscription_ua))}
                     if(profile.groupsUnsupported>0) Text(trPlural(R.plurals.message_39ce491af1, (profile.groupsUnsupported).toInt(), profile.groupsUnsupported),Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)
                     if(profile.unsupported>0) Text(rejectionSummary(profile.rejections).ifBlank {trPlural(R.plurals.message_6c693a3b14, (profile.unsupported).toInt(), profile.unsupported)},Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)
                     if(profile.fieldIssues.isNotEmpty()) {
@@ -266,18 +272,20 @@ import org.json.JSONObject
             Text((tr(R.string.message_252a24987b)),Modifier.padding(horizontal=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)
         }
     }
-    if(showImport) ImportDialog(ui,{if(!ui.busy)showImport=false}) { name,body,subscription -> if(subscription)model.subscribe(name,body.trim()) else model.importText(name,body) }
+    if(showImport) ImportDialog(ui,{if(!ui.busy)showImport=false},onUserAgent={importUa=it}) { name,body,subscription -> if(subscription)model.subscribe(name,body.trim(),importUa) else model.importText(name,body) }
+    uaProfile?.let {profile -> AlertDialog(onDismissRequest={uaProfile=null},title={Text(tr(R.string.subscription_ua))},text={Column {OutlinedTextField(uaText,{if(it.length<=256)uaText=it},singleLine=true,isError=!validSubscriptionUa(uaText));Text(tr(R.string.subscription_ua_hint))}},confirmButton={TextButton({model.subscriptionUserAgent(profile.id,uaText);uaProfile=null},enabled=validSubscriptionUa(uaText)){Text(tr(R.string.message_a3030bf8f1))}},dismissButton={TextButton({uaProfile=null}){Text(tr(R.string.cancel))}})}
     rename?.let {profile -> AlertDialog(onDismissRequest={rename=null},title={Text((tr(R.string.message_0d0cbac2ee)))},text={OutlinedTextField(renameText,{if(it.length<=100)renameText=it},singleLine=true,label={Text((tr(R.string.message_9919db867b)))})},confirmButton={TextButton({model.rename(profile.id,renameText);rename=null},enabled=renameText.isNotBlank()){Text((tr(R.string.message_a3030bf8f1)))}},dismissButton={TextButton({rename=null}){Text((tr(R.string.message_2cd0f3be87)))}})}
     export?.let {profile -> AlertDialog(onDismissRequest={export=null},title={Text((tr(R.string.message_429ea3af44)))},text={Text((tr(R.string.message_cbf0717721)))},confirmButton={TextButton({exportId=profile.id;export=null;exportPicker.launch("PingClash-profile.json")}){Text((tr(R.string.message_429ea3af44)))}},dismissButton={TextButton({export=null}){Text((tr(R.string.message_2cd0f3be87)))}})}
     delete?.let { profile -> AlertDialog(onDismissRequest={delete=null},title={Text((tr(R.string.message_03300a88fe)))},text={Text(trPlural(R.plurals.message_9e39a158c5, (profile.nodes.size).toInt(), profile.nodes.size))},confirmButton={TextButton({model.delete(profile.id);delete=null}) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}},dismissButton={TextButton({delete=null}) {Text((tr(R.string.message_2cd0f3be87)))}}) }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable internal fun ImportDialog(ui: AppUiState,onDismiss: () -> Unit,onSubmit: (String,String,Boolean) -> Unit) {
+@Composable internal fun ImportDialog(ui: AppUiState,onDismiss: () -> Unit,onUserAgent: (String)->Unit={},onSubmit: (String,String,Boolean) -> Unit) {
     var name by remember {mutableStateOf("")}
     var content by remember {mutableStateOf("")}
     var subscription by remember {mutableStateOf(true)}
     var visible by remember {mutableStateOf(false)}
+    var userAgent by remember {mutableStateOf(DEFAULT_SUBSCRIPTION_UA)}
     val focus=LocalFocusManager.current
     val errorLocation=remember { BringIntoViewRequester() }
     LaunchedEffect(ui.importIssue) {if(ui.importIssue!=null) {focus.clearFocus();errorLocation.bringIntoView()} }
@@ -294,9 +302,10 @@ import org.json.JSONObject
                 trailingIcon=if(subscription){{TextButton({visible=!visible}){Text(if(visible)tr(R.string.message_145219e726) else tr(R.string.message_4e1449e7d5))}}}else null,
                 keyboardOptions=KeyboardOptions(autoCorrectEnabled=false,keyboardType=if(subscription)KeyboardType.Uri else KeyboardType.Text,imeAction=if(subscription)ImeAction.Next else ImeAction.Default))
             OutlinedTextField(name,{if(it.length<=100)name=it},Modifier.fillMaxWidth(),enabled=!ui.busy,singleLine=true,shape=RoundedCornerShape(16.dp),label={Text((tr(R.string.message_091a5b5cb6)))},placeholder={Text(if(subscription)tr(R.string.message_79aad303b1) else tr(R.string.message_e406825e0a))})
+            if(subscription) OutlinedTextField(userAgent,{if(it.length<=256){userAgent=it;onUserAgent(it)}},Modifier.fillMaxWidth().testTag("subscription-ua"),singleLine=true,enabled=!ui.busy,isError=!validSubscriptionUa(userAgent),label={Text(tr(R.string.subscription_ua))})
             ui.importIssue?.let { Box(Modifier.bringIntoViewRequester(errorLocation)){IssueBanner(it)} }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { AppGlyph(6,Modifier.size(18.dp),Muted);Text((tr(R.string.message_8e3b073b9e)),color=Muted,style=MaterialTheme.typography.bodySmall) }
-            Button({onSubmit(name.trim(),content,subscription)},Modifier.fillMaxWidth().height(54.dp),enabled=!ui.busy&&content.isNotBlank()&&(!subscription||validHttps(content.trim())),shape=CircleShape) {
+            Button({onSubmit(name.trim(),content,subscription)},Modifier.fillMaxWidth().height(54.dp),enabled=!ui.busy&&content.isNotBlank()&&(!subscription||validHttps(content.trim())&&validSubscriptionUa(userAgent)),shape=CircleShape) {
                 if(ui.busy) {CircularProgressIndicator(Modifier.size(18.dp),strokeWidth=2.dp);Spacer(Modifier.width(10.dp));Text((tr(R.string.message_f6dc1b1641)))} else Text(if(subscription)tr(R.string.message_ad5bb4ebe0) else tr(R.string.message_576d81bb06))
             }
             if(subscription&&content.isNotBlank()&&!validHttps(content.trim())) Text((tr(R.string.message_24429aea8f)),color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)

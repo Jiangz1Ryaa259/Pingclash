@@ -45,6 +45,7 @@ data class LocalProfile(
     val groups: List<LocalGroup> = emptyList(), val groupsUnsupported: Int = 0, val definition: String = "",
     val groupsDeclared: Boolean = false, val userSelections: Map<String, String> = emptyMap(),
     val rules: List<String> = emptyList(), val rulesOmitted: Int=0,
+    val userAgent: String=DEFAULT_SUBSCRIPTION_UA, val quota: SubscriptionQuota?=null, val remote: RemoteProfile?=null,
 ) {
     val unverifiedNodes get() = nodes.count { it.certificateVerificationSkipped }
     fun groupId(name: String) = "$id/group/$name"
@@ -98,8 +99,8 @@ class ProfileRepository(context: Context) {
         }
     }
 
-    @Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map<String, String>? = null): LocalProfile {
-        ensureMutable()
+    @Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map<String, String>? = null, userAgent: String? = null, subscriptionResponse: SubscriptionResponse? = null,remote: RemoteProfile? = null,providerRefresh: Boolean=false,startingVpn: Boolean=false): LocalProfile {
+        if(providerRefresh)check(!mutableData.value.loadFailed && (!VpnRuntime.state.value.active || startingVpn && VpnRuntime.state.value.phase=="connecting")) else ensureMutable()
         require(name.isNotBlank() && name.length <= 100) { tr(R.string.message_e97cd33442) }
         var parsed = JSONObject(Mobile.importProfile(text))
         val previousProfile = mutableData.value.profiles.firstOrNull { it.id == replaceId }
@@ -140,9 +141,47 @@ class ProfileRepository(context: Context) {
             else -> nodes.firstOrNull { previous != null && it.name == previous.name && it.config == previous.config }?.id
                 ?: nodes.filter { previous != null && it.name == previous.name && it.type == previous.type }.singleOrNull()?.id
         }
-        val withRules=profile.copy(rules=if(explicitSelections!=null)previousProfile?.rules.orEmpty() else readRules(parsed.optJSONArray("rules")),rulesOmitted=if(explicitSelections!=null)previousProfile?.rulesOmitted?:0 else parsed.optInt("rulesOmitted").coerceAtLeast(0))
+        val withRules=profile.copy(remote=if(explicitSelections!=null)previousProfile?.remote else remote,userAgent=userAgent?:previousProfile?.userAgent?:DEFAULT_SUBSCRIPTION_UA,quota=if(subscriptionResponse!=null)subscriptionResponse.quota else previousProfile?.quota,rules=if(explicitSelections!=null)previousProfile?.rules.orEmpty() else readRules(parsed.optJSONArray("rules")),rulesOmitted=if(explicitSelections!=null)previousProfile?.rulesOmitted?:0 else parsed.optInt("rulesOmitted").coerceAtLeast(0))
         commit(current.copy(profiles = updated.map {if(it.id==profile.id)withRules else it}, selectedId = selected, activeProfileId = current.activeProfile?.id ?: profile.id))
         return withRules
+    }
+
+    fun importWithProviders(name: String,text: String,source: String?=null,replaceId: String?=null,userAgent: String=DEFAULT_SUBSCRIPTION_UA,response: SubscriptionResponse?=null): LocalProfile {
+        val prepared=RemoteProfiles.load(text,userAgent,force=true)
+        return importProfile(name,prepared.content,source,replaceId,userAgent=userAgent,subscriptionResponse=response,remote=prepared.remote)
+    }
+
+    fun refreshProviders(profile: LocalProfile,force: Boolean=false) {
+        val remote=profile.remote?:return
+        if(!force&&!RemoteProfiles.due(remote)&&(!remote.pending||VpnRuntime.state.value.active))return
+        try {
+            val prepared=RemoteProfiles.load(remote.original,profile.userAgent,remote,force)
+            // Parse the complete graph before replacing even the encrypted cache.
+            val checked=JSONObject(Mobile.importProfile(prepared.content))
+            if(checked.optString("state")!="passed")throw ProviderFailure(0,"proxy","provider_payload")
+            synchronized(this) {
+                val current=mutableData.value
+                if(current.loadFailed||current.profiles.firstOrNull {it.id==profile.id}!=profile)return
+                if(VpnRuntime.state.value.active) {
+                    commit(current.copy(profiles=current.profiles.map {if(it.id==profile.id)it.copy(remote=prepared.remote?.copy(pending=remote.pending || prepared.content!=RemoteProfiles.resolve(remote.original,remote.bodies))) else it}))
+                } else importProfile(profile.name,prepared.content,profile.source,profile.id,userAgent=profile.userAgent,remote=prepared.remote,providerRefresh=true)
+            }
+        } catch(failure: Exception) {
+            val problem=failure as? ProviderFailure ?: ProviderFailure(0,"proxy","provider_payload")
+            synchronized(this) {
+                val current=mutableData.value
+                if(!current.loadFailed && current.profiles.firstOrNull {it.id==profile.id}==profile)
+                    commit(current.copy(profiles=current.profiles.map {if(it.id==profile.id)it.copy(remote=remote.copy(error="${problem.index}:${problem.kind}:${problem.code}",retryAfter=java.time.Instant.now().epochSecond+60)) else it}))
+            }
+            if(force)throw problem
+        }
+    }
+
+    @Synchronized internal fun applyPendingProviders() {
+        val profile=mutableData.value.activeProfile?:return
+        val remote=profile.remote?.takeIf {it.pending}?:return
+        val content=RemoteProfiles.resolve(remote.original,remote.bodies)
+        importProfile(profile.name,content,profile.source,profile.id,userAgent=profile.userAgent,remote=remote.copy(pending=false),providerRefresh=true,startingVpn=true)
     }
 
     @Synchronized fun select(id: String) {
@@ -228,6 +267,11 @@ class ProfileRepository(context: Context) {
         fun plus(a: Long,b: Long)=a+(b.coerceAtLeast(0).coerceAtMost(Long.MAX_VALUE-a))
         commit(current.copy(usage=LocalUsage(plus(current.usage.uploaded,up),plus(current.usage.downloaded,down),plus(current.usage.seconds,seconds),plus(current.usage.sessions,1))))
     }
+    @Synchronized fun subscriptionUserAgent(id: String,value: String) {
+        ensureMutable()
+        if(!validSubscriptionUa(value))throw SettingsFailure(tr(R.string.subscription_ua_invalid))
+        commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==id)it.copy(userAgent=value) else it}))
+    }
     @Synchronized fun rename(id: String,name: String) {
         ensureMutable();require(name.isNotBlank()&&name.length<=100) {tr(R.string.message_e97cd33442)}
         commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==id)it.copy(name=name.trim()) else it}))
@@ -296,6 +340,7 @@ class ProfileRepository(context: Context) {
             }) } }); put("groupsUnsupported",profile.groupsUnsupported);put("definition",profile.definition)
             put("groupsDeclared",profile.groupsDeclared);put("userSelections",JSONObject(profile.userSelections))
             put("rules",JSONArray(profile.rules));put("rulesOmitted",profile.rulesOmitted)
+            put("userAgent",profile.userAgent);put("quota",profile.quota?.json());put("remote",profile.remote?.json())
             put("nodes", JSONArray().apply { profile.nodes.forEach { node -> put(JSONObject().apply {
                 put("id", node.id); put("name", node.name); put("type", node.type); put("config", node.config);put("requiresProfile",node.requiresProfile)
             }) } })
@@ -316,7 +361,7 @@ class ProfileRepository(context: Context) {
                 }, profile.optInt("unsupported"), profile.optBoolean("routingIgnored"), rejectionCounts(profile.optJSONObject("rejections")), profile.optInt("verificationEnabled").coerceIn(0,500), importFieldCounts(profile.optJSONObject("fieldIssues")),readGroups(profile.optJSONArray("groups")),profile.optInt("groupsUnsupported").coerceIn(0,64),profile.optString("definition"),profile.optBoolean("groupsDeclared"),profile.optJSONObject("userSelections")?.let { picks ->
                     require(picks.length()<=64)
                     picks.keys().asSequence().associateWith {picks.getString(it)}
-                }.orEmpty(),readRules(profile.optJSONArray("rules")),profile.optInt("rulesOmitted").coerceAtLeast(0))
+                }.orEmpty(),readRules(profile.optJSONArray("rules")),profile.optInt("rulesOmitted").coerceAtLeast(0),profile.optString("userAgent",DEFAULT_SUBSCRIPTION_UA).also {require(validSubscriptionUa(it))},SubscriptionQuota.read(profile.optJSONObject("quota")),RemoteProfile.read(profile.optJSONObject("remote")))
         }, selectedId = root.optString("selected").takeIf { it.isNotBlank() && it != "null" },
             dnsAddress = root.getString("dns"), probeUrl = root.getString("probe"), certificateNoticeAcknowledged = root.optBoolean("certificateNoticeAcknowledged"),activeProfileId=root.optString("activeProfile").takeIf {it.isNotBlank()&&it!="null"},client=ClientSettings.read(root.optJSONObject("client")).also(::validateClientSettings),usage=LocalUsage.read(root.optJSONObject("usage")))
     }
@@ -362,17 +407,20 @@ internal fun java.io.InputStream.readBytesLimited(maximum: Int): ByteArray {
 
 internal object SubscriptionDownloader {
     private val timer = Executors.newSingleThreadScheduledExecutor { task -> Thread(task, "subscription-deadline").apply { isDaemon = true } }
-    fun fetch(source: String): String {
+    fun fetch(source: String, userAgent: String=DEFAULT_SUBSCRIPTION_UA): String = fetchResponse(source,userAgent).content
+    fun fetchResponse(source: String,userAgent: String=DEFAULT_SUBSCRIPTION_UA,headers: Map<String,String> = emptyMap(),timeoutMillis: Int=30_000): SubscriptionResponse {
+        if(!validSubscriptionUa(userAgent))throw SettingsFailure(tr(R.string.subscription_ua_invalid))
         require(validHttps(source)) { tr(R.string.message_0351397e06) }
         var address = URI(source)
-        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30)
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis.coerceIn(1,30_000).toLong())
         repeat(4) {
             check(System.nanoTime() < deadline) { tr(R.string.message_b6e30a8416) }
             val connection = address.toURL().openConnection() as HttpsURLConnection
             connection.instanceFollowRedirects = false
             connection.useCaches = false
             connection.connectTimeout = 10_000; connection.readTimeout = 10_000
-            connection.setRequestProperty("User-Agent", "Clash.Meta/PingClash-0.2")
+            connection.setRequestProperty("User-Agent", userAgent)
+            headers.forEach {(key,value)->connection.setRequestProperty(key,value)}
             connection.setRequestProperty("Cache-Control", "no-store")
             connection.setRequestProperty("Accept-Encoding", "identity")
             val expired = java.util.concurrent.atomic.AtomicBoolean(false)
@@ -380,11 +428,14 @@ internal object SubscriptionDownloader {
             try {
                 val status = connection.responseCode
                 if (status in listOf(301, 302, 303, 307, 308)) {
+                    val previous=address
                     address = address.resolve(connection.getHeaderField("Location") ?: throw IllegalStateException(tr(R.string.message_3a12c4343b)))
                     require(validHttps(address.toString())) { tr(R.string.message_0fead32545) }
+                    // Never forward provider authorization to a different origin.
+                    require(headers.isEmpty() || previous.host.equals(address.host,true) && previous.port==address.port) {tr(R.string.provider_redirect)}
                 } else {
                     if (status != 200) throw SubscriptionHttpFailure(status.coerceIn(100, 599))
-                    return connection.inputStream.use { it.readBytesLimited(2 * 1024 * 1024) }.toString(Charsets.UTF_8)
+                    return SubscriptionResponse(connection.inputStream.use { it.readBytesLimited(2 * 1024 * 1024) }.toString(Charsets.UTF_8),SubscriptionQuota.parse(connection.getHeaderField("subscription-userinfo")))
                 }
             } catch (failure: Exception) {
                 if (expired.get() || System.nanoTime() >= deadline) throw java.net.SocketTimeoutException("subscription_deadline")

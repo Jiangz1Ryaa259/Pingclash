@@ -60,7 +60,8 @@ class StrategyGroupsTest {
             compose.onNodeWithTag("group-tab-自动测试").assertIsSelected()
             compose.onNodeWithTag("group-choice-自动测试-合成节点0").performClick()
             compose.waitUntil(10000) { app.repository.data.value.profiles.first {it.id==profile.id}.groups[1].selected=="合成节点0" }
-            compose.onNodeWithTag("group-choice-自动测试-合成节点0").performClick()
+            compose.waitUntil(10000) {compose.onAllNodes(hasTestTag("group-choice-自动测试-合成节点0") and isSelected() and isEnabled()).fetchSemanticsNodes().isNotEmpty()}
+            compose.onNodeWithTag("group-choice-自动测试-合成节点0").assertIsSelected().assertIsEnabled().performClick()
             compose.waitUntil(10000) { app.repository.data.value.profiles.first {it.id==profile.id}.groups[1].selected.isEmpty() }
             compose.onNodeWithTag("strategy-pager").performTouchInput {swipeRight()}
             captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"strategy-groups.png")

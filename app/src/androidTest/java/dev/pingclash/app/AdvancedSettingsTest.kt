@@ -25,7 +25,8 @@ class AdvancedSettingsTest {
     private fun section(id: String) {compose.onNodeWithTag("settings-$id").performScrollTo().performClick();compose.waitForIdle()}
     private fun back() {compose.onNodeWithTag("settings-back").performScrollTo().performClick();compose.waitForIdle()}
     private fun save() {
-        compose.onNodeWithTag("settings-save").performScrollTo().performClick()
+        hideFixtureKeyboard()
+        compose.onNodeWithTag("settings-save").performScrollTo().assertIsEnabled().performClick()
         val model=ViewModelProvider(compose.activity)[AppViewModel::class.java]
         compose.waitUntil(10000) {!model.ui.value.busy}
         model.dismissMessage()

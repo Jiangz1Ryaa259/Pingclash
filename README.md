@@ -8,9 +8,9 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 
 ## Features
 
-- Subscription and local configuration management; preserves supported original policy groups and nested selections.
+- Subscription management with per-profile User-Agent, quota/expiry display and a bounded HTTP provider subset; preserves supported original policy groups and nested selections.
 - Rootless Android VPN powered by Mihomo.
-- Connection diagnostics, cancellable parallel latency testing and redacted reports.
+- Connection diagnostics, separate direct TCP and native Mihomo URL latency metrics, cancellable parallel testing and redacted reports.
 - DNS over TCP / HTTPS, application routing, local outbound rules and live traffic information.
 - Standard Android `sh` terminal with PTY, keyboard input, pipes, redirection and Ctrl+C.
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
@@ -18,7 +18,7 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 
 ## 状态与边界
 
-这是首个公开 Beta，功能仍在完善。支持的配置是受限子集，远程 provider、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+这是首个公开 Beta，功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -44,7 +44,7 @@ Synthetic emulator data only; no personal subscription or credentials are shown.
 
 ## Development status
 
-See the [checklist review](docs/hardening-review.md), [documentation index](docs/README.md) and [changelog](CHANGELOG.md). Remote providers, separate TCP latency cards, subscription quotas/custom User-Agent and QR import remain under development. The implemented feature subset and automated checks do not constitute a security certification.
+See the [checklist review](docs/hardening-review.md), [documentation index](docs/README.md) and [changelog](CHANGELOG.md). HTTP providers, separate TCP latency metrics and subscription quotas/custom User-Agent now have an initial implementation; see the [supported subscription/provider subset](docs/subscriptions.md). QR and image import remain deferred. The implemented feature subset and automated checks do not constitute a security certification.
 
 ## 已测试环境
 

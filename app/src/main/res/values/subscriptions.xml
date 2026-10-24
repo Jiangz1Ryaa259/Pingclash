@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="subscription_ua">Subscription User-Agent</string>
+    <string name="subscription_ua_hint">Sent only when fetching this subscription. Changing it takes effect on the next update.</string>
+    <string name="subscription_ua_invalid">User-Agent must contain 1–256 printable ASCII characters.</string>
+    <string name="subscription_used">Used: %1$s</string>
+    <string name="subscription_total">Quota: %1$s</string>
+    <string name="subscription_remaining">Remaining: %1$s</string>
+    <string name="subscription_expires">Expires: %1$s</string>
+    <string name="subscription_unknown">Not provided by the subscription server</string>
+    <string name="subscription_expired">Subscription expired</string>
+    <string name="provider_redirect">Provider headers cannot be forwarded across origins.</string>
+    <string name="provider_failure">Provider %1$d (%2$s): %3$s. The previous configuration was retained.</string>
+    <string name="provider_invalid">Unsupported or invalid provider configuration</string>
+    <string name="provider_payload">Invalid, unsupported or oversized provider content</string>
+    <string name="provider_network">Download failed; check network, certificate and server response</string>
+    <string name="provider_status">Provider %1$d · %2$s · refresh every %3$d s</string>
+    <string name="provider_updated">Last successful update: %1$s</string>
+    <string name="provider_pending">A provider update is ready. Reconnect the VPN to apply it.</string>
+    <string name="provider_refresh">Refresh providers</string>
+    <string name="latency_url">URL: %1$s</string>
+    <string name="latency_tcp">TCP: %1$s</string>
+    <string name="latency_tcp_test">Test direct TCP reachability</string>
+    <string name="latency_tcp_note">TCP measures the server port on the current physical network, excluding DNS time. UDP protocols and policy groups are skipped. URL tests measure the proxy path.</string>
+    <string name="latency_skipped">Not applicable</string>
+    <string name="terminal_start_failed">Unable to start the terminal. No command was executed. Try creating a new session.</string>
+    <string name="terminal_raw_output">Command output comes from Android and the invoked programs and may be in English. Permission denied means the app UID lacks access; this terminal does not request root.</string>
+    <string name="terminal_process_exit">\n[Session ended: %1$d]</string>
+</resources>

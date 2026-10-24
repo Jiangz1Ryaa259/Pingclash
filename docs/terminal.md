@@ -19,3 +19,7 @@
 本地修订：Gradle 命名空间与 Android 35 构建；JNI 两个错误分支释放 PTY、修复 cwd JNI 字符串释放参数；子进程 no_new_privs；退出时关闭前台与 shell 进程组；禁止 OSC 52；中键粘贴复用显式确认入口。构建脚本固定 NDK 27.2.12479018，两个 ABI，16 KiB ELF 对齐、栈保护、RELRO/NOW。新增 Gradle library 插件沿用已有 AGP 8.9.2，依赖摘要加入 verification-metadata。
 
 终端视图采用弱引用，避免 ViewModel 跨 Activity 生命周期保留旧视图。应用回调不记录终端内容、命令或原始失败到 Android 日志。主 APK 包含终端组件的许可证说明及现有完整 GPL / Apache 许可证；发布源码包含两库全部使用源文件和本地修改。
+
+## 关键提示的语言
+
+首次 UID 确认、启动失败、进程退出，以及复制/粘贴/更多菜单均提供中文和英文。终端输出由 Android shell 或所调用的程序产生，仍可能显示 `Permission denied`、`not found` 等原文；页面说明其含义，不改写原始输出。应用不会因权限错误申请 root。启动 PTY 失败时显示本地化错误，不把原始异常写入日志。进程退出后的提示不再要求实际未实现的“按 Enter”。

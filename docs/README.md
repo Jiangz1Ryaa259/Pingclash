@@ -2,6 +2,7 @@
 
 - [Build and verification](development.md)
 - [Review against the installation-readiness checklist](hardening-review.md)
+- [Subscriptions, HTTP providers and TCP/URL latency](subscriptions.md)
 - [Terminal permissions and lifecycle](terminal.md)
 - [Background, network handoff and always-on VPN](background-vpn.md)
 - [Diagnostic evidence and limits](diagnostics.md)

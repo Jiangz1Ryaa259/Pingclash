@@ -102,6 +102,7 @@ private fun groupProblem(reason: String)=when(reason) {
                 Box {
                     IconButton({menu=true},Modifier.semantics {contentDescription=tr(R.string.message_ab43f25026)}) {ProxySymbol("menu")}
                     DropdownMenu(menu,{menu=false}) {
+                        DropdownMenuItem({Text(tr(R.string.latency_tcp_test))},{menu=false;if(profile!=null&&current!=null)model.testTcpProxies(profile,current.proxies,current.name)},enabled=!tests.running)
                         DropdownMenuItem({Text((tr(R.string.message_498958cf3d)))},{menu=false;onProfiles()})
                         DropdownMenuItem({Text(if(current!=null&&data.selectedId==profile?.groupId(current.name)) tr(R.string.message_c63fdbd771) else tr(R.string.message_b718063f31))},{menu=false;if(profile!=null&&current!=null)model.selectMainGroup(profile,current)},enabled=!locked&&current?.supported==true&&current.type!="nodes",modifier=Modifier.testTag("group-main-${current?.name}"))
                         if(current?.type in listOf("url-test","fallback")) DropdownMenuItem({Text((tr(R.string.message_5edc4aac67)))},{menu=false;model.selectGroup(requireNotNull(profile),requireNotNull(current),"")},enabled=!locked)
@@ -150,12 +151,13 @@ private fun groupProblem(reason: String)=when(reason) {
                                     val available=name in listOf("DIRECT","REJECT","COMPATIBLE") || node!=null || nested?.supported==true
                                     val chosen=if(group.type=="nodes") node?.id==data.selectedId else group.selected==name
                                     ProxyCard(name,profile.proxyDescription(name),chosen,!locked&&group.selectionEditable&&available,
-                                        tests.values[delayKey(profile.id,name,group.name)],Modifier.testTag("group-choice-${group.name}-$name"),
+                                        tests.values[delayKey(profile.id,name,group.name)],tests.tcpValues[delayKey(profile.id,name,group.name)],Modifier.testTag("group-choice-${group.name}-$name"),
                                         onClick={when(group.type) {
                                             "nodes" -> node?.let {model.select(it.id)}
                                             "load-balance" -> model.message(tr(R.string.message_42f6bdedaa))
-                                            else -> model.selectGroup(profile,group,if(group.type!="select"&&group.selected==name) "" else name)
+                                            else -> model.toggleGroupMember(profile.id,group.name,name)
                                         }},
+                                        onTcpTest=if(node!=null&&!tests.running) {{model.testTcpProxies(profile,listOf(name),group.name)}} else null,
                                         onTest=if((node!=null||nested?.supported==true)&&!tests.running) {{model.testProxies(profile,listOf(name),group.name)}} else null,
                                         onOpen=if(nested!=null) {{val index=groups.indexOfFirst {it.name==name};if(index>=0)scope.launch {pager.animateScrollToPage(index)}}} else null)
                                 }
@@ -171,7 +173,7 @@ private fun groupProblem(reason: String)=when(reason) {
     }
 }
 
-@Composable private fun ProxyCard(name: String,description: String,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,modifier: Modifier,onClick: () -> Unit,onTest: (() -> Unit)?,onOpen: (() -> Unit)?) {
+@Composable private fun ProxyCard(name: String,description: String,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,tcp: ProxyDelay?,modifier: Modifier,onClick: () -> Unit,onTest: (() -> Unit)?,onTcpTest: (() -> Unit)?,onOpen: (() -> Unit)?) {
     val background by animateColorAsState(if(chosen) MaterialTheme.colorScheme.primaryContainer.copy(alpha=.65f) else Panel,
         if(LocalMotionAllowed.current)tween(180) else snap(),label="proxy-selection")
     Surface(shape=RoundedCornerShape(22.dp),color=background,border=BorderStroke(if(chosen)1.dp else .7.dp,if(chosen)Mint.copy(alpha=.5f) else MaterialTheme.colorScheme.outlineVariant),modifier=modifier.fillMaxWidth().semantics {selected=chosen}.clickable(enabled=enabled,onClick=onClick)) {
@@ -184,10 +186,11 @@ private fun groupProblem(reason: String)=when(reason) {
                 Text(description,Modifier.weight(1f),style=MaterialTheme.typography.bodySmall,color=Muted,maxLines=1,overflow=TextOverflow.Ellipsis)
                 if(onOpen!=null) Box(Modifier.size(26.dp).clickable(onClick=onOpen).semantics {contentDescription=tr(R.string.message_73396c3856, name)},contentAlignment=Alignment.Center) {ProxySymbol("right",Modifier.size(16.dp))}
             }
+            Text(tr(R.string.latency_tcp,when(tcp?.state){"passed"->"${tcp.elapsedMs.coerceAtLeast(1)} ms";"skipped"->tr(R.string.latency_skipped);"timeout"->tr(R.string.message_e512cf016f);"failed","dns","stale"->tr(R.string.message_28384d7afd);"running"->"…";else->"—"}),modifier=Modifier.clickable(enabled=onTcpTest!=null){onTcpTest?.invoke()},style=MaterialTheme.typography.bodySmall,color=if(tcp?.state=="passed")Success else Muted)
             Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription=tr(R.string.message_e5cc5f1229, name)},contentAlignment=Alignment.CenterStart) {
                 when(delay?.state) {
                     "running" -> CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=1.5.dp)
-                    "passed" -> Text("${delay.elapsedMs.coerceAtLeast(1)} ms",fontSize=12.sp,color=Success)
+                    "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),fontSize=12.sp,color=Success)
                     "timeout" -> Text((tr(R.string.message_e512cf016f)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "failed" -> Text((tr(R.string.message_28384d7afd)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "busy" -> Text(tr(R.string.message_7b0fe85cc2),fontSize=12.sp,color=Muted)

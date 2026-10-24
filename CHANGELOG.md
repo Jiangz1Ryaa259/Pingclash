@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add per-subscription User-Agent and quota/expiry parsing with encrypted persistence.
+- Add a bounded HTTP/HTTPS provider subset, original group membership, rule expansion, private encrypted cache and transactional refresh.
+- Add direct TCP latency metrics separately from native Mihomo URLTest.
+- Localize terminal startup/exit and text selection actions; retain original shell output.
+- Audit all reachable Git history for signing files and add a CI history guard.
+- Extend synthetic Android integration coverage to 29 tests and explicitly enable/restore Doze in the lifecycle fixture.
+
+
 - Run CI on GitHub with verified metadata for clean dependency resolution; add Android 12–15 emulator integration jobs and a README status badge.
 - Move app and diagnostic messages into 527 English/Chinese resource entries, including plurals; enforce translation/format parity and strict localization lint.
 - Integrate Android 13+ application locales and keep language changes independent of network-setting saves.

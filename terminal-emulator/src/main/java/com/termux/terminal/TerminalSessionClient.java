@@ -13,6 +13,11 @@ public interface TerminalSessionClient {
 
     void onSessionFinished(TerminalSession finishedSession);
 
+    default String sessionFinishedMessage(int status) { return "\r\n[Session ended: " + status + "]"; }
+    default String sessionStartFailedMessage() { return "\r\n[Unable to start the terminal]"; }
+    default void onSessionStartFailed(TerminalSession session) { }
+
+
     void onCopyTextToClipboard(TerminalSession session, String text);
 
     void onPasteTextFromClipboard(TerminalSession session);

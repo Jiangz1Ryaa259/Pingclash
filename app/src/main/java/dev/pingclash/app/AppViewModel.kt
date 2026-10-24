@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 
 data class AppUiState(val busy: Boolean = false, val message: String? = null, val importIssue: String? = null, val importedProfileId: String? = null)
 data class ProxyDelay(val state: String, val elapsedMs: Long = 0)
-data class ProxyTestState(val running: Boolean = false, val completed: Int = 0, val total: Int = 0, val values: Map<String,ProxyDelay> = emptyMap())
+data class ProxyTestState(val running: Boolean = false, val completed: Int = 0, val total: Int = 0, val values: Map<String,ProxyDelay> = emptyMap(),val tcpValues: Map<String,ProxyDelay> = emptyMap())
 internal fun delayKey(profileId: String,name: String,group: String="") = "$profileId\u0000$group\u0000$name"
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,6 +47,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val mutableProxyTests=MutableStateFlow(ProxyTestState())
     val proxyTests=mutableProxyTests.asStateFlow()
     private var testJob: Job?=null
+    private val tcpRuns=ConcurrentHashMap.newKeySet<RunControl>()
     private val testRuns=ConcurrentHashMap.newKeySet<String>()
     @Volatile private var control: RunControl? = null
     @Volatile private var nativeRun: String? = null
@@ -81,6 +82,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun publicFailure(failure: Exception): String = when (failure) {
+        is ProviderFailure -> failure.publicMessage()
         is ProfileImportFailure -> failure.publicMessage
         is SettingsFailure -> failure.publicMessage
         is SubscriptionHttpFailure -> tr(R.string.message_a1372a7755, failure.status)
@@ -108,20 +110,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     fun importText(name: String, text: String) = importOperation {
-        app.repository.importProfile(name.ifBlank { tr(R.string.message_e406825e0a) }, text)
+        app.repository.importWithProviders(name.ifBlank { tr(R.string.message_e406825e0a) }, text)
     }
     fun importFile(name: String, uri: Uri) = importOperation {
         val text = app.contentResolver.openInputStream(uri)?.use { it.readBytesLimited(2 * 1024 * 1024).toString(Charsets.UTF_8) }
             ?: error("input_unavailable")
-        app.repository.importProfile(name, text)
+        app.repository.importWithProviders(name, text)
     }
-    fun subscribe(name: String, source: String) = importOperation {
-        app.repository.importProfile(name.ifBlank { tr(R.string.message_79aad303b1) }, SubscriptionDownloader.fetch(source), source)
+    fun subscribe(name: String, source: String,userAgent: String=DEFAULT_SUBSCRIPTION_UA) = importOperation {
+        val response=SubscriptionDownloader.fetchResponse(source,userAgent)
+        app.repository.importWithProviders(name.ifBlank { tr(R.string.message_79aad303b1) }, response.content, source,userAgent=userAgent,response=response)
     }
     fun refresh(profile: LocalProfile) = operation {
         val source = requireNotNull(profile.source)
-        imported(app.repository.importProfile(profile.name, SubscriptionDownloader.fetch(source), source, profile.id))
+        val response=SubscriptionDownloader.fetchResponse(source,profile.userAgent)
+        imported(app.repository.importWithProviders(profile.name, response.content, source, profile.id,userAgent=profile.userAgent,response=response))
     }
+    fun refreshProviders(profile: LocalProfile)=operation {app.repository.refreshProviders(profile,true);""}
     fun reparse(profile: LocalProfile) = operation {imported(app.repository.reparse(profile.id))}
     private fun imported(profile: LocalProfile): String = trPlural(R.plurals.message_e5fce9261e, (profile.nodes.size).toInt(), profile.nodes.size) +
         (if (profile.unsupported > 0) tr(R.string.message_a82c682af4, profile.unsupported) else "")
@@ -133,12 +138,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if(!wasGroup) app.repository.select(profile.groupId(group.name))
         ""
     }
+    fun toggleGroupMember(profileId: String,groupName: String,name: String)=operation {
+        val current=data.value
+        val profile=current.profiles.single {it.id==profileId}
+        val group=profile.groups.single {it.name==groupName}
+        val wasGroup=current.selected?.type=="group"
+        app.repository.selectGroup(profile.id,groupName,if(group.type!="select"&&group.selected==name)"" else name)
+        if(!wasGroup)app.repository.select(profile.groupId(groupName))
+        ""
+    }
     fun selectMainGroup(profile: LocalProfile, group: LocalGroup) = select(profile.groupId(group.name))
     fun delete(id: String) = operation { app.repository.delete(id); tr(R.string.message_df12a31f25) }
     fun settings(dns: String, target: String) = operation { app.repository.settings(dns, target); tr(R.string.message_bd03c0aad7) }
     fun clientSettings(value: ClientSettings,dns: String,target: String)=operation {app.repository.clientSettings(value,dns,target);""}
     fun appearance(language: String,theme: String) {viewModelScope.launch(Dispatchers.IO) {runCatching {app.repository.appearance(language,theme)}.onFailure {message(tr(R.string.message_c7acc6686e))}}}
     fun resetUsage()=operation {app.repository.resetUsage();tr(R.string.message_90c913765d)}
+    fun subscriptionUserAgent(id: String,value: String)=operation {app.repository.subscriptionUserAgent(id,value);""}
     fun rename(id: String,name: String)=operation {app.repository.rename(id,name);tr(R.string.message_e61b17d0d2)}
     fun closeConnection(id: Long) {viewModelScope.launch(Dispatchers.IO) {Mobile.closeVPNConnection(id)}}
     fun restartVpn() {
@@ -228,8 +243,43 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    fun testTcpProxies(profile: LocalProfile,names: List<String>,groupName: String="") {
+        if(testJob?.isCompleted==false||mutableUi.value.busy||mutableDiagnosis.value.running)return
+        val candidates=names.distinct().take(500)
+        if(candidates.isEmpty())return
+        val version=requestKey(data.value);val settings=data.value.client
+        val pending=ConcurrentHashMap<String,ProxyDelay>();val completed=AtomicInteger(0);val queue=AtomicInteger(0)
+        fun flush() {
+            if(requestKey(data.value)!=version||!mutableProxyTests.value.running)return
+            val entries=pending.entries.map {it.key to it.value};entries.forEach {(key,value)->pending.remove(key,value)}
+            if(entries.isNotEmpty())mutableProxyTests.update {it.copy(completed=completed.get(),tcpValues=it.tcpValues+entries)}
+        }
+        mutableProxyTests.update {it.copy(running=true,completed=0,total=candidates.size)}
+        testJob=viewModelScope.launch(Dispatchers.IO) {
+            val updates=launch {while(true){delay(100);flush()}}
+            try {
+                List(settings.probeConcurrency.coerceIn(1,16)) {async {
+                    while(mutableProxyTests.value.running&&requestKey(data.value)==version) {
+                        val index=queue.getAndIncrement();if(index>=candidates.size)break
+                        val name=candidates[index];val key=delayKey(profile.id,name,groupName)
+                        val run=RunControl(settings.probeTimeout.toLong());tcpRuns.add(run)
+                        try {
+                            if(!mutableProxyTests.value.running){run.cancel();break}
+                            pending[key]=ProxyDelay("running")
+                            val result=TcpLatencyProbe.run(app,profile.nodes.firstOrNull {it.name==name},settings.probeTimeout,run)
+                            if(mutableProxyTests.value.running&&requestKey(data.value)==version){pending[key]=result;completed.incrementAndGet()}
+                        } finally {tcpRuns.remove(run);run.close()}
+                    }
+                }}.awaitAll()
+            } finally {
+                updates.cancel();flush()
+                mutableProxyTests.update {it.copy(running=false,tcpValues=it.tcpValues.filterValues {v->v.state!="running"})}
+            }
+        }
+    }
     fun cancelProxyTests() {
         mutableProxyTests.update {it.copy(running=false)}
+        tcpRuns.forEach {it.cancel()}
         testRuns.forEach { Mobile.cancel(it) }
         testJob?.cancel()
     }

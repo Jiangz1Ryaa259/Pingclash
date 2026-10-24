@@ -117,6 +117,7 @@ import org.json.JSONArray
                         NumberSetting(tr(R.string.message_d4d74926c2),draft.probeTimeout,1000..20000,!locked) {draft=draft.copy(probeTimeout=it)}
                         NumberSetting(tr(R.string.message_8f7e175c9a),draft.probeConcurrency,1..16,!locked) {draft=draft.copy(probeConcurrency=it)}
                         SettingSwitch(tr(R.string.message_57ef467828),draft.unifiedDelay,!locked) {draft=draft.copy(unifiedDelay=it)}
+                        Text(tr(R.string.latency_tcp_note),color=Muted,style=MaterialTheme.typography.bodySmall)
                         Text(tr(R.string.message_b70091e752),color=Muted,style=MaterialTheme.typography.bodySmall)
                         Text((tr(R.string.message_80a58f0749)),color=Muted,style=MaterialTheme.typography.bodySmall)
                     }

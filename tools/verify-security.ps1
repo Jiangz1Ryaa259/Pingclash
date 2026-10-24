@@ -19,9 +19,11 @@ try {
     & $go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
     if ($LASTEXITCODE -ne 0) { throw 'Pinned vulnerability scanner installation failed.' }
     if ($Fuzz) {
-        & $go test -mod=readonly ./mobile -run '^$' -fuzz '^FuzzUntrustedProfile$' -fuzztime=30s -parallel=2
+        & $go test -mod=readonly ./mobile -run '^$' -fuzz '^FuzzUntrustedProfile$' -fuzztime=30s -fuzzminimizetime=1s -parallel=2
         if ($LASTEXITCODE -ne 0) { throw 'Untrusted profile fuzzing failed.' }
-        & $go test -mod=readonly ./mobile -run '^$' -fuzz '^FuzzRuntimeOptions$' -fuzztime=30s -parallel=2
+        & $go test -mod=readonly ./mobile -run '^$' -fuzz '^FuzzRemoteProviders$' -fuzztime=30s -fuzzminimizetime=1s -parallel=2
+        if ($LASTEXITCODE -ne 0) { throw 'Remote providers fuzzing failed.' }
+        & $go test -mod=readonly ./mobile -run '^$' -fuzz '^FuzzRuntimeOptions$' -fuzztime=30s -fuzzminimizetime=1s -parallel=2
         if ($LASTEXITCODE -ne 0) { throw 'Runtime options fuzzing failed.' }
     }
     $env:GOOS = 'android'; $env:GOARCH = 'arm64'; $env:CGO_ENABLED = '1'

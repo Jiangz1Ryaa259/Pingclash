@@ -10,6 +10,7 @@ import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import dev.pingclash.mobile.Mobile
 import dev.pingclash.mobile.Platform
+import kotlinx.coroutines.launch
 import java.net.InetAddress
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -33,6 +34,14 @@ class PingClashApplication : Application() {
         }.getOrDefault(false)
         repository = ProfileRepository(this)
         UiStrings.migrate(repository.data.value.client.language)
+        if(nativeReady) kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob()+kotlinx.coroutines.Dispatchers.IO).launch {
+            while(true) {
+                repository.data.value.profiles.filter {it.remote!=null}.forEach {profile ->
+                    runCatching {repository.refreshProviders(profile)}
+                }
+                kotlinx.coroutines.delay(60_000)
+            }
+        }
     }
 }
 

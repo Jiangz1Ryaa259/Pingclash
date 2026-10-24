@@ -33,6 +33,7 @@ internal class TerminalModel(application:Application):AndroidViewModel(applicati
     var view:TerminalView?
         get()=viewRef.get()
         set(value) {viewRef=java.lang.ref.WeakReference(value)}
+    var startFailed by mutableStateOf(false)
     var paste by mutableStateOf<String?>(null)
     private val app=application
     var noticeAccepted by mutableStateOf(application.getSharedPreferences("terminal_ui",0).getBoolean("uid_notice_accepted",false))
@@ -42,6 +43,9 @@ internal class TerminalModel(application:Application):AndroidViewModel(applicati
     }
     private val callbacks=object:TerminalCallbacks() {
         override fun onTextChanged(s:TerminalSession) {if(sessions.getOrNull(selected)===s)view?.onScreenUpdated()}
+        override fun sessionFinishedMessage(status: Int)=tr(R.string.terminal_process_exit,status)
+        override fun sessionStartFailedMessage()="\r\n"+tr(R.string.terminal_start_failed)
+        override fun onSessionStartFailed(s: TerminalSession) {startFailed=true;revision++}
         override fun onSessionFinished(s:TerminalSession) {revision++;onTextChanged(s)}
         override fun onColorsChanged(s:TerminalSession) {onTextChanged(s)}
         override fun onCopyTextToClipboard(s:TerminalSession,text:String) {
@@ -57,6 +61,7 @@ internal class TerminalModel(application:Application):AndroidViewModel(applicati
         if(!noticeAccepted||sessions.size>=3)return
         val cwd=File(app.cacheDir,"terminal").apply {mkdirs()}
         val env=arrayOf("HOME=${cwd.absolutePath}","TMPDIR=${cwd.absolutePath}","PATH=/system/bin:/system/xbin","TERM=xterm-256color","LANG=C.UTF-8","ENV=/dev/null","HISTFILE=/dev/null","PS1=\$ ")
+        startFailed=false
         sessions.add(TerminalSession("/system/bin/sh",cwd.absolutePath,arrayOf("sh","-i"),env,2000,callbacks))
         selected=sessions.lastIndex
     }
@@ -96,18 +101,21 @@ class TerminalActivity:ComponentActivity() {
             TextButton(model::create,enabled=model.noticeAccepted&&model.sessions.size<3,modifier=Modifier.testTag("terminal-new")) {Text(tr(R.string.message_14ee5380fc))}
             TextButton(model::closeCurrent,enabled=model.sessions.isNotEmpty()) {Text(tr(R.string.message_965df3bce4))}
         }
+        if(model.startFailed)Text(tr(R.string.terminal_start_failed),Modifier.padding(16.dp),color=MaterialTheme.colorScheme.error)
         Text(tr(R.string.message_b8b89f7925),Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)
         if(model.sessions.isEmpty()) {
             Column(Modifier.weight(1f).padding(24.dp),verticalArrangement=Arrangement.Center) {
                 Text(tr(R.string.message_ffa09539e0),style=MaterialTheme.typography.headlineMedium,color=Color.White)
                 Spacer(Modifier.height(16.dp))
                 Text(tr(R.string.message_dd950864ba),color=Color.LightGray)
+                Spacer(Modifier.height(12.dp))
+                Text(tr(R.string.terminal_raw_output),color=Color.LightGray)
             }
         } else {
             LazyRow {items(model.sessions.size) {i->FilterChip(model.selected==i,{model.selected=i},label={Text("sh ${i+1}"+(if(model.sessions[i].isRunning)"" else tr(R.string.message_4263ea7dfa)))})}}
             val session=model.sessions.getOrNull(model.selected)
             key(session) {
-                AndroidView(factory={context->TerminalView(context,null).apply {model.attach(this);session?.let {attachSession(it)};requestFocus()}},
+                AndroidView(factory={context->TerminalView(context.createConfigurationContext(UiStrings.resources().configuration),null).apply {model.attach(this);session?.let {attachSession(it)};requestFocus()}},
                     update={v->model.view=v;if(revision>=0)v.onScreenUpdated()},modifier=Modifier.weight(1f).fillMaxWidth().testTag("terminal-view"))
             }
             LazyRow(Modifier.fillMaxWidth()) {
