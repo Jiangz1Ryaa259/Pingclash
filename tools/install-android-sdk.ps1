@@ -19,7 +19,7 @@ if ($repositoryUri.Scheme -ne 'https' -or $repositoryUri.Host -ne 'dl.google.com
 $repositoryBase = $RepositoryUrl.Substring(0, $RepositoryUrl.LastIndexOf('/') + 1)
 $metadata = Join-Path $toolsRoot ('android-' + [IO.Path]::GetFileName($repositoryUri.AbsolutePath))
 if (-not (Test-Path -LiteralPath $metadata)) {
-    & curl.exe --fail --silent --show-error --location --connect-timeout 10 --max-time 60 --output $metadata $RepositoryUrl
+    & curl.exe --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --connect-timeout 10 --max-time 60 --retry 3 --retry-all-errors --retry-max-time 180 --retry-delay 1 --output $metadata $RepositoryUrl
     if ($LASTEXITCODE -ne 0) { throw 'Android repository metadata download failed.' }
 }
 [xml]$repository = Get-Content -LiteralPath $metadata -Raw
@@ -70,7 +70,7 @@ foreach ($id in $PackageIds) {
     if (-not $downloadNeeded) { $downloadNeeded = (Get-Item -LiteralPath $zipPath).Length -ne [long]$archive.complete.size }
     if ($downloadNeeded) {
         Write-Output "Downloading: $id"
-        & curl.exe --fail --silent --show-error --location --connect-timeout 10 --max-time 600 --speed-time 30 --speed-limit 4096 --retry 3 --retry-delay 1 --continue-at - --output $zipPath ($repositoryBase + $url)
+        & curl.exe --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --connect-timeout 10 --max-time 600 --speed-time 30 --speed-limit 4096 --retry 3 --retry-all-errors --retry-max-time 900 --retry-delay 1 --continue-at - --output $zipPath ($repositoryBase + $url)
         if ($LASTEXITCODE -ne 0) { throw "Download failed: $id" }
     }
     if ((Get-FileHash -LiteralPath $zipPath -Algorithm SHA1).Hash.ToLowerInvariant() -ne $expected.ToLowerInvariant()) {
