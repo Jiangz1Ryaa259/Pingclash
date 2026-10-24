@@ -1,0 +1,1051 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:AppViewModel.kt$AppViewModel$!app.nativeReady || testJob?.isCompleted==false || mutableProxyTests.value.running || mutableUi.value.busy || mutableDiagnosis.value.running</ID>
+    <ID>ComplexCondition:ProfileRepository.kt$ProfileRepository$!force&amp;&amp;!RemoteProfiles.due(remote)&amp;&amp;(!remote.pending||VpnRuntime.state.value.active)</ID>
+    <ID>ComplexCondition:RemoteProfiles.kt$RemoteProfiles$!force &amp;&amp; previous?.bodies?.containsKey(id)==true &amp;&amp; now&gt;=stamp &amp;&amp; now-stamp&lt;spec.getInt("interval")</ID>
+    <ID>CyclomaticComplexMethod:AppScreens.kt$@Composable internal fun PingClashApp(model: AppViewModel = viewModel())</ID>
+    <ID>CyclomaticComplexMethod:AppScreens.kt$@Composable private fun ConnectionScreen(data: AppData,vpn: VpnUiState,diagnosis: DiagnosticUiState,ready: Boolean,busy: Boolean,onNodes: () -&gt; Unit,onDiagnose: () -&gt; Unit,onConnect: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:AppScreens.kt$@Composable private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, busy: Boolean, model: AppViewModel)</ID>
+    <ID>CyclomaticComplexMethod:AppScreens.kt$@Composable private fun ProfilesScreen(data: AppData,locked: Boolean,model: AppViewModel,ui: AppUiState,onProxies: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:AppScreens.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun ImportDialog(ui: AppUiState,onDismiss: () -&gt; Unit,onUserAgent: (String)-&gt;Unit={},onSubmit: (String,String,Boolean) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:AppViewModel.kt$AppViewModel$fun diagnose()</ID>
+    <ID>CyclomaticComplexMethod:AppViewModel.kt$AppViewModel$fun testProxies(profile: LocalProfile,names: List&lt;String&gt;,groupName: String="")</ID>
+    <ID>CyclomaticComplexMethod:AppViewModel.kt$AppViewModel$fun testTcpProxies(profile: LocalProfile,names: List&lt;String&gt;,groupName: String="")</ID>
+    <ID>CyclomaticComplexMethod:AppViewModel.kt$AppViewModel$private fun proxyStep(result: JSONObject): Models.Step</ID>
+    <ID>CyclomaticComplexMethod:ClientSettings.kt$internal fun validateClientSettings(value: ClientSettings)</ID>
+    <ID>CyclomaticComplexMethod:GlassUi.kt$@Composable internal fun VpnPowerControl(phase: String,enabled: Boolean,label: String,onClick: ()-&gt;Unit)</ID>
+    <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())</ID>
+    <ID>CyclomaticComplexMethod:PingVpnService.kt$PingVpnService$private suspend fun establish()</ID>
+    <ID>CyclomaticComplexMethod:ProfileRepository.kt$ProfileRepository$@Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map&lt;String, String&gt;? = null, userAgent: String? = null, subscriptionResponse: SubscriptionResponse? = null,remote: RemoteProfile? = null,providerRefresh: Boolean=false,startingVpn: Boolean=false,requireActivation: Boolean=false): LocalProfile</ID>
+    <ID>CyclomaticComplexMethod:ProfileRepository.kt$ProfileRepository$fun refreshProviders(profile: LocalProfile,force: Boolean=false)</ID>
+    <ID>CyclomaticComplexMethod:ProxyScreen.kt$@Composable internal fun ProxyScreen(data: AppData,locked: Boolean,model: AppViewModel,tests: ProxyTestState,onProfiles: () -&gt; Unit,onDiagnosis: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:ProxyScreen.kt$@Composable private fun ProxyCard(name: String,description: String,udpOnly: Boolean,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,tcp: ProxyDelay?,modifier: Modifier,onClick: () -&gt; Unit,onTest: (() -&gt; Unit)?,onTcpTest: (() -&gt; Unit)?,onOpen: (() -&gt; Unit)?)</ID>
+    <ID>CyclomaticComplexMethod:RuntimeCards.kt$@Composable internal fun RuntimeCards(data: AppData,vpn: VpnUiState,all: Boolean=false)</ID>
+    <ID>CyclomaticComplexMethod:SettingsHub.kt$@Composable internal fun SettingsHub(data: AppData,vpn: VpnUiState,locked: Boolean,model: AppViewModel,onProfiles:()-&gt;Unit,onProxies:()-&gt;Unit,onDashboard:()-&gt;Unit,onDiagnose:()-&gt;Unit)</ID>
+    <ID>CyclomaticComplexMethod:SettingsHub.kt$@Composable private fun SettingLink(id: String,title: String,description: String,onClick:()-&gt;Unit)</ID>
+    <ID>CyclomaticComplexMethod:SubscriptionDetails.kt$@Composable internal fun SubscriptionDetails(profile: LocalProfile)</ID>
+    <ID>CyclomaticComplexMethod:SubscriptionImportTest.kt$SubscriptionImportTest$@Test fun screenshotsAllowedExceptWhenCredentialsAreVisible()</ID>
+    <ID>CyclomaticComplexMethod:TcpLatencyProbe.kt$TcpLatencyProbe$fun run(context: Context,node: LocalNode?,timeout: Int,control: RunControl): ProxyDelay</ID>
+    <ID>EmptyElseBlock:AppScreens.kt$if(profile.id!=data.activeProfile?.id)model.activate(profile.id)</ID>
+    <ID>EmptyElseBlock:ProfileRepository.kt$if(value==null)return emptyList()</ID>
+    <ID>EmptyElseBlock:SettingsHub.kt$if(current is Activity)return current as Activity</ID>
+    <ID>EmptyElseBlock:SettingsHub.kt$if(manual !in selected)onChange(draft.copy(packages=(draft.packages+manual.trim()).take(300)))</ID>
+    <ID>EmptyElseBlock:SubscriptionImportTest.kt$SubscriptionFixture$if (line.isEmpty()) break</ID>
+    <ID>EmptyWhileBlock:DelayCompatibilityTest.kt$DelayCompatibilityTest${}</ID>
+    <ID>InstanceOfCheckForException:TcpLatencyProbe.kt$TcpLatencyProbe$failure is ProbeFailure</ID>
+    <ID>InstanceOfCheckForException:TcpLatencyProbe.kt$TcpLatencyProbe$failure is java.net.UnknownHostException</ID>
+    <ID>InstanceOfCheckForException:TcpLatencyProbe.kt$TcpLatencyProbe$failure is java.util.concurrent.TimeoutException</ID>
+    <ID>LongMethod:AppScreens.kt$@Composable internal fun PingClashApp(model: AppViewModel = viewModel())</ID>
+    <ID>LongMethod:AppScreens.kt$@Composable private fun ProfilesScreen(data: AppData,locked: Boolean,model: AppViewModel,ui: AppUiState,onProxies: () -&gt; Unit)</ID>
+    <ID>LongMethod:AppViewModel.kt$AppViewModel$fun diagnose()</ID>
+    <ID>LongMethod:ClientIntegrationTest.kt$ClientIntegrationTest$@Test fun importEncryptProbeEstablishVPNForwardSeparateUIDAndStop()</ID>
+    <ID>LongMethod:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$@Test fun selfSignedHysteriaKeepsSubscriptionPolicyAndForwardsPeerDnsAndTcp()</ID>
+    <ID>LongMethod:MainActivity.kt$@Composable internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())</ID>
+    <ID>LongMethod:NetworkReconnectionTest.kt$NetworkReconnectionTest$@Test fun networkLossKeepsTunAndForegroundThenResumesWithoutNewPermission()</ID>
+    <ID>LongMethod:PingVpnService.kt$PingVpnService$private suspend fun establish()</ID>
+    <ID>LongMethod:ProxyPageTest.kt$ProxyPageTest$@Test fun disjointGroupsKeepNestedCardsAndRootRouteWhileTabsSwipe()</ID>
+    <ID>LongMethod:ProxyScreen.kt$@Composable internal fun ProxyScreen(data: AppData,locked: Boolean,model: AppViewModel,tests: ProxyTestState,onProfiles: () -&gt; Unit,onDiagnosis: () -&gt; Unit)</ID>
+    <ID>LongMethod:SettingsHub.kt$@Composable internal fun SettingsHub(data: AppData,vpn: VpnUiState,locked: Boolean,model: AppViewModel,onProfiles:()-&gt;Unit,onProxies:()-&gt;Unit,onDashboard:()-&gt;Unit,onDiagnose:()-&gt;Unit)</ID>
+    <ID>LongMethod:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$@Test fun httpProvidersPreserveGroupsCacheAndRetainLastGoodConfiguration()</ID>
+    <ID>LongParameterList:AppScreens.kt$(data: AppData,vpn: VpnUiState,diagnosis: DiagnosticUiState,ready: Boolean,busy: Boolean,onNodes: () -&gt; Unit,onDiagnose: () -&gt; Unit,onConnect: () -&gt; Unit)</ID>
+    <ID>LongParameterList:ProfileRepository.kt$ProfileRepository$(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map&lt;String, String&gt;? = null, userAgent: String? = null, subscriptionResponse: SubscriptionResponse? = null,remote: RemoteProfile? = null,providerRefresh: Boolean=false,startingVpn: Boolean=false,requireActivation: Boolean=false)</ID>
+    <ID>LongParameterList:ProfileRepository.kt$ProfileRepository$(name: String,text: String,source: String?=null,replaceId: String?=null,userAgent: String=DEFAULT_SUBSCRIPTION_UA,response: SubscriptionResponse?=null)</ID>
+    <ID>LongParameterList:ProxyScreen.kt$(data: AppData,locked: Boolean,model: AppViewModel,tests: ProxyTestState,onProfiles: () -&gt; Unit,onDiagnosis: () -&gt; Unit)</ID>
+    <ID>LongParameterList:ProxyScreen.kt$(name: String,description: String,udpOnly: Boolean,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,tcp: ProxyDelay?,modifier: Modifier,onClick: () -&gt; Unit,onTest: (() -&gt; Unit)?,onTcpTest: (() -&gt; Unit)?,onOpen: (() -&gt; Unit)?)</ID>
+    <ID>LongParameterList:SettingsHub.kt$(data: AppData,vpn: VpnUiState,locked: Boolean,model: AppViewModel,onProfiles:()-&gt;Unit,onProxies:()-&gt;Unit,onDashboard:()-&gt;Unit,onDiagnose:()-&gt;Unit)</ID>
+    <ID>LoopWithTooManyJumpStatements:AppViewModel.kt$AppViewModel$while</ID>
+    <ID>LoopWithTooManyJumpStatements:SubscriptionImportTest.kt$SubscriptionFixture$while</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$.5</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$11</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$12</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$13</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$14</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$15</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$16</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$17</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$18</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$19</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$20</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$21</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$22</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$23</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$24</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$24f</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$25</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$26</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$27</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$3</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$32</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$4</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$5</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$6</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$7</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$7.7</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$8</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$9</ID>
+    <ID>MagicNumber:AppIcons.kt$AppIcons$9.6</ID>
+    <ID>MagicNumber:AppScreens.kt$100</ID>
+    <ID>MagicNumber:AppScreens.kt$1024</ID>
+    <ID>MagicNumber:AppScreens.kt$1024.0</ID>
+    <ID>MagicNumber:AppScreens.kt$1024L</ID>
+    <ID>MagicNumber:AppScreens.kt$110</ID>
+    <ID>MagicNumber:AppScreens.kt$12</ID>
+    <ID>MagicNumber:AppScreens.kt$140</ID>
+    <ID>MagicNumber:AppScreens.kt$16</ID>
+    <ID>MagicNumber:AppScreens.kt$190</ID>
+    <ID>MagicNumber:AppScreens.kt$256</ID>
+    <ID>MagicNumber:AppScreens.kt$33</ID>
+    <ID>MagicNumber:AppScreens.kt$4</ID>
+    <ID>MagicNumber:AppScreens.kt$443</ID>
+    <ID>MagicNumber:AppScreens.kt$5</ID>
+    <ID>MagicNumber:AppScreens.kt$512</ID>
+    <ID>MagicNumber:AppScreens.kt$6</ID>
+    <ID>MagicNumber:AppScreens.kt$8</ID>
+    <ID>MagicNumber:AppTheme.kt$.5f</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF082759</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF0C0E12</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF111318</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF153C83</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF171A20</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF188038</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF1C304F</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF22262E</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF242D3C</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF2563EB</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF292F39</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF30353F</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF442722</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF4D5B71</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF626A78</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF805600</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF818895</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF81C995</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF8C1D18</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFF91B5FF</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFA7AEBB</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFB3261E</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFBCC6D8</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFD9E5FF</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFE1E6EF</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFE5E8EE</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFE8EFFD</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFF0F2F5</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFF2F3F5</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFF7F8FA</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFFCE8E6</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFFDD663</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFFFB4AB</ID>
+    <ID>MagicNumber:AppTheme.kt$0xFFFFDAD6</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$100</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$10000</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$1000L</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$1024</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$15_000</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$16</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$3</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$30_000</ID>
+    <ID>MagicNumber:AppViewModel.kt$AppViewModel$500</ID>
+    <ID>MagicNumber:ClientSettings.kt$10</ID>
+    <ID>MagicNumber:ClientSettings.kt$1000</ID>
+    <ID>MagicNumber:ClientSettings.kt$1024</ID>
+    <ID>MagicNumber:ClientSettings.kt$1280</ID>
+    <ID>MagicNumber:ClientSettings.kt$16</ID>
+    <ID>MagicNumber:ClientSettings.kt$20000</ID>
+    <ID>MagicNumber:ClientSettings.kt$2048</ID>
+    <ID>MagicNumber:ClientSettings.kt$255</ID>
+    <ID>MagicNumber:ClientSettings.kt$3</ID>
+    <ID>MagicNumber:ClientSettings.kt$300</ID>
+    <ID>MagicNumber:ClientSettings.kt$512</ID>
+    <ID>MagicNumber:ClientSettings.kt$60</ID>
+    <ID>MagicNumber:ClientSettings.kt$64</ID>
+    <ID>MagicNumber:ClientSettings.kt$65535</ID>
+    <ID>MagicNumber:ClientSettings.kt$9000</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$10</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$1500</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$256</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$300</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$5000</ID>
+    <ID>MagicNumber:ClientSettings.kt$ClientSettings.Companion$60</ID>
+    <ID>MagicNumber:DiagnosticViewModel.kt$DiagnosticViewModel$25_000</ID>
+    <ID>MagicNumber:GlassUi.kt$.65f</ID>
+    <ID>MagicNumber:GlassUi.kt$.85f</ID>
+    <ID>MagicNumber:GlassUi.kt$.94f</ID>
+    <ID>MagicNumber:GlassUi.kt$1.6f</ID>
+    <ID>MagicNumber:GlassUi.kt$100f</ID>
+    <ID>MagicNumber:GlassUi.kt$12</ID>
+    <ID>MagicNumber:GlassUi.kt$14</ID>
+    <ID>MagicNumber:GlassUi.kt$160</ID>
+    <ID>MagicNumber:GlassUi.kt$280</ID>
+    <ID>MagicNumber:GlassUi.kt$3</ID>
+    <ID>MagicNumber:GlassUi.kt$36</ID>
+    <ID>MagicNumber:GlassUi.kt$3f</ID>
+    <ID>MagicNumber:GlassUi.kt$400f</ID>
+    <ID>MagicNumber:GlassUi.kt$460</ID>
+    <ID>MagicNumber:GlassUi.kt$4f</ID>
+    <ID>MagicNumber:GlassUi.kt$50</ID>
+    <ID>MagicNumber:GlassUi.kt$600f</ID>
+    <ID>MagicNumber:GlassUi.kt$7</ID>
+    <ID>MagicNumber:Localization.kt$UiStrings$33</ID>
+    <ID>MagicNumber:MainActivity.kt$5</ID>
+    <ID>MagicNumber:MainActivity.kt$8</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity$.5f</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity$33</ID>
+    <ID>MagicNumber:PingClashApplication.kt$AndroidCorePlatform$5000</ID>
+    <ID>MagicNumber:PingClashApplication.kt$PingClashApplication$60_000</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$1000</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$126</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$30</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$300</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$31</ID>
+    <ID>MagicNumber:PingVpnService.kt$PingVpnService$34</ID>
+    <ID>MagicNumber:PingVpnService.kt$VpnRuntime$60</ID>
+    <ID>MagicNumber:ProfileRepository.kt$1024</ID>
+    <ID>MagicNumber:ProfileRepository.kt$2000</ID>
+    <ID>MagicNumber:ProfileRepository.kt$2048</ID>
+    <ID>MagicNumber:ProfileRepository.kt$256</ID>
+    <ID>MagicNumber:ProfileRepository.kt$4096</ID>
+    <ID>MagicNumber:ProfileRepository.kt$500</ID>
+    <ID>MagicNumber:ProfileRepository.kt$64</ID>
+    <ID>MagicNumber:ProfileRepository.kt$65535</ID>
+    <ID>MagicNumber:ProfileRepository.kt$8192</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$100</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$1024</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$128</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$13</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$20</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$2048</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$29</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$3</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$500</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$64</ID>
+    <ID>MagicNumber:ProfileRepository.kt$ProfileRepository$80</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$100</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$1024</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$10_000</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$200</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$301</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$302</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$303</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$307</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$308</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$30_000</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$4</ID>
+    <ID>MagicNumber:ProfileRepository.kt$SubscriptionDownloader$599</ID>
+    <ID>MagicNumber:ProxyScreen.kt$1.6f</ID>
+    <ID>MagicNumber:ProxyScreen.kt$100</ID>
+    <ID>MagicNumber:ProxyScreen.kt$15</ID>
+    <ID>MagicNumber:ProxyScreen.kt$16</ID>
+    <ID>MagicNumber:ProxyScreen.kt$180</ID>
+    <ID>MagicNumber:ProxyScreen.kt$25</ID>
+    <ID>MagicNumber:ProxyScreen.kt$26</ID>
+    <ID>MagicNumber:ProxyScreen.kt$5</ID>
+    <ID>MagicNumber:ProxyScreen.kt$8</ID>
+    <ID>MagicNumber:RemoteProfiles.kt$RemoteProfile.Companion$1024</ID>
+    <ID>MagicNumber:RemoteProfiles.kt$RemoteProfile.Companion$16</ID>
+    <ID>MagicNumber:RemoteProfiles.kt$RemoteProfiles$1024</ID>
+    <ID>MagicNumber:RemoteProfiles.kt$RemoteProfiles$30_000</ID>
+    <ID>MagicNumber:RemoteProfiles.kt$RemoteProfiles$60</ID>
+    <ID>MagicNumber:RuntimeCards.kt$1024</ID>
+    <ID>MagicNumber:RuntimeCards.kt$2000</ID>
+    <ID>MagicNumber:RuntimeCards.kt$3</ID>
+    <ID>MagicNumber:RuntimeCards.kt$3600</ID>
+    <ID>MagicNumber:RuntimeCards.kt$4</ID>
+    <ID>MagicNumber:RuntimeCards.kt$59f</ID>
+    <ID>MagicNumber:RuntimeCards.kt$60</ID>
+    <ID>MagicNumber:SettingsHub.kt$10</ID>
+    <ID>MagicNumber:SettingsHub.kt$100</ID>
+    <ID>MagicNumber:SettingsHub.kt$1000</ID>
+    <ID>MagicNumber:SettingsHub.kt$1024</ID>
+    <ID>MagicNumber:SettingsHub.kt$12</ID>
+    <ID>MagicNumber:SettingsHub.kt$1280</ID>
+    <ID>MagicNumber:SettingsHub.kt$14</ID>
+    <ID>MagicNumber:SettingsHub.kt$16</ID>
+    <ID>MagicNumber:SettingsHub.kt$17</ID>
+    <ID>MagicNumber:SettingsHub.kt$18</ID>
+    <ID>MagicNumber:SettingsHub.kt$19</ID>
+    <ID>MagicNumber:SettingsHub.kt$20</ID>
+    <ID>MagicNumber:SettingsHub.kt$20000</ID>
+    <ID>MagicNumber:SettingsHub.kt$2048</ID>
+    <ID>MagicNumber:SettingsHub.kt$21</ID>
+    <ID>MagicNumber:SettingsHub.kt$22</ID>
+    <ID>MagicNumber:SettingsHub.kt$23</ID>
+    <ID>MagicNumber:SettingsHub.kt$24</ID>
+    <ID>MagicNumber:SettingsHub.kt$255</ID>
+    <ID>MagicNumber:SettingsHub.kt$27</ID>
+    <ID>MagicNumber:SettingsHub.kt$3</ID>
+    <ID>MagicNumber:SettingsHub.kt$300</ID>
+    <ID>MagicNumber:SettingsHub.kt$5</ID>
+    <ID>MagicNumber:SettingsHub.kt$500</ID>
+    <ID>MagicNumber:SettingsHub.kt$512</ID>
+    <ID>MagicNumber:SettingsHub.kt$6</ID>
+    <ID>MagicNumber:SettingsHub.kt$60</ID>
+    <ID>MagicNumber:SettingsHub.kt$64</ID>
+    <ID>MagicNumber:SettingsHub.kt$7</ID>
+    <ID>MagicNumber:SettingsHub.kt$80</ID>
+    <ID>MagicNumber:SettingsHub.kt$9000</ID>
+    <ID>MagicNumber:SubscriptionInfo.kt$126</ID>
+    <ID>MagicNumber:SubscriptionInfo.kt$256</ID>
+    <ID>MagicNumber:SubscriptionInfo.kt$32</ID>
+    <ID>MagicNumber:SubscriptionInfo.kt$SubscriptionQuota.Companion$253402300799L</ID>
+    <ID>MagicNumber:SubscriptionInfo.kt$SubscriptionQuota.Companion$4096</ID>
+    <ID>MagicNumber:TcpLatencyProbe.kt$TcpLatencyProbe$8</ID>
+    <ID>MagicNumber:TerminalActivity.kt$0xff0c0e12</ID>
+    <ID>MagicNumber:TerminalActivity.kt$7</ID>
+    <ID>MagicNumber:TerminalActivity.kt$8</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$12</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$14</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$16384</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$2000</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$3</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel$40</ID>
+    <ID>MagicNumber:TerminalActivity.kt$TerminalModel.&lt;no name provided&gt;$65536</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$assertEquals("passed",JSONObject(dev.pingclash.mobile.Mobile.validateRuntimeOptions(repo.data.value.runtimeOptions())).getString("state"))</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("example.invalid/dns-query"))</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("private-settings-fixture"))</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$assertTrue(runCatching {repo.clientSettings(before.client.copy(appMode="include",packages=emptyList()),before.dnsAddress,before.probeUrl)}.isFailure)</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$assertTrue(runCatching {repo.clientSettings(before.client.copy(appMode="include",packages=listOf("dev.pingclash.app")),before.dnsAddress,before.probeUrl)}.isFailure)</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$compose.onNodeWithTag("field-加密 DNS 地址").performScrollTo().performTextReplacement("https://example.invalid/dns-query")</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$compose.waitUntil(5000) {compose.activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE==0}</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$private fun section(id: String)</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$repo.clientSettings(before.client.copy(mode="rule",customRules="DST-PORT,443,PROXY"),before.dnsAddress,before.probeUrl)</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$val input="""{"proxies":[{"name":"fixture-node","type":"trojan","server":"example.invalid","port":443,"password":"private-settings-fixture"}],"proxy-groups":[{"name":"provider-root","type":"select","proxies":["fixture-node","REJECT"]}],"rules":["DOMAIN-SUFFIX,private-rule.test,REJECT","MATCH,provider-root"]}"""</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$val invalid=before.client.copy(mode="rule",useProviderRules=false,customRules="GEOSITE,private-target-name,PROXY")</ID>
+    <ID>MaxLineLength:AdvancedSettingsTest.kt$AdvancedSettingsTest$val reader=workers.submit {repeat(60) {assertFalse("Concurrent read lost storage integrity",ProfileRepository(app).data.value.loadFailed)}}</ID>
+    <ID>MaxLineLength:AndroidNetworkBinding.kt$AndroidNetworkBinding$(manager.activeNetwork == network || PingVpnService.instance?.boundNetwork == network)</ID>
+    <ID>MaxLineLength:AppIcons.kt$@Composable internal</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$1 to "M20.5 12 A8.5 8.5 0 1 1 3.5 12 A8.5 8.5 0 1 1 20.5 12 Z M3.8 12 H20.2 M12 3.5 C8 7.8 8 16.2 12 20.5 C16 16.2 16 7.8 12 3.5"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$12 to "M4.5 17.8 A9 9 0 1 1 19.5 17.8 Q19 18.5 18 18.5 H6 Q5 18.5 4.5 17.8 Z M12 12.5 L16 8.5 M12.9 13 A1.3 1.3 0 1 1 10.3 13 A1.3 1.3 0 1 1 12.9 13 M5.8 12 H6.8 M8.2 6.8 L8.7 7.6 M17.3 12 H18.3"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$13 to "M8 6.5 V5 A2 2 0 0 1 10 3 H14 A2 2 0 0 1 16 5 V6.5 M5 6.5 H19 A2 2 0 0 1 21 8.5 V18.5 A2 2 0 0 1 19 20.5 H5 A2 2 0 0 1 3 18.5 V8.5 A2 2 0 0 1 5 6.5 Z M3.5 12 H20.5 M10 12 V14 H14 V12"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$20 to "M9.2 14.8 L14.8 9.2 M8.2 8 L9.8 6.4 A4.1 4.1 0 0 1 17.6 14.2 L16 15.8 M8 8.2 L6.4 9.8 A4.1 4.1 0 0 0 14.2 17.6 L15.8 16"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$21 to "M4.5 4 H19.5 A1.5 1.5 0 0 1 21 5.5 V9 A1.5 1.5 0 0 1 19.5 10.5 H4.5 A1.5 1.5 0 0 1 3 9 V5.5 A1.5 1.5 0 0 1 4.5 4 Z M4.5 13.5 H19.5 A1.5 1.5 0 0 1 21 15 V18.5 A1.5 1.5 0 0 1 19.5 20 H4.5 A1.5 1.5 0 0 1 3 18.5 V15 A1.5 1.5 0 0 1 4.5 13.5 Z M6.5 7.3 H6.6 M6.5 16.8 H6.6 M15.5 7.3 H17.5 M15.5 16.8 H17.5"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$22 to "M3.5 8.2 C8.2 3.5 15.8 3.5 20.5 8.2 M6.8 11.5 C9.7 8.6 14.3 8.6 17.2 11.5 M10 14.7 C11.1 13.6 12.9 13.6 14 14.7 M12 18.2 V18.3"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$23 to "M9 3.5 H15 A1 1 0 0 1 16 4.5 V8.5 A1 1 0 0 1 15 9.5 H9 A1 1 0 0 1 8 8.5 V4.5 A1 1 0 0 1 9 3.5 Z M12 9.5 V13.5 M5 16 V14.5 A1 1 0 0 1 6 13.5 H18 A1 1 0 0 1 19 14.5 V16 M3 16 H7 V20.5 H3 Z M17 16 H21 V20.5 H17 Z"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$27 to "M5.5 3.5 H8.5 A2 2 0 0 1 10.5 5.5 V8.5 A2 2 0 0 1 8.5 10.5 H5.5 A2 2 0 0 1 3.5 8.5 V5.5 A2 2 0 0 1 5.5 3.5 Z M15.5 3.5 H18.5 A2 2 0 0 1 20.5 5.5 V8.5 A2 2 0 0 1 18.5 10.5 H15.5 A2 2 0 0 1 13.5 8.5 V5.5 A2 2 0 0 1 15.5 3.5 Z M5.5 13.5 H8.5 A2 2 0 0 1 10.5 15.5 V18.5 A2 2 0 0 1 8.5 20.5 H5.5 A2 2 0 0 1 3.5 18.5 V15.5 A2 2 0 0 1 5.5 13.5 Z M15.5 13.5 H18.5 A2 2 0 0 1 20.5 15.5 V18.5 A2 2 0 0 1 18.5 20.5 H15.5 A2 2 0 0 1 13.5 18.5 V15.5 A2 2 0 0 1 15.5 13.5 Z"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$6 to "M12 3 L19.5 6 V11.2 C19.5 15.8 16.7 19.1 12 21 C7.3 19.1 4.5 15.8 4.5 11.2 V6 Z M8.5 11.8 L11 14.3 L15.7 9.6"</ID>
+    <ID>MaxLineLength:AppIcons.kt$AppIcons$7 to "M14.2 3.5 H7 A2 2 0 0 0 5 5.5 V18.5 A2 2 0 0 0 7 20.5 H17 A2 2 0 0 0 19 18.5 V8.3 Z M14 3.8 V7 A1.5 1.5 0 0 0 15.5 8.5 H18.6 M8.8 12 H15.2 M8.8 15.8 H13.2"</ID>
+    <ID>MaxLineLength:AppScreens.kt$(slideInHorizontally(spring(dampingRatio=1f,stiffness=650f)) {it/12*direction}+fadeIn(tween(190)))</ID>
+    <ID>MaxLineLength:AppScreens.kt$.</ID>
+    <ID>MaxLineLength:AppScreens.kt$0</ID>
+    <ID>MaxLineLength:AppScreens.kt$1 -&gt; ProxyScreen(data,locked,model,tests,onProfiles={tab=2},onDiagnosis={tab=3;tool=0;model.diagnose()})</ID>
+    <ID>MaxLineLength:AppScreens.kt$?:</ID>
+    <ID>MaxLineLength:AppScreens.kt$@Composable</ID>
+    <ID>MaxLineLength:AppScreens.kt$@Composable private</ID>
+    <ID>MaxLineLength:AppScreens.kt$@Composable private fun SectionLabel(text: String)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Box(Modifier.size(44.dp).background(MaterialTheme.colorScheme.primaryContainer,RoundedCornerShape(14.dp)),contentAlignment=Alignment.Center) { AppGlyph(index,tint=Mint) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$Box(Modifier.size(6.dp).background(if(vpn.phase=="established") Success else Muted,CircleShape));Text((if(vpn.phase=="established") tr(R.string.message_5be0323e8a) else if(vpn.active) tr(R.string.message_694b71bc80) else tr(R.string.message_3d52574ce1)),style=MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Box(Modifier.size(76.dp).background(MaterialTheme.colorScheme.primaryContainer,RoundedCornerShape(24.dp)),contentAlignment=Alignment.Center) {AppGlyph(1,Modifier.size(36.dp),Mint)}</ID>
+    <ID>MaxLineLength:AppScreens.kt$Box(Modifier.weight(1f)) {if(tool==0)NodeDiagnosisScreen(data,diagnosis,ui.busy||tests.running,model) else SettingsHub(data,vpn,locked,model,onProfiles={tab=2},onProxies={tab=1},onDashboard={tab=0},onDiagnose={tool=0})}</ID>
+    <ID>MaxLineLength:AppScreens.kt$Button</ID>
+    <ID>MaxLineLength:AppScreens.kt$Button(onClick={model.clearImportIssue();showImport=true},enabled=!locked&amp;&amp;!data.loadFailed) { AppGlyph(4,Modifier.size(18.dp));Spacer(Modifier.width(6.dp));Text((tr(R.string.message_fa9d1a2012))) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$Card</ID>
+    <ID>MaxLineLength:AppScreens.kt$Column</ID>
+    <ID>MaxLineLength:AppScreens.kt$Column(Modifier.weight(1f)) { Text((tr(R.string.message_b138010267)),color=Muted,style=MaterialTheme.typography.bodySmall);Text(data.selected?.name ?: tr(R.string.message_428504d9a1),style=MaterialTheme.typography.titleMedium,maxLines=2,overflow=TextOverflow.Ellipsis) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text((tr(R.string.message_75793291b7)),style=MaterialTheme.typography.titleMedium);Text((tr(R.string.message_3d68b50722)),color=Muted,style=MaterialTheme.typography.bodySmall) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {Text(profile.name,fontWeight=FontWeight.SemiBold,maxLines=1,overflow=TextOverflow.Ellipsis);Text(trPlural(R.plurals.message_36f0a655c4, (profile.nodes.size).toInt(), profile.nodes.size, if(profile.source==null) tr(R.string.message_a74010990f) else tr(R.string.message_cf8efc450f)),color=Muted,style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:AppScreens.kt$Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {Text((tr(R.string.message_108c6cdd56)),style=MaterialTheme.typography.headlineMedium);Text((tr(R.string.message_a12140eb61)),color=Muted,style=MaterialTheme.typography.bodyMedium)}</ID>
+    <ID>MaxLineLength:AppScreens.kt$FilledTonalButton(onClick=onDiagnose,enabled=ready&amp;&amp;data.selected!=null&amp;&amp;!diagnosis.running&amp;&amp;!busy,modifier=Modifier.fillMaxWidth()) { Text((tr(R.string.message_625924befc))) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$FilledTonalButton({if(profile.id!=data.activeProfile?.id)model.activate(profile.id);onProxies()},enabled=!locked) {Text(if(profile.id==data.activeProfile?.id) tr(R.string.message_1f4f69f770) else tr(R.string.message_6f25358701))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$FilterChip(false,{context.startActivity(Intent(context,TerminalActivity::class.java))},label={Text((tr(R.string.message_e2a76ef1f1)))},modifier=Modifier.testTag("tool-terminal"))</ID>
+    <ID>MaxLineLength:AppScreens.kt$FilterChip(tool==0,{tool=0},label={Text((tr(R.string.message_40ff6300f9)))},modifier=Modifier.testTag("tool-diagnosis"))</ID>
+    <ID>MaxLineLength:AppScreens.kt$FilterChip(tool==1,{tool=1},label={Text((tr(R.string.message_df3d58c7d8)))},modifier=Modifier.testTag("tool-settings"))</ID>
+    <ID>MaxLineLength:AppScreens.kt$LaunchedEffect(uiMessage) { uiMessage?.let { snackbar.showSnackbar(it, acknowledge, duration = SnackbarDuration.Long); model.dismissMessage() } }</ID>
+    <ID>MaxLineLength:AppScreens.kt$ModalBottomSheet</ID>
+    <ID>MaxLineLength:AppScreens.kt$OutlinedButton(onClick={model.clearImportIssue();filePicker.launch(arrayOf("*/*"))},enabled=!locked&amp;&amp;!data.loadFailed) { Text((tr(R.string.message_fa3ecfb797))) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$OutlinedTextField</ID>
+    <ID>MaxLineLength:AppScreens.kt$OutlinedTextField(command, { if (it.length &lt;= 512) command = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text((tr(R.string.message_617f4593d8))) })</ID>
+    <ID>MaxLineLength:AppScreens.kt$OutlinedTextField(name,{if(it.length&lt;=100)name=it},Modifier.fillMaxWidth(),enabled=!ui.busy,singleLine=true,shape=RoundedCornerShape(16.dp),label={Text((tr(R.string.message_091a5b5cb6)))},placeholder={Text(if(subscription)tr(R.string.message_79aad303b1) else tr(R.string.message_e406825e0a))})</ID>
+    <ID>MaxLineLength:AppScreens.kt$Row</ID>
+    <ID>MaxLineLength:AppScreens.kt$Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { AppGlyph(6,Modifier.size(18.dp),Muted);Text((tr(R.string.message_8e3b073b9e)),color=Muted,style=MaterialTheme.typography.bodySmall) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$Surface</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text("${report.elapsedMs} ms · ${report.networkType}", color = Muted, style = MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text((if(vpn.phase=="established") tr(R.string.message_35f7d981fb) else if(data.selected==null) tr(R.string.message_ef50e7f638) else tr(R.string.message_05d0b75302)),color=Muted,style=MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text((if(vpn.phase=="established") tr(R.string.message_5d1cd38e0d) else if(vpn.phase=="connecting") tr(R.string.message_694186911a) else if(vpn.phase=="stopping") tr(R.string.message_b8d23e6673) else tr(R.string.message_93ae902da0)),style=MaterialTheme.typography.titleLarge)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text((tr(R.string.message_252a24987b)),Modifier.padding(horizontal=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text(data.selected?.name?:tr(R.string.message_71cb1d7ea6),style=MaterialTheme.typography.titleMedium,maxLines=1,overflow=TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text(data.selected?.type?.uppercase()?:tr(R.string.message_4a403931f2),color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text(if(profile.hasSubscriptionGroups) tr(R.string.message_5076fa3a21) else tr(R.string.message_c7fab0a4c0),Modifier.padding(horizontal=20.dp,vertical=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text(text,Modifier.fillMaxWidth().padding(16.dp),color=MaterialTheme.colorScheme.onErrorContainer,style=MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:AppScreens.kt$Text(tr(R.string.message_a03eefe8ff),color=Muted,style=MaterialTheme.typography.bodyMedium,textAlign=androidx.compose.ui.text.style.TextAlign.Center)</ID>
+    <ID>MaxLineLength:AppScreens.kt$TextButton(onClick = { console = !console }) { Text(if (console) tr(R.string.message_ddc2dcfebf) else tr(R.string.message_a030d422db)) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$TextButton({delete=profile},enabled=!locked) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}</ID>
+    <ID>MaxLineLength:AppScreens.kt$TextButton({rename=profile;renameText=profile.name},enabled=!locked) {Text((tr(R.string.message_0d0cbac2ee)))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$TextButton({showIssues=!showIssues},Modifier.padding(horizontal=12.dp)) { Text(if(showIssues) tr(R.string.message_815769985a) else tr(R.string.message_2774441c8b)) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$confirmButton={TextButton(onClick=model::acknowledgeCertificateNotice) {Text((tr(R.string.message_100a19b574)))}}</ID>
+    <ID>MaxLineLength:AppScreens.kt$delete?.let { profile -&gt; AlertDialog(onDismissRequest={delete=null},title={Text((tr(R.string.message_03300a88fe)))},text={Text(trPlural(R.plurals.message_9e39a158c5, (profile.nodes.size).toInt(), profile.nodes.size))},confirmButton={TextButton({model.delete(profile.id);delete=null}) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}},dismissButton={TextButton({delete=null}) {Text((tr(R.string.message_2cd0f3be87)))}}) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$else</ID>
+    <ID>MaxLineLength:AppScreens.kt$export?.let {profile -&gt; AlertDialog(onDismissRequest={export=null},title={Text((tr(R.string.message_429ea3af44)))},text={Text((tr(R.string.message_cbf0717721)))},confirmButton={TextButton({exportId=profile.id;export=null;exportPicker.launch("PingClash-profile.json")}){Text((tr(R.string.message_429ea3af44)))}},dismissButton={TextButton({export=null}){Text((tr(R.string.message_2cd0f3be87)))}})}</ID>
+    <ID>MaxLineLength:AppScreens.kt$if</ID>
+    <ID>MaxLineLength:AppScreens.kt$if (diagnosis.running) { LinearProgressIndicator(Modifier.fillMaxWidth()); TextButton(onClick = model::cancelDiagnosis) { Text((tr(R.string.message_e831d49866))) } }</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(!ready||data.loadFailed) IssueBanner(if(!ready) tr(R.string.message_0fef4c3028) else tr(R.string.message_9e30b1eb6a))</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(data.profiles.size&gt;1) LazyRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) { items(data.profiles,key={it.id}) { profile -&gt; FilterChip(viewed?.id==profile.id,{viewedProfile=profile.id},label={Text(profile.name,maxLines=1)}) } }</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.activationRequired)Text(tr(R.string.deep_link_inactive),Modifier.padding(horizontal=20.dp,vertical=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.definition.isNotBlank() &amp;&amp; (profile.unsupported&gt;0||profile.groupsUnsupported&gt;0)) TextButton({model.reparse(profile)},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp).testTag("profile-reparse-${profile.id}")) {Text(tr(R.string.message_64c2833618))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.groupsUnsupported&gt;0) Text(trPlural(R.plurals.message_39ce491af1, (profile.groupsUnsupported).toInt(), profile.groupsUnsupported),Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.remote!=null)TextButton({model.refreshProviders(profile)},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)){Text(tr(R.string.provider_refresh))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.source!=null) TextButton({model.refresh(profile)},enabled=!locked) {Text((tr(R.string.message_3055a035f0)))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.source!=null) TextButton({uaProfile=profile;uaText=profile.userAgent},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)) {Text(tr(R.string.subscription_ua))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.unsupported&gt;0) Text(rejectionSummary(profile.rejections).ifBlank {trPlural(R.plurals.message_6c693a3b14, (profile.unsupported).toInt(), profile.unsupported)},Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(profile.verificationEnabled&gt;0) Text((tr(R.string.message_98bcec3b79)),Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(showImport) ImportDialog(ui,{if(!ui.busy)showImport=false},onUserAgent={importUa=it}) { name,body,subscription -&gt; if(subscription)model.subscribe(name,body.trim(),importUa) else model.importText(name,body) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(showIssues) Text(importFieldSummary(profile.fieldIssues),Modifier.padding(horizontal=20.dp,vertical=8.dp),color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(subscription&amp;&amp;content.isNotBlank()&amp;&amp;!validHttps(content.trim())) Text((tr(R.string.message_24429aea8f)),color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(subscription) OutlinedTextField(userAgent,{if(it.length&lt;=256){userAgent=it;onUserAgent(it)}},Modifier.fillMaxWidth().testTag("subscription-ua"),singleLine=true,enabled=!ui.busy,isError=!validSubscriptionUa(userAgent),label={Text(tr(R.string.subscription_ua))})</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(ui.busy) {CircularProgressIndicator(Modifier.size(18.dp),strokeWidth=2.dp);Spacer(Modifier.width(10.dp));Text((tr(R.string.message_f6dc1b1641)))} else Text(if(subscription)tr(R.string.message_ad5bb4ebe0) else tr(R.string.message_576d81bb06))</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(vpn.active) tr(R.string.message_a33f380476) else if(data.selected==null) {if(data.nodes.isEmpty()) tr(R.string.message_40b1401f0d) else tr(R.string.message_86b4062627)} else tr(R.string.message_beecafaf89)</ID>
+    <ID>MaxLineLength:AppScreens.kt$if(vpn.failures&gt;0) Text(trPlural(R.plurals.message_b4e092f3e3, (vpn.failures).toInt(), vpn.failures),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:AppScreens.kt$input == "logs --recent" -&gt; output = diagnosis.steps.joinToString("\n") { "${it.stage.title()} · ${it.state.title()} · ${it.code.message()}" }.ifEmpty { tr(R.string.message_d2fbb7ebe4) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$input.startsWith("diag dns ") -&gt; { onDns(input.removePrefix("diag dns ").trim()); output = tr(R.string.message_904d1683cf) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$keyboardOptions=KeyboardOptions(autoCorrectEnabled=false,keyboardType=if(subscription)KeyboardType.Uri else KeyboardType.Text,imeAction=if(subscription)ImeAction.Next else ImeAction.Default)</ID>
+    <ID>MaxLineLength:AppScreens.kt$label={Text(if(subscription)tr(R.string.message_6a113a5edf) else tr(R.string.message_f77aab4c7a))}</ID>
+    <ID>MaxLineLength:AppScreens.kt$listOf(tr(R.string.message_6a113a5edf),tr(R.string.message_33e74eb6db)).forEachIndexed { index,label -&gt; SegmentedButton(subscription==(index==0),{subscription=index==0;content=""},shape=SegmentedButtonDefaults.itemShape(index,2),enabled=!ui.busy) {Text(label)} }</ID>
+    <ID>MaxLineLength:AppScreens.kt$private</ID>
+    <ID>MaxLineLength:AppScreens.kt$properties=ModalBottomSheetProperties(securePolicy=if(!subscription||visible)SecureFlagPolicy.SecureOn else SecureFlagPolicy.SecureOff)</ID>
+    <ID>MaxLineLength:AppScreens.kt$rename?.let {profile -&gt; AlertDialog(onDismissRequest={rename=null},title={Text((tr(R.string.message_0d0cbac2ee)))},text={OutlinedTextField(renameText,{if(it.length&lt;=100)renameText=it},singleLine=true,label={Text((tr(R.string.message_9919db867b)))})},confirmButton={TextButton({model.rename(profile.id,renameText);rename=null},enabled=renameText.isNotBlank()){Text((tr(R.string.message_a3030bf8f1)))}},dismissButton={TextButton({rename=null}){Text((tr(R.string.message_2cd0f3be87)))}})}</ID>
+    <ID>MaxLineLength:AppScreens.kt$shape=RoundedCornerShape(16.dp)</ID>
+    <ID>MaxLineLength:AppScreens.kt$text</ID>
+    <ID>MaxLineLength:AppScreens.kt$trailingIcon=if(subscription){{TextButton({visible=!visible}){Text(if(visible)tr(R.string.message_145219e726) else tr(R.string.message_4e1449e7d5))}}}else null</ID>
+    <ID>MaxLineLength:AppScreens.kt$type = "text/plain"; putExtra(Intent.EXTRA_TEXT, markdown); putExtra(Intent.EXTRA_SUBJECT, tr(R.string.message_20b6001a93))</ID>
+    <ID>MaxLineLength:AppScreens.kt$uaProfile?.let {profile -&gt; AlertDialog(onDismissRequest={uaProfile=null},title={Text(tr(R.string.subscription_ua))},text={Column {OutlinedTextField(uaText,{if(it.length&lt;=256)uaText=it},singleLine=true,isError=!validSubscriptionUa(uaText));Text(tr(R.string.subscription_ua_hint))}},confirmButton={TextButton({model.subscriptionUserAgent(profile.id,uaText);uaProfile=null},enabled=validSubscriptionUa(uaText)){Text(tr(R.string.message_a3030bf8f1))}},dismissButton={TextButton({uaProfile=null}){Text(tr(R.string.cancel))}})}</ID>
+    <ID>MaxLineLength:AppScreens.kt$val</ID>
+    <ID>MaxLineLength:AppScreens.kt$val data=if(Build.VERSION.SDK_INT&gt;=33)storedData.copy(client=storedData.client.copy(language=UiStrings.preference())) else storedData</ID>
+    <ID>MaxLineLength:AppScreens.kt$val filePicker=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -&gt; if(uri!=null) model.importFile(tr(R.string.message_e406825e0a),uri) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$val markdown = remember(report,UiStrings.resources().configuration.locales.toLanguageTags()) { ReportFormatter.markdown(report) }</ID>
+    <ID>MaxLineLength:AppScreens.kt$val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { requestVpn() }</ID>
+    <ID>MaxLineLength:AppScreens.kt$}</ID>
+    <ID>MaxLineLength:AppTheme.kt$bodyLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 25.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$bodyMedium = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 22.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$bodySmall = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 19.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$headlineLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Bold, fontSize = 34.sp, lineHeight = 42.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$headlineMedium = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, lineHeight = 36.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$internal val Success: Color @Composable get() = if (MaterialTheme.colorScheme.background.luminance()&lt;.5f) Color(0xFF81C995) else Color(0xFF188038)</ID>
+    <ID>MaxLineLength:AppTheme.kt$internal val Warning: Color @Composable get() = if (MaterialTheme.colorScheme.background.luminance()&lt;.5f) Color(0xFFFDD663) else Color(0xFF805600)</ID>
+    <ID>MaxLineLength:AppTheme.kt$labelLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$outline = Color(0xFF626A78)</ID>
+    <ID>MaxLineLength:AppTheme.kt$outline = Color(0xFF818895)</ID>
+    <ID>MaxLineLength:AppTheme.kt$primary = Color(0xFF2563EB)</ID>
+    <ID>MaxLineLength:AppTheme.kt$primary = Color(0xFF91B5FF)</ID>
+    <ID>MaxLineLength:AppTheme.kt$secondary = Color(0xFF4D5B71)</ID>
+    <ID>MaxLineLength:AppTheme.kt$secondary = Color(0xFFBCC6D8)</ID>
+    <ID>MaxLineLength:AppTheme.kt$titleLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 30.sp)</ID>
+    <ID>MaxLineLength:AppTheme.kt$titleMedium = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppUiState</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$Models.Step(Models.Stage.NETWORK,if(binding.isCurrent()) Models.State.PASSED else Models.State.STALE,if(binding.isCurrent()) Models.Code.NETWORK_READY else Models.Code.NETWORK_CHANGED,0,"",0)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$Models.Step(Models.Stage.PROXY, Models.State.STALE, Models.Code.CONFIG_CHANGED, 0, "", 0)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$Models.Step(Models.Stage.PROXY, Models.State.STALE, Models.Code.NETWORK_CHANGED, result.optLong("elapsedMs"), "", 0)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$app.repository.importWithProviders(name.ifBlank { tr(R.string.message_79aad303b1) }, response.content, source,userAgent=userAgent,response=response)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$catch (failure: Exception) { mutableUi.update { it.copy(busy = false, importIssue = publicFailure(failure)) } }</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$code == Models.Code.CORE_BUSY || code == Models.Code.INTERNAL_ERROR || code == Models.Code.LOCAL_RESTRICTION -&gt; Models.State.BLOCKED</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$fun appearance(language: String,theme: String)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$fun clientSettings(value: ClientSettings,dns: String,target: String)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$fun settings(dns: String, target: String)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if (node.certificateVerificationSkipped) steps.add(0, Models.Step(Models.Stage.POLICY, Models.State.SKIPPED, Models.Code.NODE_CERTIFICATE_UNVERIFIED, 0, "", 0))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if (parameters.has("dialer-chain")) steps.add(0, Models.Step(Models.Stage.ROUTE,Models.State.SKIPPED,Models.Code.PROXY_CHAIN_ACTIVE,0,"",0))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if (udpTransport &amp;&amp; step.code == Models.Code.DNS_ONLY) Models.Step(step.stage, step.state, Models.Code.UDP_PROTOCOL, step.elapsedMs, step.addressFamily, step.attempt) else step</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if(!app.nativeReady || testJob?.isCompleted==false || mutableProxyTests.value.running || mutableUi.value.busy || mutableDiagnosis.value.running) return</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if(entries.isNotEmpty())mutableProxyTests.update {it.copy(completed=completed.get(),tcpValues=it.tcpValues+entries)}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if(entries.isNotEmpty())mutableProxyTests.update {it.copy(completed=completed.get(),values=it.values+entries)}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if(mutableProxyTests.value.running&amp;&amp;requestKey(data.value)==version){pending[key]=result;completed.incrementAndGet()}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$if(raw==null) "" else (0 until raw.length()).mapNotNull {raw.optJSONObject(it)}.firstOrNull {it.optString("name")==groupName}?.optString("url").orEmpty()</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$imported(app.repository.importWithProviders(profile.name, response.content, source, profile.id,userAgent=profile.userAgent,response=response))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$mutableDiagnosis</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$mutableDiagnosis.value = DiagnosticUiState(steps = report?.steps.orEmpty(), report = report, nodeId = node.id)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$mutableProxyTests.update {it.copy(running=false,tcpValues=it.tcpValues.filterValues {v-&gt;v.state!="running"})}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$mutableProxyTests.update {it.copy(running=false,values=it.values.filterValues {v -&gt; v.state!="running"})}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$parameters.optString("sni").ifBlank { parameters.optString("servername") }</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$private</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$report = Models.Report(runID, auxiliary.timestamp, auxiliary.networkType, steps, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$report = Models.Report(runID, java.time.Instant.now().toString(), tr(R.string.message_4d8c1c5b42), steps, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$return Models.Step(Models.Stage.PROXY, state, code, result.optLong("elapsedMs"), "", 0, result.optInt("httpStatus"))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$root.remove("pingclash-selections")</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$tr(R.string.message_0fead32545)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$tr(R.string.message_5cf607d225)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$tr(R.string.message_ac1ec3e9aa)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$try</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val blocking = steps.firstOrNull { it.state in listOf(Models.State.CANCELLED, Models.State.STALE, Models.State.BLOCKED) }</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val candidates=names.distinct().take(500).filter {name -&gt; profile.nodes.any {it.name==name} || profile.groups.any {it.name==name&amp;&amp;it.supported} }</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val entries=pending.entries.map {it.key to it.value}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val graphNames=candidates.filter {name -&gt;profile.groups.any {it.name==name}||profile.nodes.any {it.name==name&amp;&amp;it.requiresProfile}}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val reply=JSONObject(Mobile.probeDelay(config,target,id,settings.probeTimeout.toLong(),settings.unifiedDelay))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val result=TcpLatencyProbe.run(app,profile.nodes.firstOrNull {it.name==name},settings.probeTimeout,run)</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val root=if(profile.definition.isNotBlank())JSONObject(profile.definition) else JSONObject().put("proxies",org.json.JSONArray(profile.nodes.map {JSONObject(it.config)}))</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$val state=when(reply.optString("code")) {"proxy_delay_measured" -&gt; "passed";"cancelled" -&gt; "idle";"timeout_stage_unknown","proxy_channel_timeout","proxy_quic_handshake_timeout" -&gt; "timeout";else -&gt; "failed"}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$AppViewModel$}</ID>
+    <ID>MaxLineLength:AppViewModel.kt$ProxyTestState</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$app</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$assertTrue("A test fixture bound outside loopback",baselineAcceptors.all {it.substringBefore(":") in setOf("0100007F","00000000000000000000000001000000","0000000000000000FFFF00000100007F")})</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$assertTrue("Ordinary page blocks screenshots", compose.activity.window.attributes.flags and android.view.WindowManager.LayoutParams.FLAG_SECURE == 0)</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$assertTrue("Separate-UID DNS/TCP VPN path failed at ${peerResult?.getString("stage")}", peerResult?.getBoolean("success") == true)</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$assertTrue("System file picker did not complete saving", device.wait(Until.gone(By.pkg("com.android.documentsui")), 8000))</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$assertTrue("VPN foreground notification missing",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1&amp;&amp;it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT!=0})</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$compose.waitUntil(5000) { device.executeShellCommand("cat /sdcard/Download/$filename").contains("# PingClash") }</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest$val directProbe = JSONObject(Mobile.probe(config, "http://127.0.0.1:${fixture.http.localPort}/", UUID.randomUUID().toString(), 4000))</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ClientIntegrationTest.&lt;no name provided&gt;$override fun onReceiveResult(resultCode: Int, resultData: Bundle?)</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$if (accepted &amp;&amp; isA) { out.writeShort(0xc00c); out.writeShort(1); out.writeShort(1); out.writeInt(60); out.writeShort(4); out.write(byteArrayOf(192.toByte(), 0, 2, 123)) }</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$java.io.DataOutputStream(socket.getOutputStream()).apply { writeShort(payload.size); write(payload); flush() }</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$private val workers = Executors.newCachedThreadPool { task -&gt; Thread(task, "controlled-test-server").apply { isDaemon = true } }</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$require(user.toString(Charsets.UTF_8) == "fixture-user" &amp;&amp; password.toString(Charsets.UTF_8) == "fixture-private-password")</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$socket.getOutputStream().write("HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".toByteArray(Charsets.US_ASCII))</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$workers.execute { try { input.copyTo(remote.getOutputStream()) } catch (_: Exception) { } finally { copied.countDown() } }</ID>
+    <ID>MaxLineLength:ClientIntegrationTest.kt$ControlledServers$workers.execute { try { socket.use { it.soTimeout = 12_000; handler(it) } } catch (_: Exception) { } finally { sockets.remove(socket) } }</ID>
+    <ID>MaxLineLength:ClientSettings.kt$.</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings$put("notificationSpeed",notificationSpeed)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings$put("showSpeed",showSpeed)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings$put("useProviderRules",useProviderRules)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$p.optBoolean("showSpeed",true)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$p.optBoolean("useProviderRules",true)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")&lt;2&amp;&amp;it==2)10 else it}</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$p.optString("dnsMode","tcp")</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$p.optString("lan","proxy")</ID>
+    <ID>MaxLineLength:ClientSettings.kt$ClientSettings.Companion$return</ID>
+    <ID>MaxLineLength:ClientSettings.kt$LocalUsage$Companion</ID>
+    <ID>MaxLineLength:ClientSettings.kt$LocalUsage$fun json()</ID>
+    <ID>MaxLineLength:ClientSettings.kt$if(settings.mode=="rule"&amp;&amp;settings.useProviderRules) require((activeProfile?.rulesOmitted?:0)==0) {tr(R.string.message_c6d0075555)}</ID>
+    <ID>MaxLineLength:ClientSettings.kt$require(value.appMode in listOf("all","exclude","include")&amp;&amp;value.packages.size&lt;=300&amp;&amp;value.packages.distinct().size==value.packages.size&amp;&amp;value.packages.all {it.length&lt;=255&amp;&amp;it!="dev.pingclash.app"&amp;&amp;it.matches(Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+"))}&amp;&amp;(value.appMode!="include"||value.packages.isNotEmpty())) {tr(R.string.message_e5eca6fb98)}</ID>
+    <ID>MaxLineLength:ClientSettings.kt$require(value.language in listOf("system","zh","en")&amp;&amp;value.theme in listOf("system","light","dark")&amp;&amp;value.customRules.toByteArray().size&lt;=64*1024&amp;&amp;value.probeTimeout in 1000..20000&amp;&amp;value.probeConcurrency in 1..16) {tr(R.string.message_fef3d1894e)}</ID>
+    <ID>MaxLineLength:ClientSettings.kt$require(value.mode in listOf("global","rule","direct")&amp;&amp;value.mtu in 1280..9000&amp;&amp;value.lan in listOf("proxy","direct","block")&amp;&amp;value.connectTimeout in 3..60&amp;&amp;value.udpTimeout in 10..300&amp;&amp;value.maxConnections in 16..512&amp;&amp;value.dnsMode in listOf("tcp","https")) {tr(R.string.message_ac1ec3e9aa)}</ID>
+    <ID>MaxLineLength:ClientSettings.kt$return</ID>
+    <ID>MaxLineLength:ClientSettings.kt$url.scheme in listOf("http","https")&amp;&amp;!url.host.isNullOrBlank()&amp;&amp;url.rawUserInfo==null&amp;&amp;url.rawFragment==null&amp;&amp;(url.port==-1||url.port in 1..65535)</ID>
+    <ID>MaxLineLength:ClientSettings.kt$val</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$assertEquals(112,profile.nodes.size)</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$captureSyntheticFixture(compose,androidx.test.uiautomator.UiDevice.getInstance(androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()),"delay-compatibility.png")</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$fun group(name: String,type: String,members: List&lt;String&gt;)</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$names.forEachIndexed {i,name -&gt;nodes.put(JSONObject().put("name",name).put("type",if(i&gt;=101)"hysteria2" else "anytls").put("server","example.invalid").put("port",443).put("password","delay-compat-fixture").apply {if(i&gt;=101){put("up",JSONObject.NULL);put("down",JSONObject.NULL)}})}</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$repo.clientSettings(before.client.copy(probeConcurrency=1,probeTimeout=1000,delayUrl="http://127.0.0.1:1/"),before.dnsAddress,before.probeUrl)</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$repo.clientSettings(before.client.copy(probeConcurrency=10,probeTimeout=1000,delayUrl="http://127.0.0.1:1/"),before.dnsAddress,before.probeUrl)</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$thread(isDaemon=true) {try {val buffer=ByteArray(4096);while(socket.getInputStream().read(buffer)&gt;=0){} }catch(_:Exception){}finally{active.decrementAndGet();socket.close()}}</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$val nodes=JSONArray(names.map {name -&gt;JSONObject().put("name",name).put("type","anytls").put("server","127.0.0.1").put("port",server.localPort).put("password","delay-queue-fixture")})</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$val raw=JSONObject().put("proxies",nodes).put("proxy-groups",JSONArray().put(JSONObject().put("name","测速队列").put("type","select").put("proxies",JSONArray(names)))).toString()</ID>
+    <ID>MaxLineLength:DelayCompatibilityTest.kt$DelayCompatibilityTest$val raw=JSONObject().put("proxies",nodes).put("proxy-groups",JSONArray().put(group("主代理","select",listOf("自动选择","故障转移")+names)).put(group("自动选择","url-test",names)).put(group("故障转移","fallback",names))).toString()</ID>
+    <ID>MaxLineLength:DiagnosticViewModel.kt$if (report.steps.any { it.state in listOf(Models.State.CANCELLED, Models.State.BLOCKED) }) return tr(R.string.message_229d73083e)</ID>
+    <ID>MaxLineLength:DiagnosticViewModel.kt$proxy?.state == Models.State.PASSED &amp;&amp; proxy.code == Models.Code.PROXY_OK -&gt; tr(R.string.message_8a62417c01, proxy.elapsedMs)</ID>
+    <ID>MaxLineLength:EncryptedStorageTest.kt$EncryptedStorageTest$repository.importProfile("fixture", """{"type":"anytls","server":"example.invalid","port":443,"password":"storage-private-token"}""")</ID>
+    <ID>MaxLineLength:GlassUi.kt$.</ID>
+    <ID>MaxLineLength:GlassUi.kt$Box</ID>
+    <ID>MaxLineLength:GlassUi.kt$Column</ID>
+    <ID>MaxLineLength:GlassUi.kt$Surface</ID>
+    <ID>MaxLineLength:GlassUi.kt$Text((label),Modifier.padding(horizontal=10.dp),textAlign=TextAlign.Center,style=MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:GlassUi.kt$Text((label),fontSize=11.sp,lineHeight=15.sp,fontWeight=if(chosen)FontWeight.SemiBold else FontWeight.Normal,color=tint,maxLines=1)</ID>
+    <ID>MaxLineLength:GlassUi.kt$animationSpec=if(motion&amp;&amp;dragPosition==null) spring(dampingRatio=.86f,stiffness=550f) else snap()</ID>
+    <ID>MaxLineLength:GlassUi.kt$context.contentResolver.registerContentObserver(Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),false,observer)</ID>
+    <ID>MaxLineLength:GlassUi.kt$drawLine(Color.White.copy(alpha=.34f),Offset(30.dp.toPx(),1.dp.toPx()),Offset(size.width-30.dp.toPx(),1.dp.toPx()),1.dp.toPx(),StrokeCap.Round)</ID>
+    <ID>MaxLineLength:GlassUi.kt$drawRoundRect(Brush.linearGradient(listOf(accent.copy(alpha=.95f),accent.copy(alpha=.62f))),Offset(x,inset),Size(w-inset*2,size.height-inset*2),CornerRadius(25.dp.toPx()))</ID>
+    <ID>MaxLineLength:GlassUi.kt$drawRoundRect(light.copy(alpha=.035f),Offset(x,inset),Size(w-inset*2,size.height-inset*2),CornerRadius(25.dp.toPx()),style=Stroke(1.dp.toPx()))</ID>
+    <ID>MaxLineLength:GlassUi.kt$fun allowed()</ID>
+    <ID>MaxLineLength:GlassUi.kt$horizontalAlignment=Alignment.CenterHorizontally</ID>
+    <ID>MaxLineLength:GlassUi.kt$if(target!=current) {haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(target)}</ID>
+    <ID>MaxLineLength:GlassUi.kt$listOf(tr(R.string.message_0853bf3c01),tr(R.string.message_5e84ea61e8),tr(R.string.message_148d195e21),tr(R.string.message_df3d58c7d8))</ID>
+    <ID>MaxLineLength:GlassUi.kt$modifier=Modifier.size(powerSize).graphicsLayer {scaleX=scale;scaleY=scale}.testTag("vpn-power").semantics {stateDescription=state}</ID>
+    <ID>MaxLineLength:GlassUi.kt$onDispose {context.contentResolver.unregisterContentObserver(observer);accessibility.removeTouchExplorationStateChangeListener(listener)}</ID>
+    <ID>MaxLineLength:GlassUi.kt$onHorizontalDrag={change,amount -&gt; change.consume();dragPosition=((dragPosition?:current.toFloat())+amount/cellWidth).coerceIn(0f,3f)}</ID>
+    <ID>MaxLineLength:GlassUi.kt$shape=RoundedCornerShape(corner)</ID>
+    <ID>MaxLineLength:GlassUi.kt$val accessibility=remember(context) {context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager}</ID>
+    <ID>MaxLineLength:GlassUi.kt$val observer=object: ContentObserver(Handler(Looper.getMainLooper())) {override fun onChange(selfChange: Boolean) {enabled=allowed()}}</ID>
+    <ID>MaxLineLength:GlassUi.kt$val outline=Path().apply {addRoundRect(RoundRect(inset,inset,size.width-inset,size.height-inset,radius))}</ID>
+    <ID>MaxLineLength:GlassUi.kt$val panel=Panel</ID>
+    <ID>MaxLineLength:GlassUi.kt$val state=(if(connected) tr(R.string.message_5be0323e8a) else if(working) tr(R.string.message_694b71bc80) else tr(R.string.message_3d52574ce1))</ID>
+    <ID>MaxLineLength:GlassUi.kt$val tint by animateColorAsState(if(chosen) Mint else Muted,if(motion)tween(160) else snap(),label="navigation-tint")</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$assertEquals(101,profile.nodes.size)</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("availability-android-fixture"))</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"group-availability.png")</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$fun group(name: String,type: String,members: List&lt;String&gt;)</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$private fun node(name: String)</ID>
+    <ID>MaxLineLength:GroupAvailabilityTest.kt$GroupAvailabilityTest$val raw=JSONObject().put("proxies",JSONArray().put(node("有效节点"))).put("proxy-groups",JSONArray().put(JSONObject().put("name","手动选择").put("type","select").put("proxies",JSONArray(listOf("缺失成员","有效节点"))))).toString()</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$app</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$app.repository</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$assertEquals("proxy_request_verified",JSONObject(Mobile.probe(app.repository.data.value.selectedRuntimeConfig!!,target,UUID.randomUUID().toString(),5000)).getString("code"))</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$before.selectedId?.takeIf { id -&gt; app.repository.data.value.nodes.any { it.id==id } }?.let(app.repository::select)</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$compose.waitUntil(5000) {VpnRuntime.state.value.downloaded&gt;0&amp;&amp;VpnRuntime.state.value.history.any {it.up&gt;0||it.down&gt;0}}</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$useProviderRules=false</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$val group=JSONObject().put("name","主代理回归").put("type","select").put("proxies",JSONArray(listOf("HY2 自签回归","REJECT")))</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$val hyPort = requireNotNull(arguments.getString("hy2Port")) { "Run tools/verify-android.ps1 for controlled host fixture" }.toInt()</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$val profile = app.repository.importProfile("HY2 兼容回归", JSONObject().put("proxies",JSONArray().put(config)).put("proxy-groups",JSONArray().put(group)).toString())</ID>
+    <ID>MaxLineLength:HysteriaCompatibilityTest.kt$HysteriaCompatibilityTest$val proxy = JSONObject(Mobile.probe(profile.nodes.single().config, target, UUID.randomUUID().toString(), 5000))</ID>
+    <ID>MaxLineLength:Localization.kt$UiStrings$val</ID>
+    <ID>MaxLineLength:Localization.kt$UiStrings$when(app.getSystemService(LocaleManager::class.java).applicationLocales.get(0)?.language) {"zh"-&gt;"zh";"en"-&gt;"en";else-&gt;"system"}</ID>
+    <ID>MaxLineLength:MainActivity.kt$)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Box</ID>
+    <ID>MaxLineLength:MainActivity.kt$Card</ID>
+    <ID>MaxLineLength:MainActivity.kt$FilterChip(family == option, { family = option }, label = { Text(label) }, enabled = !state.running)</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$val language=if(data.client.language=="system") {if(systemLanguage=="zh")"zh" else "en"} else data.client.language</ID>
+    <ID>MaxLineLength:MainActivity.kt$Row</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text("${report.networkType} · ${report.elapsedMs} ms", color = Muted, style = MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(tr(R.string.message_100d9e4baf), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(tr(R.string.message_1383e06670), color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 21.sp)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(tr(R.string.message_18f7273d32, step.addressFamily, step.attempt, step.elapsedMs), color = Muted, style = MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(tr(R.string.message_5ba569f731), color = Muted, style = MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(tr(R.string.message_73cf02b62d), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:MainActivity.kt$Text(trPlural(R.plurals.message_7ae041d629, (state.steps.count { it.state == Models.State.PASSED }).toInt(), state.steps.count { it.state == Models.State.PASSED }), color = Muted, style = MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:MainActivity.kt$TextButton(onClick = model::cancel, modifier = Modifier.align(Alignment.CenterHorizontally)) { Text(tr(R.string.message_e831d49866)) }</ID>
+    <ID>MaxLineLength:MainActivity.kt$error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }</ID>
+    <ID>MaxLineLength:MainActivity.kt$if (step.attempt == 0 &amp;&amp; step.elapsedMs &gt; 0) Text("${step.elapsedMs} ms", color = Muted, style = MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:MainActivity.kt$if (step.httpStatus &gt; 0) Text("HTTP ${step.httpStatus}", color = color, style = MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:MainActivity.kt$listOf(Models.Family.AUTO to tr(R.string.message_7eb336e42c), Models.Family.IPV4 to "IPv4", Models.Family.IPV6 to "IPv6")</ID>
+    <ID>MaxLineLength:MainActivity.kt$val markdown = remember(report,UiStrings.resources().configuration.locales.toLanguageTags()) { ReportFormatter.markdown(report) }</ID>
+    <ID>MaxLineLength:MainActivity.kt$val number = port.toIntOrNull() ?: throw IllegalArgumentException(tr(R.string.message_0ff53da1e7))</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$assertEquals("Dashboard excluded from recents",0,activityInfo.flags and android.content.pm.ActivityInfo.FLAG_EXCLUDE_FROM_RECENTS)</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$assertTrue("Doze removed foreground notification",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1})</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$assertTrue("Doze was not entered",device.executeShellCommand("dumpsys deviceidle get deep").contains("IDLE"))</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$assertTrue(app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1})</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$if(permission!=null){compose.runOnUiThread {compose.activity.startActivity(permission)};approveSyntheticVpn(device,compose)}</ID>
+    <ID>MaxLineLength:NetworkReconnectionTest.kt$NetworkReconnectionTest$val reply=JSONObject(Mobile.probe(config,"http://127.0.0.1:${fixture.http.localPort}/",UUID.randomUUID().toString(),4000))</ID>
+    <ID>MaxLineLength:NodeConnectivityTest.kt$NodeConnectivityTest$assertEquals("连通性：本次访问未成功",nodeConnectivitySummary(state(policy,Models.Step(Models.Stage.PROXY,Models.State.FAILED,Models.Code.PROXY_TIMEOUT,37,"",0)),"node-a"))</ID>
+    <ID>MaxLineLength:NodeConnectivityTest.kt$NodeConnectivityTest$fun state(vararg steps: Models.Step)</ID>
+    <ID>MaxLineLength:NodeConnectivityTest.kt$NodeConnectivityTest$val policy = Models.Step(Models.Stage.POLICY, Models.State.SKIPPED, Models.Code.NODE_CERTIFICATE_UNVERIFIED, 0, "", 0)</ID>
+    <ID>MaxLineLength:NodeConnectivityTest.kt$NodeConnectivityTest$val summary=nodeConnectivitySummary(state(policy,success,Models.Step(Models.Stage.PROXY,terminal,Models.Code.CONFIG_CHANGED,0,"",0)),"node-a")</ID>
+    <ID>MaxLineLength:PingClashApplication.kt$AndroidCorePlatform$answer.get(timeoutMillis.coerceIn(1, 5000), TimeUnit.MILLISECONDS).joinToString("\n") { it.hostAddress.orEmpty() }</ID>
+    <ID>MaxLineLength:PingClashApplication.kt$AndroidCorePlatform$it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &amp;&amp; !it.hasTransport(NetworkCapabilities.TRANSPORT_VPN)</ID>
+    <ID>MaxLineLength:PingClashApplication.kt$PingClashApplication$dev.pingclash.diagnostics.DiagnosticText.setVersion(packageManager.getPackageInfo(packageName,0).versionName?:"development")</ID>
+    <ID>MaxLineLength:PingClashApplication.kt$PingClashApplication$if</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$(application as PingClashApplication).repository.recordUsage(status.optLong("uploaded"),status.optLong("downloaded"),status.optLong("uptime"))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$.</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$NotificationChannel(CHANNEL, tr(R.string.message_38854bf43e), NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) }</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$VpnRuntime.publish(VpnUiState("error", tr(R.string.message_2bb1c4d7fe)))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$else</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(tr(R.string.message_247da58fe9)))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID,notification(tr(R.string.vpn_waiting_network)))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$if</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$if(data.client.notificationSpeed) getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID,notification("↑ ${formatBytes(up)}/s ↓ ${formatBytes(down)}/s"))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)&amp;&amp;!it.hasTransport(NetworkCapabilities.TRANSPORT_VPN)</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$manager</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$override fun onRevoke()</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$previousTime=now</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$val open = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$val result = JSONObject(Mobile.startVPNWithOptions(runtimeConfig, requireNotNull(descriptor).fd.toLong(), data.dnsAddress,options))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$val resume=intent==null&amp;&amp;settings.autoReconnect&amp;&amp;getSharedPreferences("vpn_runtime",0).getBoolean("resume_requested",false)&amp;&amp;prepare(this)==null</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService$val stop = PendingIntent.getService(this, 1, Intent(this, PingVpnService::class.java).setAction(DISCONNECT), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)</ID>
+    <ID>MaxLineLength:PingVpnService.kt$PingVpnService.&lt;no name provided&gt;$override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities)</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$if (previous.active || !mutableState.compareAndSet(previous, VpnUiState("connecting", tr(R.string.message_55910a2986)))) return</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$if (state.value.active) context.startService(Intent(context, PingVpnService::class.java).setAction(PingVpnService.DISCONNECT))</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$it</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$totalConnections=status.optLong("totalConnections")</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$try</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnRuntime$uploadSpeed=upSpeed</ID>
+    <ID>MaxLineLength:PingVpnService.kt$VpnUiState$val totalConnections: Long=0</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$(0 until value.length())</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$AppData$if(node.requiresProfile) profiles.single { p -&gt; p.nodes.any { it.id==node.id } }.runtimeConfig(node.name) else node.config</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$AppData$val activeProfile get() = profiles.firstOrNull { !it.activationRequired &amp;&amp; it.id==activeProfileId } ?: profiles.firstOrNull { !it.activationRequired &amp;&amp; it.containsTarget(selectedId) } ?: profiles.firstOrNull { !it.activationRequired }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$AppData$val selected get() = profiles.filterNot {it.activationRequired}.flatMap {it.nodes}.firstOrNull { it.id == selectedId } ?: profiles.filterNot {it.activationRequired}.firstNotNullOfOrNull { p -&gt; p.groups.firstOrNull { it.supported &amp;&amp; p.groupId(it.name)==selectedId }?.let(p::groupTarget) }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalGroup$data</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalGroup$val selectionEditable get() = supported || type=="select" &amp;&amp; reason in setOf("group_dependency","group_node_unavailable","group_missing","group_cycle","group_duplicate")</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalGroup(group.getString("name"),group.getString("type"),(0 until members.length()).map(members::getString),group.getString("selected"),group.getBoolean("supported"),group.optString("reason"),group.optInt("unavailable").coerceIn(0,500))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalNode$(graphNodes != null &amp;&amp; (0 until graphNodes.length()).any { skipped(graphNodes.getJSONObject(it)) }) || skipped(parameters)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalNode$data</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalNode$fun skipped(p: JSONObject)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalNode$val graphNodes = if (type == "group") JSONObject(parameters.getString("definition")).optJSONArray("proxies") else null</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalProfile$fun runtimeConfig(target: String)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalProfile$runCatching { JSONObject(definition).optJSONArray("proxy-groups")?.length()?.let {it&gt;0}==true }.getOrDefault(false)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$LocalProfile$val</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$.</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$?:</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$@Synchronized</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$LocalNode(UUID.randomUUID().toString(), node.getString("name"), node.getString("type"), node.getString("config"),node.optBoolean("requiresProfile"))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$LocalNode(node.getString("id"), node.getString("name"), node.getString("type"), node.getString("config"),node.optBoolean("requiresProfile"))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$LocalProfile</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$available.any { it.name==name &amp;&amp; it.supported &amp;&amp; it.type!="load-balance" &amp;&amp; (choice in it.proxies || choice.isEmpty() &amp;&amp; it.type!="select") }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(current.copy(client=value,dnsAddress=dns,probeUrl=probe,usage=if(value.keepUsage)current.usage else LocalUsage()))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(current.copy(profiles = updated.map {if(it.id==profile.id)imported else it}, selectedId = selected, activeProfileId = current.activeProfile?.id ?: profile.id.takeUnless {activationRequired}))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(current.copy(profiles=current.profiles.map {if(it.id==profile.id)it.copy(remote=prepared.remote?.copy(pending=remote.pending || prepared.content!=RemoteProfiles.resolve(remote.original,remote.bodies))) else it}))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(current.copy(profiles=current.profiles.map {if(it.id==profile.id)it.copy(remote=remote.copy(error="${problem.index}:${problem.kind}:${problem.code}",retryAfter=java.time.Instant.now().epochSecond+60)) else it}))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(current.copy(usage=LocalUsage(plus(current.usage.uploaded,up),plus(current.usage.downloaded,down),plus(current.usage.seconds,seconds),plus(current.usage.sessions,1))))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==id)it.copy(name=name.trim()) else it}))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==id)it.copy(userAgent=value) else it}))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==profile.id)it.copy(activationRequired=false) else it},selectedId=profile.defaultTargetId,activeProfileId=profile.id))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$dnsAddress = root.getString("dns")</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$else</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$existing.groups.any { existing.groupId(it.name)==current.selectedId } -&gt; profile.groups.firstOrNull { it.supported &amp;&amp; it.name==previous?.name }?.let { profile.groupId(it.name) }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$existing.id==current.activeProfile?.id &amp;&amp; (current.selectedId==null || !existing.hasSubscriptionGroups &amp;&amp; profile.hasSubscriptionGroups) -&gt; profile.defaultTargetId</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$fun</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$if</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$if(providerRefresh)check(!mutableData.value.loadFailed &amp;&amp; (!VpnRuntime.state.value.active || startingVpn &amp;&amp; VpnRuntime.state.value.phase=="connecting")) else ensureMutable()</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$importProfile(profile.name,content,profile.source,profile.id,userAgent=profile.userAgent,remote=remote.copy(pending=false),providerRefresh=true,startingVpn=true)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$keptSelections</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$keptSelections.forEach { (name, choice) -&gt; picks.put(name,choice) }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$parsed.optInt("unsupported")</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$put("id", node.id); put("name", node.name); put("type", node.type); put("config", node.config);put("requiresProfile",node.requiresProfile)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$put("name",group.name);put("type",group.type);put("proxies",JSONArray(group.proxies));put("selected",group.selected);put("supported",group.supported);put("reason",group.reason);put("unavailable",group.unavailable)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$require(group.selectionEditable &amp;&amp; group.type!="load-balance" &amp;&amp; (choice in group.proxies || choice.isEmpty() &amp;&amp; group.type!="select"))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$return importProfile(name,prepared.content,source,replaceId,userAgent=userAgent,subscriptionResponse=response,remote=prepared.remote)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$return importProfile(profile.name,definition.toString(),profile.source,profile.id,explicitSelections=profile.userSelections+(groupName to choice))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$return importProfile(profile.name,profile.definition,profile.source,profile.id,explicitSelections=profile.userSelections)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$val active=profiles.firstOrNull {!it.activationRequired &amp;&amp; it.id==current.activeProfile?.id} ?: profiles.firstOrNull {!it.activationRequired}</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$val next=mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==owner.id)it.copy(activationRequired=false) else it},selectedId=id,activeProfileId=owner.id)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$val updated = if (existing != null) current.profiles.map { if (it.id == replaceId) profile else it } else current.profiles + profile</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$val withRules=profile.copy(remote=if(explicitSelections!=null)previousProfile?.remote else remote,userAgent=userAgent?:previousProfile?.userAgent?:DEFAULT_SUBSCRIPTION_UA,quota=if(subscriptionResponse!=null)subscriptionResponse.quota else previousProfile?.quota,rules=if(explicitSelections!=null)previousProfile?.rules.orEmpty() else readRules(parsed.optJSONArray("rules")),rulesOmitted=if(explicitSelections!=null)previousProfile?.rulesOmitted?:0 else parsed.optInt("rulesOmitted").coerceAtLeast(0))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$ProfileRepository$}</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$address = address.resolve(connection.getHeaderField("Location") ?: throw IllegalStateException(tr(R.string.message_3a12c4343b)))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$fun</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$fun fetch(source: String, userAgent: String=DEFAULT_SUBSCRIPTION_UA): String</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$if (expired.get() || System.nanoTime() &gt;= deadline) throw java.net.SocketTimeoutException("subscription_deadline")</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$private val timer = Executors.newSingleThreadScheduledExecutor { task -&gt; Thread(task, "subscription-deadline").apply { isDaemon = true } }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$require(headers.isEmpty() || previous.host.equals(address.host,true) &amp;&amp; previous.port==address.port) {tr(R.string.provider_redirect)}</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$return SubscriptionResponse(connection.inputStream.use { it.readBytesLimited(2 * 1024 * 1024) }.toString(Charsets.UTF_8),SubscriptionQuota.parse(connection.getHeaderField("subscription-userinfo")))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$SubscriptionDownloader$val expiry = timer.schedule({ expired.set(true); connection.disconnect() }, maxOf(1, deadline - System.nanoTime()), TimeUnit.NANOSECONDS)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$internal</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$internal fun rejectionSummary(counts: Map&lt;String, Int&gt;): String</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$internal val rejectionLabels get() = linkedMapOf("resource_limit" to tr(R.string.message_dd78acd8da), "security_policy" to tr(R.string.message_013c8202d5), "tls_policy" to tr(R.string.message_08f09e82cc), "proxy_chain" to tr(R.string.message_af37f27d56), "replay_policy" to tr(R.string.message_3913485e58), "plaintext_transport" to tr(R.string.message_de9a8af39f), "cipher_policy" to tr(R.string.message_6178fccf0c), "udp_policy" to tr(R.string.message_9bf38eee01), "unsupported_protocol" to tr(R.string.message_e72cf6020d), "invalid_parameters" to tr(R.string.message_adbc2f44ed), "unsupported_fields" to tr(R.string.message_0357e0e899), "invalid_node" to tr(R.string.message_b41b084688))</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$private</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$raw.length &lt;= 4096 &amp;&amp; uri.scheme == "https" &amp;&amp; !uri.host.isNullOrBlank() &amp;&amp; uri.rawUserInfo == null &amp;&amp; uri.rawFragment == null &amp;&amp; (uri.port == -1 || uri.port in 1..65535)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$require(uri.port in 1..65535 &amp;&amp; uri.rawUserInfo == null &amp;&amp; uri.rawQuery == null &amp;&amp; uri.rawFragment == null &amp;&amp; uri.rawPath.isNullOrEmpty())</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$trPlural(R.plurals.message_ab72fde8f0, (count).toInt(), if(parts[0] == "other") tr(R.string.message_d2909f1647) else parts[0].uppercase(java.util.Locale.ROOT), field, count)</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$val detail = rejectionSummary(counts) + importFieldSummary(importFieldCounts(parsed.optJSONObject("fieldIssues"))).takeIf { it.isNotBlank() }?.let { "。$it" }.orEmpty()</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$val field = when(parts[1]) { "parameters" -&gt; tr(R.string.message_0facf15a7b); "structure" -&gt; tr(R.string.message_b4c7dabb18); "protocol" -&gt; tr(R.string.message_3c54c5dcf5); "other" -&gt; tr(R.string.message_588e7c7ede); else -&gt; parts[1] }</ID>
+    <ID>MaxLineLength:ProfileRepository.kt$val rules=(0 until value.length()).map(value::getString)</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$before.selectedId?.takeIf {AppData(profiles=app.repository.data.value.profiles,selectedId=it).selected!=null}?.let(app.repository::select)</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"proxy-grid-light.png")</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"proxy-group-region.png")</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$compose.waitUntil(10000) {compose.activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK==android.content.res.Configuration.UI_MODE_NIGHT_YES}</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$fun group(name:String,type:String,members:List&lt;String&gt;)</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$val names=listOf("🇭🇰 香港 01 · 专线","🇭🇰 香港 02 · 高速","🇯🇵 东京 01 · 标准","🇯🇵 东京 02 · 专线","🇸🇬 新加坡 · BGP","🇺🇸 洛杉矶 · 标准","🇩🇪 法兰克福 · 高速","🇹🇼 台北 · 专线")</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$val nodes=JSONArray(names.map {name -&gt; JSONObject().put("name",name).put("type","trojan").put("server","example.invalid").put("port",443).put("password","proxy-page-fixture-secret")})</ID>
+    <ID>MaxLineLength:ProxyPageTest.kt$ProxyPageTest$}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$"failed" -&gt; Text((tr(R.string.message_28384d7afd)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$"passed" -&gt; Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),fontSize=12.sp,color=Success)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$"timeout" -&gt; Text((tr(R.string.message_e512cf016f)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$@Composable internal</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$@Composable private</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$AppGlyph(1,Modifier.size(44.dp),Mint)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Box</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Column</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$DropdownMenuItem({Text((tr(R.string.message_33ff6d18e1)))},{menu=false;onDiagnosis()},enabled=data.selected!=null&amp;&amp;!tests.running)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$DropdownMenuItem({Text(if(current!=null&amp;&amp;data.selectedId==profile?.groupId(current.name)) tr(R.string.message_c63fdbd771) else tr(R.string.message_b718063f31))},{menu=false;if(profile!=null&amp;&amp;current!=null)model.selectMainGroup(profile,current)},enabled=!locked&amp;&amp;current?.supported==true&amp;&amp;current.type!="nodes",modifier=Modifier.testTag("group-main-${current?.name}"))</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$DropdownMenuItem({Text(tr(R.string.latency_tcp_test))},{menu=false;if(profile!=null&amp;&amp;current!=null)model.testTcpProxies(profile,current.proxies,current.name)},enabled=!tests.running)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$HorizontalPager</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$IconButton</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$IconButton({chooser=true},Modifier.padding(end=8.dp).background(Panel,CircleShape).semantics {contentDescription=tr(R.string.message_64a4fcdeb6)}) {ProxySymbol("down")}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$IconButton({menu=true},Modifier.semantics {contentDescription=tr(R.string.message_ab43f25026)}) {ProxySymbol("menu")}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$IconButton({searching=!searching;if(!searching)query=""},Modifier.semantics {contentDescription=tr(R.string.message_760585442e)}) {AppGlyph(8,Modifier.size(23.dp))}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$LaunchedEffect(pager.currentPage,groups.map {it.name}) {if(groups.isNotEmpty()) tabs.animateScrollToItem(pager.currentPage)}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$LazyRow</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$LazyVerticalGrid</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$LinearProgressIndicator(progress={if(tests.total&gt;0)tests.completed.toFloat()/tests.total else 0f},modifier=Modifier.fillMaxWidth().padding(horizontal=18.dp))</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$ProxyCard</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Row</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Spacer(Modifier.height(12.dp))</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Surface</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text((tr(R.string.message_5e84ea61e8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text(description,Modifier.weight(1f),style=MaterialTheme.typography.bodySmall,color=Muted,maxLines=1,overflow=TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text(g.name,Modifier.padding(horizontal=16.dp,vertical=11.dp),maxLines=1,fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text(name,Modifier.weight(1f).heightIn(min=48.dp),fontSize=16.sp,lineHeight=23.sp,maxLines=2,overflow=TextOverflow.Ellipsis,color=if(enabled)MaterialTheme.colorScheme.onSurface else Muted)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text(tr(R.string.latency_tcp,if(udpOnly)tr(R.string.latency_udp_na) else when(tcp?.state){"passed"-&gt;"${tcp.elapsedMs.coerceAtLeast(1)} ms";"skipped"-&gt;tr(R.string.latency_skipped);"timeout"-&gt;tr(R.string.message_e512cf016f);"failed","dns","stale"-&gt;tr(R.string.message_28384d7afd);"running"-&gt;"…";else-&gt;"—"}),modifier=Modifier.clickable(enabled=onTcpTest!=null){onTcpTest?.invoke()},style=MaterialTheme.typography.bodySmall,color=if(tcp?.state=="passed")Success else Muted)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$Text(tr(R.string.message_3538e7b1a7, tests.completed, tests.total, data.client.probeConcurrency),Modifier.padding(horizontal=18.dp,vertical=4.dp),style=MaterialTheme.typography.labelSmall,color=Muted)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$border=BorderStroke(.7.dp,if(pager.currentPage==i) Mint.copy(alpha=.2f) else MaterialTheme.colorScheme.outlineVariant)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$else -&gt; if(onTest!=null) ProxySymbol("bolt",Modifier.size(16.dp),Mint) else Text("—",fontSize=12.sp,color=Muted)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(!group.supported) Text(groupProblem(group.reason),Modifier.padding(horizontal=18.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(chosen) Box(Modifier.size(22.dp).background(Mint,CircleShape),contentAlignment=Alignment.Center) {ProxySymbol("check",Modifier.size(15.dp),MaterialTheme.colorScheme.onPrimary)}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(current?.type in listOf("url-test","fallback")) DropdownMenuItem({Text((tr(R.string.message_5edc4aac67)))},{menu=false;model.selectGroup(requireNotNull(profile),requireNotNull(current),"")},enabled=!locked)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(group.unavailable&gt;0) Text(trPlural(R.plurals.message_9854876d3b, (group.unavailable).toInt(), group.unavailable),Modifier.padding(horizontal=18.dp,vertical=8.dp),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(onOpen!=null) Box(Modifier.size(26.dp).clickable(onClick=onOpen).semantics {contentDescription=tr(R.string.message_73396c3856, name)},contentAlignment=Alignment.Center) {ProxySymbol("right",Modifier.size(16.dp))}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(raw==null) emptySet() else (0 until raw.length()).mapNotNull {raw.optJSONObject(it)?.takeIf {it.optBoolean("hidden")}?.optString("name")}.toSet()</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(searching) OutlinedTextField(query,{if(it.length&lt;=100)query=it},Modifier.fillMaxWidth().padding(horizontal=16.dp).padding(bottom=10.dp).testTag("proxy-search"),singleLine=true,shape=CircleShape,placeholder={Text((tr(R.string.message_9c9e5273fe)))},trailingIcon={TextButton({searching=false;query=""}){Text((tr(R.string.message_3fd47edce4)))}})</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$if(tests.running) CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp) else ProxySymbol("bolt")</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$items(groups.size) {i -&gt; TextButton({chooser=false;scope.launch {pager.animateScrollToPage(i)}},Modifier.fillMaxWidth()) {Text(groups[i].name,Modifier.weight(1f),maxLines=2,overflow=TextOverflow.Ellipsis);if(i==pager.currentPage)Text("✓")}}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$modifier=Modifier.testTag("group-tab-${g.name}").semantics {selected=pager.currentPage==i}.clickable {scope.launch {pager.animateScrollToPage(i)}}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$onOpen=if(nested!=null) {{val index=groups.indexOfFirst {it.name==name};if(index&gt;=0)scope.launch {pager.animateScrollToPage(index)}}} else null</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$onTcpTest=if(node!=null&amp;&amp;node.type !in setOf("hysteria2","tuic")&amp;&amp;!tests.running) {{model.testTcpProxies(profile,listOf(name),group.name)}} else null</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$onTest=if((node!=null||nested?.supported==true)&amp;&amp;!tests.running) {{model.testProxies(profile,listOf(name),group.name)}} else null</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$return proxyTypeLabel(g.type)+when {g.type=="load-balance" -&gt; tr(R.string.message_4682046b69);g.selected.isEmpty() -&gt; tr(R.string.message_d3d5aa4a3b);else -&gt; "(${g.selected})"}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$tests.values[delayKey(profile.id,name,group.name)]</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val available=name in listOf("DIRECT","REJECT","COMPATIBLE") || node!=null || nested?.supported==true</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val chosen=if(group.type=="nodes") node?.id==data.selectedId else group.selected==name</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val g=groups.firstOrNull {it.name==name} ?: return if(name in listOf("DIRECT","REJECT","COMPATIBLE")) name else tr(R.string.message_454a00d476)</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val groups=remember(profile?.id,profile?.definition,profile?.groups,profile?.nodes) {profile?.displayGroups().orEmpty()}</ID>
+    <ID>MaxLineLength:ProxyScreen.kt$val members=group.proxies.filter {query.isBlank()||it.contains(query,true)||profile.proxyDescription(it).contains(query,true)}</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$ProviderFailure$fun publicMessage()</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfile$data</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfile.Companion$RemoteProfile(original,bodies.keys().asSequence().associateWith(bodies::getString),times.keys().asSequence().associateWith(times::getLong),it.optLong("retryAfter"),it.optString("error").takeIf {s-&gt;s.matches(Regex("[0-9]{1,2}:(proxy|rule):(provider_invalid|provider_payload|provider_network)"))}.orEmpty(),it.optBoolean("pending"))</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfile.Companion$val bodies=it.getJSONObject("bodies")</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfiles$bodies[id]=SubscriptionDownloader.fetchResponse(spec.getString("url"),userAgent,headers,remaining.coerceAtMost(30_000).toInt()).content</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfiles$fun</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfiles$if(bodies.values.sumOf {it.toByteArray().size}&gt;2*1024*1024)throw ProviderFailure(spec.getInt("index"),spec.getString("kind"),"provider_payload")</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfiles$return (0 until specs.length()).any {i-&gt;val spec=specs.getJSONObject(i);val last=remote.updated[spec.getString("id")]?:0;now&lt;last || now-last&gt;=spec.getInt("interval")}</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$RemoteProfiles$}</ID>
+    <ID>MaxLineLength:RemoteProfiles.kt$internal fun providerFailure(reply: JSONObject)</ID>
+    <ID>MaxLineLength:ReportExporter.kt$ReportExporter$Toast.makeText(app, if (saved) tr(R.string.message_ca6e1092af) else tr(R.string.message_37e5395b04), Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:ResourceLocaleRule.kt$ResourceLocaleRule$val app=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as PingClashApplication</ID>
+    <ID>MaxLineLength:ResourceLocaleRule.kt$val input=view.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$Canvas</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$Card</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$Column(Modifier.weight(1f)) {Text("↑ ${formatBytes(vpn.uploadSpeed)}/s",color=Mint,style=MaterialTheme.typography.titleLarge);Text((tr(R.string.message_9e07e3c053)),color=Muted)}</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$Column(Modifier.weight(1f)) {Text("↓ ${formatBytes(vpn.downloadSpeed)}/s",color=Success,style=MaterialTheme.typography.titleLarge);Text((tr(R.string.message_4673a23061)),color=Muted)}</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_03d39aa1b9),(when(vpn.phase){"established"-&gt;tr(R.string.message_1f0eb99b7e);"connecting"-&gt;tr(R.string.message_087739b986);"error"-&gt;tr(R.string.message_0cb3fb5b86);else-&gt;tr(R.string.message_f006455e3b)}))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_3726bcb690),vpn.connections.toString())</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_77939c5206),formatBytes(snapshot[0]))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_a51797a853),formatBytes(snapshot[2]))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_daae3125b8),(when(prefs.mode){"rule"-&gt;tr(R.string.message_1123245d1b);"direct"-&gt;tr(R.string.message_b06325c566);else-&gt;tr(R.string.message_f1880deaae)}))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_e38ff950f7),vpn.rejected.toString())</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_ea2678384d),formatBytes(if(vpn.active)vpn.heapBytes else snapshot[3]))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_f2f0204946),formatBytes(vpn.uploaded))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$StatLine(tr(R.string.message_fd1e76eafb),durationText(vpn.uptime))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$fun point(index: Int,value: Long)</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$listOf(memory.totalPss.toLong()*1024,Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory(),system.availMem,core.optLong("heapBytes"),core.optLong("goroutines"))</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$val core=if(vpn.active) JSONObject() else runCatching {JSONObject(Mobile.vpnStatus())}.getOrDefault(JSONObject())</ID>
+    <ID>MaxLineLength:RuntimeCards.kt$val system=ActivityManager.MemoryInfo()</ID>
+    <ID>MaxLineLength:SecurePage.kt$SecurePage$val entry=entries.getOrPut(window) {Entry(window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE!=0)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$@Composable internal</ID>
+    <ID>MaxLineLength:SettingsHub.kt$@Composable private</ID>
+    <ID>MaxLineLength:SettingsHub.kt$AlertDialog(onDismissRequest={license=null},title={Text(file)},text={Text(text,Modifier.heightIn(max=400.dp).verticalScroll(rememberScrollState()),style=MaterialTheme.typography.bodySmall)},confirmButton={TextButton({license=null}){Text((tr(R.string.message_3fd47edce4)))}})</ID>
+    <ID>MaxLineLength:SettingsHub.kt$AppGlyph(when(id) {"live","diagnosis"-&gt;2;"usage"-&gt;19;"connections"-&gt;20;"network"-&gt;22;"dns"-&gt;21;"lan"-&gt;23;"apps"-&gt;27;"profiles"-&gt;7;"rules"-&gt;17;"about"-&gt;24;"privacy"-&gt;6;"control"-&gt;0;"appearance"-&gt;18;"groups"-&gt;14;else-&gt;12},Modifier.size(19.dp),Muted)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Box</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Button({if(vpn.active)VpnRuntime.disconnect(context) else onDashboard()},Modifier.fillMaxWidth()) {Text((if(vpn.active)tr(R.string.message_a33f380476) else tr(R.string.message_a01b7b224b)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Button({model.clientSettings(draft,dns.trim(),target.trim())},enabled=dirty&amp;&amp;!locked,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).testTag("settings-save")) {Text((if(dirty)tr(R.string.message_c8550237ba) else tr(R.string.message_1bd91a7d0c)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_47a270081a),draft.appMode,listOf("all" to tr(R.string.message_b4de26e01a),"exclude" to tr(R.string.message_b74c5a407d),"include" to tr(R.string.message_cddb6c9475)),enabled) {onChange(draft.copy(appMode=it))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_47a270081a),draft.dnsMode,listOf("tcp" to "DNS over TCP","https" to "DNS over HTTPS"),!locked) {draft=draft.copy(dnsMode=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_4f8389a45d),draft.lan,listOf("proxy" to tr(R.string.message_244df9f228),"direct" to tr(R.string.message_72a607c93d),"block" to tr(R.string.message_58c11726a2)),!locked) {draft=draft.copy(lan=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_788db1cfec),data.client.theme,listOf("system" to tr(R.string.message_217cfe7db1),"light" to tr(R.string.message_aa0819dfc4),"dark" to tr(R.string.message_a6b75d0680)),true) {model.appearance(data.client.language,it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_9f6fee1aba),data.client.language,listOf("system" to tr(R.string.message_217cfe7db1),"zh" to tr(R.string.message_9937e365aa),"en" to tr(R.string.message_d1648bacbc)),true) {model.appearance(it,data.client.theme)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Choices(tr(R.string.message_daae3125b8),draft.mode,listOf("global" to tr(R.string.message_f1880deaae),"rule" to tr(R.string.message_1123245d1b),"direct" to tr(R.string.message_b06325c566)),!locked) {draft=draft.copy(mode=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Column</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Column(Modifier.weight(1f)) {Text(app.name,maxLines=1,overflow=TextOverflow.Ellipsis);Text(app.packageName,color=Muted,style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {Text((title),style=MaterialTheme.typography.titleMedium);Text((description),color=Muted,style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$ConnectionRow</ID>
+    <ID>MaxLineLength:SettingsHub.kt$LazyColumn</ID>
+    <ID>MaxLineLength:SettingsHub.kt$NumberSetting(tr(R.string.message_6052d6f653),draft.udpTimeout,10..300,!locked) {draft=draft.copy(udpTimeout=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$NumberSetting(tr(R.string.message_84b0b71bc5),draft.connectTimeout,3..60,!locked) {draft=draft.copy(connectTimeout=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$NumberSetting(tr(R.string.message_8f7e175c9a),draft.probeConcurrency,1..16,!locked) {draft=draft.copy(probeConcurrency=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$NumberSetting(tr(R.string.message_c2e266e57d),draft.maxConnections,16..512,!locked) {draft=draft.copy(maxConnections=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$NumberSetting(tr(R.string.message_d4d74926c2),draft.probeTimeout,1000..20000,!locked) {draft=draft.copy(probeTimeout=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedButton(model::restartVpn,enabled=vpn.phase=="established",modifier=Modifier.fillMaxWidth()) {Text((tr(R.string.message_ce42fad515)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedButton({model.cancelDiagnosis();model.cancelProxyTests()},Modifier.fillMaxWidth()) {Text((tr(R.string.message_c04d2e604f)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedButton({model.closeConnection(0)},enabled=vpn.phase=="established",modifier=Modifier.fillMaxWidth()) {Text((tr(R.string.message_39bfc9edc3)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedTextField(draft.customRules,{if(it.toByteArray().size&lt;=64*1024)draft=draft.copy(customRules=it)},Modifier.fillMaxWidth().heightIn(min=200.dp,max=400.dp).testTag("custom-rules"),enabled=!locked,label={Text((tr(R.string.message_51c22886b5)))},shape=RoundedCornerShape(16.dp))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedTextField(raw,{if(it.length&lt;=6&amp;&amp;it.all(Char::isDigit)){raw=it;onChange(it.toIntOrNull()?:0)}},Modifier.fillMaxWidth().testTag("number-$title"),enabled=enabled,singleLine=true,label={Text((title))},isError=!valid,supportingText={Text("${range.first}–${range.last}")},keyboardOptions=androidx.compose.foundation.text.KeyboardOptions(keyboardType=androidx.compose.ui.text.input.KeyboardType.Number),shape=RoundedCornerShape(16.dp))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$OutlinedTextField(value,onChange,Modifier.fillMaxWidth().testTag("field-$title"),enabled=enabled,singleLine=true,label={Text((title))},shape=RoundedCornerShape(16.dp))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Row</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {Text((title),Modifier.weight(1f));Switch(value,onChange,enabled=enabled,modifier=Modifier.testTag("switch-$title"))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingField(tr(R.string.message_09ed073054),draft.delayUrl,!locked) {if(it.length&lt;=2048)draft=draft.copy(delayUrl=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("about",tr(R.string.message_495dc9e725),tr(R.string.message_87f447012c)) {page="about"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("appearance",tr(R.string.message_f3d6b6c03b),tr(R.string.message_a9a0dc61a9)) {page="appearance"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("apps",tr(R.string.message_d8618b5e19),tr(R.string.message_3223a06434)) {page="apps"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("connections",tr(R.string.message_fc16aec85d),tr(R.string.message_36dd5f6649)) {page="connections"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("control",tr(R.string.message_4f51d0285e),tr(R.string.message_868b06e262)) {page="control"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("diagnosis",tr(R.string.message_75793291b7),tr(R.string.message_dde1ab0b99)) {onDiagnose()}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("groups",tr(R.string.message_47d56387f5),tr(R.string.message_8d039d6835)) {onProxies()}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("live",tr(R.string.message_caaf859d56),tr(R.string.message_3a2c23fbc8)) {page="live"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("network",tr(R.string.message_03fae6b449),tr(R.string.message_b187f37b87)) {page="network"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("privacy",tr(R.string.message_58e6ce61a6),tr(R.string.message_1b7a562155)) {page="privacy"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("profiles",tr(R.string.message_148d195e21),tr(R.string.message_08083cb518)) {onProfiles()}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("rules",tr(R.string.message_beae79496b),tr(R.string.message_9724800c57)) {page="rules"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingLink("usage",tr(R.string.message_e7370f8097),tr(R.string.message_5848c8f018)) {page="usage"}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.auto_reconnect),draft.autoReconnect,!locked) {draft=draft.copy(autoReconnect=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_1a8e6963af),draft.notificationSpeed,!locked) {draft=draft.copy(notificationSpeed=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_1de996dcd1),draft.inspectConnections,!locked) {draft=draft.copy(inspectConnections=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_3356dda6d6),draft.keepUsage,!locked) {draft=draft.copy(keepUsage=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_57ef467828),draft.unifiedDelay,!locked) {draft=draft.copy(unifiedDelay=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_89d9fceeb2),draft.showTraffic,!locked) {draft=draft.copy(showTraffic=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_8f93778b08),draft.useProviderRules,!locked) {draft=draft.copy(useProviderRules=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_a3c3934d25),draft.showService,!locked) {draft=draft.copy(showService=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_a706781246),draft.showSpeed,!locked) {draft=draft.copy(showSpeed=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingSwitch(tr(R.string.message_b01eb09ae9),draft.showMemory,!locked) {draft=draft.copy(showMemory=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$SettingsCard {StatLine(tr(R.string.message_3726bcb690),rows.size.toString());OutlinedButton({model.closeConnection(0)},enabled=rows.isNotEmpty()) {Text((tr(R.string.message_39bfc9edc3)))}}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$StatLine(tr(R.string.message_03d39aa1b9),(if(vpn.phase=="established")tr(R.string.message_1f0eb99b7e) else tr(R.string.message_f006455e3b)))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$StatLine(tr(R.string.message_4211d1e5e4),formatBytes(data.usage.uploaded))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$StatLine(tr(R.string.message_60b4864be8),durationText(data.usage.seconds))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$StatLine(tr(R.string.message_f3d6b6c03b),(when(data.client.theme){"light"-&gt;tr(R.string.message_aa0819dfc4);"dark"-&gt;tr(R.string.message_a6b75d0680);else-&gt;tr(R.string.message_217cfe7db1)}))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Text("${data.activeProfile?.rules?.size?:0} ${(tr(R.string.message_d60617d759))} · ${data.activeProfile?.rulesOmitted?:0} ${(tr(R.string.message_01e0c3f814))}",color=Muted)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Text("DOMAIN-SUFFIX,example.com,PROXY\nIP-CIDR,192.168.0.0/16,DIRECT,no-resolve\nDST-PORT,443,PROXY\nNETWORK,udp,REJECT\nMATCH,PROXY",style=MaterialTheme.typography.bodySmall,color=Muted)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Text("↑ ${formatBytes(r.up)} ↓ ${formatBytes(r.down)} · ${durationText(r.seconds)}",style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Text((titles[page]?:tr(R.string.message_df3d58c7d8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:SettingsHub.kt$Text(r.destination.ifEmpty {(tr(R.string.message_cbd4ad8d7c))},color=Muted,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$TextButton({if(manual !in selected)onChange(draft.copy(packages=(draft.packages+manual.trim()).take(300)));manual=""},enabled=enabled&amp;&amp;manual.isNotBlank()) {Text((tr(R.string.message_c363ad1f5f)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE,context.packageName))}}) {Text(tr(R.string.notification_settings))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))}}) {Text((tr(R.string.message_11a3eb2648)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_VPN_SETTINGS))}}) {Text((tr(R.string.message_23e3eef5b0)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$TextButton({showProviderRules=true},enabled=!data.activeProfile?.rules.isNullOrEmpty()) {Text((tr(R.string.message_a89096ffdb)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$choices.forEach {(id,name) -&gt; Row(Modifier.fillMaxWidth().clickable(enabled=enabled){onChange(id)}.testTag("choice-$title-$id"),verticalAlignment=Alignment.CenterVertically) {RadioButton(value==id,{onChange(id)},enabled=enabled);Text((name),Modifier.weight(1f))}}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$context.packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER),0)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$draft.packages.forEach {pkg -&gt; Row(verticalAlignment=Alignment.CenterVertically) {Text(pkg,Modifier.weight(1f),style=MaterialTheme.typography.bodySmall);TextButton({onChange(draft.copy(packages=draft.packages-pkg))},enabled=enabled){Text((tr(R.string.message_6135d4159e)))}}}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$fun toggle(pkg: String)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$if(draft.dnsMode=="https") SettingField(tr(R.string.message_56dcdaae6d),draft.dnsHttps,!locked) {if(it.length&lt;=2048)draft=draft.copy(dnsHttps=it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$if(locked&amp;&amp;page in listOf("dns","network","apps","rules","lan","usage")) Text((tr(R.string.message_0845a173b1)),color=Warning,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SettingsHub.kt$if(page.isNotEmpty()) TextButton({page=""},Modifier.testTag("settings-back")){Text((tr(R.string.message_572cf45ba4)))}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$if(reset) AlertDialog(onDismissRequest={reset=false},title={Text((tr(R.string.message_3b1473939a)))},text={Text((tr(R.string.message_c323a1f237)))},confirmButton={TextButton({model.clientSettings(ClientSettings(),"1.1.1.1","https://www.gstatic.com/generate_204");reset=false}){Text((tr(R.string.message_3b1473939a)))}},dismissButton={TextButton({reset=false}){Text((tr(R.string.message_2cd0f3be87)))}})</ID>
+    <ID>MaxLineLength:SettingsHub.kt$if(showProviderRules) AlertDialog(onDismissRequest={showProviderRules=false},properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn),title={Text((tr(R.string.message_a89096ffdb)))},text={Text(data.activeProfile?.rules?.joinToString("\n").orEmpty(),Modifier.heightIn(max=400.dp).verticalScroll(rememberScrollState()),style=MaterialTheme.typography.bodySmall)},confirmButton={TextButton({showProviderRules=false}){Text((tr(R.string.message_3fd47edce4)))}})</ID>
+    <ID>MaxLineLength:SettingsHub.kt$info.activityInfo?.packageName?.takeIf {it!=context.packageName}?.let {VisibleApp(info.loadLabel(context.packageManager).toString().take(100),it)}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$license</ID>
+    <ID>MaxLineLength:SettingsHub.kt$repeat(16) {if(current is Activity)return current as Activity;current=(current as? ContextWrapper)?.baseContext?:return null}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$val raw=JSONArray(Mobile.vpnConnections());(0 until raw.length().coerceAtMost(512)).map {val r=raw.getJSONObject(it);ConnectionRow(r.getLong("id"),r.getString("network"),r.getString("route"),r.getString("destination"),r.getLong("seconds"),r.getLong("uploaded"),r.getLong("downloaded"))}.sortedByDescending {it.id}</ID>
+    <ID>MaxLineLength:SettingsHub.kt$val titles=mapOf("live" to tr(R.string.message_caaf859d56),"connections" to tr(R.string.message_fc16aec85d),"dns" to "DNS","network" to tr(R.string.message_03fae6b449),"apps" to tr(R.string.message_d8618b5e19),"rules" to tr(R.string.message_beae79496b),"lan" to tr(R.string.message_4f8389a45d),"appearance" to tr(R.string.message_f3d6b6c03b),"usage" to tr(R.string.message_e7370f8097),"control" to tr(R.string.message_4f51d0285e),"privacy" to tr(R.string.message_58e6ce61a6),"about" to tr(R.string.message_495dc9e725))</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$assertEquals("passed",JSONObject(Mobile.validateNode(app.repository.data.value.selectedRuntimeConfig!!)).getString("state"))</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$assertFalse(java.io.File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("private-group-fixture"))</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$before.selectedId?.takeIf { id -&gt; app.repository.data.value.nodes.any { it.id==id } }?.let(app.repository::select)</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"strategy-groups.png")</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$compose.waitUntil(10000) { app.repository.data.value.profiles.first { it.id==profile.id }.groups.first().selected=="合成节点0" }</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$compose.waitUntil(10000) { app.repository.data.value.profiles.first {it.id==profile.id}.groups[1].selected.isEmpty() }</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$compose.waitUntil(10000) { app.repository.data.value.profiles.first {it.id==profile.id}.groups[1].selected=="合成节点0" }</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$compose.waitUntil(10000) {compose.onAllNodes(hasTestTag("group-choice-自动测试-合成节点0") and isSelected() and isEnabled()).fetchSemanticsNodes().isNotEmpty()}</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$nodes</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$val auto=JSONObject().put("name","自动测试").put("type","url-test").put("proxies",JSONArray(listOf("合成节点0","DIRECT"))).put("url","https://www.gstatic.com/generate_204").put("tolerance",50)</ID>
+    <ID>MaxLineLength:StrategyGroupsTest.kt$StrategyGroupsTest$val group=JSONObject().put("name","拨号选择").put("type","select").put("proxies",JSONArray(listOf("DIRECT","合成节点0")))</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$.</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$Text(tr(R.string.provider_status,spec.getInt("index"),spec.getString("kind"),spec.getInt("interval")),style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$Text(tr(R.string.subscription_expires,quota.expire?.let(::localDateTime)?:tr(R.string.subscription_unknown)),style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$Text(tr(R.string.subscription_total,quota.total?.takeIf {it&gt;0}?.let(::formatBytes)?:tr(R.string.subscription_unknown)),style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$Text(tr(R.string.subscription_used,quota.used?.let(::formatBytes)?:tr(R.string.subscription_unknown)),style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$if(profile.source!=null&amp;&amp;profile.quota==null)Text(tr(R.string.subscription_unknown),style=MaterialTheme.typography.bodySmall,color=Muted)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$if(quota.expire?.let {it&lt;=Instant.now().epochSecond}==true)Text(tr(R.string.subscription_expired),color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$if(remote.error.isNotBlank()) {val parts=remote.error.split(':');Text(ProviderFailure(parts[0].toInt(),parts[1],parts[2]).publicMessage(),color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$quota.remaining?.let {Text(tr(R.string.subscription_remaining,formatBytes(it)),style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$remote.updated[spec.getString("id")]?.let {stamp-&gt;Text(tr(R.string.provider_updated,localDateTime(stamp)),style=MaterialTheme.typography.bodySmall)}</ID>
+    <ID>MaxLineLength:SubscriptionDetails.kt$val specs=androidx.compose.runtime.remember(remote.original) {runCatching {RemoteProfiles.plan(remote.original)}.getOrNull()}</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$RunControl(3000).use {assertEquals("failed",TcpLatencyProbe.run(app,node.copy(config=JSONObject(config).put("port",closedPort).toString()),2000,it).state)}</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$RunControl(3000).use {assertEquals("skipped",TcpLatencyProbe.run(app,node.copy(type="hysteria2"),2000,it).state)}</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$RunControl(3000).use {control -&gt; assertEquals("passed",TcpLatencyProbe.run(app,node,2000,control).state)}</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$approveSyntheticVpn(androidx.test.uiautomator.UiDevice.getInstance(androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()),compose)</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$assertEquals("TCP metric sent an application handshake",-1,accepted.get(3,java.util.concurrent.TimeUnit.SECONDS))</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$assertEquals(profile.definition,kept.definition)</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$assertTrue(runCatching {SubscriptionDownloader.fetchResponse(fixture.source,"invalid\r\nInjected: value")}.isFailure)</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$fixture.bodies["/nodes"]="proxies: [{name: remote-HK, type: anytls, server: example.invalid, port: 443, password: synthetic-secret}]"</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$if(app.repository.data.value.profiles.size&gt;1)compose.onNode(hasText("Synthetic quota") and hasClickAction()).performClick()</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$val accepted=executor.submit&lt;Int&gt; {server.accept().use {socket -&gt; socket.soTimeout=2000;socket.getInputStream().read()}}</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$val config=JSONObject().put("type","anytls").put("server","127.0.0.1").put("port",server.localPort).put("password","synthetic-secret").toString()</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$val profile=app.repository.importWithProviders("Synthetic quota",response.content,fixture.source,userAgent="mihomo/synthetic-fixture",response=response)</ID>
+    <ID>MaxLineLength:SubscriptionFeaturesTest.kt$SubscriptionFeaturesTest$}</ID>
+    <ID>MaxLineLength:SubscriptionGroupsPriorityTest.kt$SubscriptionGroupsPriorityTest$.</ID>
+    <ID>MaxLineLength:SubscriptionGroupsPriorityTest.kt$SubscriptionGroupsPriorityTest$for</ID>
+    <ID>MaxLineLength:SubscriptionGroupsPriorityTest.kt$SubscriptionGroupsPriorityTest$listOf("A","B","C").forEach { name -&gt; nodes.put(JSONObject().put("name",name).put("type","trojan").put("server","example.invalid").put("port",443).put("password","synthetic-priority-fixture")) }</ID>
+    <ID>MaxLineLength:SubscriptionGroupsPriorityTest.kt$SubscriptionGroupsPriorityTest$val invalidFirst=JSONObject(fixture()).apply {getJSONArray("proxy-groups").getJSONObject(0).put("type","relay")}.toString()</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$else</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$override fun close()</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val asset = InstrumentationRegistry.getInstrumentation().context.assets.open("subscription-fixture.base64").use { it.readBytes() }</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val body = bodies[path] ?: if (html) "&lt;!doctype html&gt;&lt;html&gt;login page&lt;/html&gt;" else Base64.encodeToString(raw.toByteArray(), Base64.NO_WRAP)</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val certificate=java.security.cert.CertificateFactory.getInstance("X.509").generateCertificate(Base64.decode(encoded.getString("certificate"),Base64.DEFAULT).inputStream())</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val key=java.security.KeyFactory.getInstance("RSA").generatePrivate(java.security.spec.PKCS8EncodedKeySpec(Base64.decode(encoded.getString("fixturePrivateDer"),Base64.DEFAULT)))</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val keys = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply { init(store, "public-test-password".toCharArray()) }</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$val raw = "anytls://fixture-password@example.invalid:443?sni=example.invalid&amp;insecure=1#HK%20AnyTLS"</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionFixture$while (true) { val line = reader.readLine() ?: break; total += line.length; require(total &lt; 32768); if (line.isEmpty()) break;val pair=line.split(':',limit=2);if(pair.size==2)headers[pair[0].lowercase()]=pair[1].trim() }</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$activity!==beforeFont &amp;&amp; activity.lifecycle.currentState==androidx.lifecycle.Lifecycle.State.RESUMED &amp;&amp; activity.resources.configuration.fontScale&gt;1.2f</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK==android.content.res.Configuration.UI_MODE_NIGHT_YES</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$android.util.Log.i("PingClashTest","Capture denied: secureWindow=$secureWindow expected=$expected")</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$assertEquals(1, ProfileRepository(app).data.value.profiles.single { it.id == profile.id }.fieldIssues["vless.tfo"])</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$assertTrue(reply.getString("code") in setOf("timeout_stage_unknown", "proxy_channel_timeout", "proxy_quic_handshake_timeout"))</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$compose.onNodeWithTag("subscription-content").performTextInput("https://example.invalid/subscribe?token=synthetic-private")</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$if (android.graphics.Color.red(pixel)&lt;8 &amp;&amp; android.graphics.Color.green(pixel)&lt;8 &amp;&amp; android.graphics.Color.blue(pixel)&lt;8) dark++</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$if (app.repository.data.value.profiles.size &gt; 1) compose.onNode(hasText("字段诊断测试") and hasClickAction()).performClick()</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$if(app.repository.data.value.profiles.size&gt;1) compose.onNode(hasText("混合订阅回归") and hasClickAction()).performClick()</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$java.io.File(folder,"capture-${android.os.Build.VERSION.SDK_INT}-$expected.png").outputStream().use {frame.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)}</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$secureWindow=(view.layoutParams as android.view.WindowManager.LayoutParams).flags and android.view.WindowManager.LayoutParams.FLAG_SECURE!=0</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$val bounds=if(field)compose.onNodeWithTag("subscription-content").fetchSemanticsNode().boundsInWindow else null</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$val folder=java.io.File(instrumentation.targetContext.getExternalFilesDir(null),"synthetic-test-evidence").apply {mkdirs()}</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$val input = """{"proxies":[{"type":"anytls","server":"example.invalid","port":443,"password":"synthetic-secret"},{"type":"vless","server":"private.invalid","port":443,"uuid":"ca3ea70c-6845-4e3b-88d4-e4ac64ffbfa8","tls":true,"tfo":true}]}"""</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$SubscriptionImportTest$val result = worker.submit&lt;String&gt; { dev.pingclash.mobile.Mobile.probe(config, "https://example.invalid/", "android-quic-fixture", 1000) }</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$check(device.wait(androidx.test.uiautomator.Until.gone(androidx.test.uiautomator.By.pkg("com.android.vpndialogs")),5000)) {"System VPN consent was not accepted"}</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$val button=device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.res("android","button1")),5000)</ID>
+    <ID>MaxLineLength:SubscriptionImportTest.kt$val present=device.wait(androidx.test.uiautomator.Until.hasObject(androidx.test.uiautomator.By.pkg("com.android.vpndialogs")),8000)</ID>
+    <ID>MaxLineLength:SubscriptionInfo.kt$SubscriptionQuota$data</ID>
+    <ID>MaxLineLength:SubscriptionInfo.kt$SubscriptionQuota$val used: Long? get() = if(upload==null || download==null) null else upload + download.coerceAtMost(Long.MAX_VALUE-upload)</ID>
+    <ID>MaxLineLength:SubscriptionInfo.kt$SubscriptionQuota.Companion$parse(listOf("upload","download","total","expire").filter {key -&gt; !it.isNull(key)}.joinToString(";") {key -&gt; "$key=${it.opt(key)}"})</ID>
+    <ID>MaxLineLength:SubscriptionInfo.kt$SubscriptionQuota.Companion$return</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$failure is java.util.concurrent.TimeoutException || failure is ProbeFailure &amp;&amp; failure.code.name in setOf("DEADLINE","TCP_TIMEOUT")-&gt;ProxyDelay("timeout")</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$return if(binding.isCurrent())ProxyDelay("passed",TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-started)) else ProxyDelay("stale")</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$runCatching {control.check()}.exceptionOrNull()?.let {it is ProbeFailure &amp;&amp; it.code.name=="CANCELLED"}==true-&gt;ProxyDelay("idle")</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$val resolved=if(android.net.InetAddresses.isNumericAddress(server))listOf(android.net.InetAddresses.parseNumericAddress(server)) else binding.resolve(server,control.timeoutMillis(timeout.toLong()),control)</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$val socket=SocketProbe().connect(binding,address,config.getInt("port"),control.timeoutMillis(timeout.toLong()),control)</ID>
+    <ID>MaxLineLength:TcpLatencyProbe.kt$TcpLatencyProbe$when(config.optString("ip-version")){"ipv4"-&gt;ip is Inet4Address;"ipv6"-&gt;ip is Inet6Address;else-&gt;true}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$AndroidView</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$LazyRow {items(model.sessions.size) {i-&gt;FilterChip(model.selected==i,{model.selected=i},label={Text("sh ${i+1}"+(if(model.sessions[i].isRunning)"" else tr(R.string.message_4263ea7dfa)))})}}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TerminalModel$val env=arrayOf("HOME=${cwd.absolutePath}","TMPDIR=${cwd.absolutePath}","PATH=/system/bin:/system/xbin","TERM=xterm-256color","LANG=C.UTF-8","ENV=/dev/null","HISTFILE=/dev/null","PS1=\$ ")</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TerminalModel$var noticeAccepted by mutableStateOf(application.getSharedPreferences("terminal_ui",0).getBoolean("uid_notice_accepted",false))</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TerminalModel.&lt;no name provided&gt;$app.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Terminal",text.take(65536)))</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TerminalModel.&lt;no name provided&gt;$override fun onSingleTapUp(e:android.view.MotionEvent)</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$Text(tr(R.string.message_b8b89f7925),Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TextButton(model::create,enabled=model.noticeAccepted&amp;&amp;model.sessions.size&lt;3,modifier=Modifier.testTag("terminal-new")) {Text(tr(R.string.message_14ee5380fc))}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$TextButton({if(i==7)model.requestPaste() else model.send(listOf("\u0003","\t","\u001b","\u001b[A","\u001b[B","\u001b[D","\u001b[C")[i])},Modifier.testTag("terminal-key-$i")){Text(key)}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$confirmButton={TextButton(model::acceptNotice,Modifier.testTag("terminal-notice-accept")){Text(tr(R.string.terminal_warning_accept))}}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$if</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$if(model.startFailed)Text(tr(R.string.terminal_start_failed),Modifier.padding(16.dp),color=MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$model.paste?.let {text-&gt;AlertDialog(onDismissRequest={model.paste=null},title={Text(tr(R.string.message_dfc1aad746))},text={Text(trPlural(R.plurals.message_54907f03b6, (text.length).toInt(), text.length))},confirmButton={TextButton({model.sessions.getOrNull(model.selected)?.emulator?.paste(text);model.paste=null}){Text(tr(R.string.message_3351792674))}},dismissButton={TextButton({model.paste=null}){Text(tr(R.string.message_2cd0f3be87))}})}</ID>
+    <ID>MaxLineLength:TerminalActivity.kt$update={v-&gt;model.view=v;if(revision&gt;=0)v.onScreenUpdated()}</ID>
+    <ID>MaxLineLength:TerminalTest.kt$TerminalTest$compose.runOnUiThread {assertEquals("keep-clipboard",clipboard.primaryClip!!.getItemAt(0).text.toString());model.create();model.create();model.create()}</ID>
+    <ID>MaxLineLength:TerminalTest.kt$TerminalTest$private fun awaitText(text:String)</ID>
+    <ID>NestedBlockDepth:NetworkReconnectionTest.kt$NetworkReconnectionTest$@Test fun networkLossKeepsTunAndForegroundThenResumesWithoutNewPermission()</ID>
+    <ID>NestedBlockDepth:RemoteProfiles.kt$RemoteProfiles$fun load(text: String,userAgent: String,old: RemoteProfile?=null,force: Boolean=false,now: Long=Instant.now().epochSecond): PreparedRemoteProfile</ID>
+    <ID>NestedBlockDepth:TcpLatencyProbe.kt$TcpLatencyProbe$fun run(context: Context,node: LocalNode?,timeout: Int,control: RunControl): ProxyDelay</ID>
+    <ID>ReturnCount:AppViewModel.kt$AppViewModel$fun diagnose()</ID>
+    <ID>ReturnCount:AppViewModel.kt$AppViewModel$fun runProbe(name: String)</ID>
+    <ID>ReturnCount:DiagnosticViewModel.kt$internal fun nodeConnectivitySummary(state: DiagnosticUiState, selectedId: String?): String</ID>
+    <ID>ReturnCount:PingVpnService.kt$PingVpnService$override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int</ID>
+    <ID>ReturnCount:PingVpnService.kt$PingVpnService$private suspend fun establish()</ID>
+    <ID>ReturnCount:PingVpnService.kt$PingVpnService$private suspend fun rebindNetwork()</ID>
+    <ID>ReturnCount:ProfileRepository.kt$ProfileRepository$fun refreshProviders(profile: LocalProfile,force: Boolean=false)</ID>
+    <ID>ReturnCount:ProxyScreen.kt$internal fun LocalProfile.displayGroups(): List&lt;LocalGroup&gt;</ID>
+    <ID>ReturnCount:ProxyScreen.kt$internal fun LocalProfile.proxyDescription(name: String): String</ID>
+    <ID>ReturnCount:SettingsHub.kt$private fun Context.hostActivity(): Activity?</ID>
+    <ID>ReturnCount:SubscriptionInfo.kt$SubscriptionQuota.Companion$fun parse(header: String?): SubscriptionQuota?</ID>
+    <ID>ReturnCount:TcpLatencyProbe.kt$TcpLatencyProbe$fun run(context: Context,node: LocalNode?,timeout: Int,control: RunControl): ProxyDelay</ID>
+    <ID>ThrowsCount:AndroidNetworkBinding.kt$AndroidNetworkBinding.Companion$fun open(context: Context): NetworkBinding</ID>
+    <ID>ThrowsCount:ProfileRepository.kt$SubscriptionDownloader$fun fetchResponse(source: String,userAgent: String=DEFAULT_SUBSCRIPTION_UA,headers: Map&lt;String,String&gt; = emptyMap(),timeoutMillis: Int=30_000): SubscriptionResponse</ID>
+    <ID>ThrowsCount:RemoteProfiles.kt$RemoteProfiles$fun load(text: String,userAgent: String,old: RemoteProfile?=null,force: Boolean=false,now: Long=Instant.now().epochSecond): PreparedRemoteProfile</ID>
+    <ID>TooGenericExceptionCaught:AppViewModel.kt$AppViewModel$failure: Exception</ID>
+    <ID>TooGenericExceptionCaught:PingVpnService.kt$VpnRuntime$error: Exception</ID>
+    <ID>TooGenericExceptionCaught:ProfileRepository.kt$ProfileRepository$error: Exception</ID>
+    <ID>TooGenericExceptionCaught:ProfileRepository.kt$ProfileRepository$failure: Exception</ID>
+    <ID>TooGenericExceptionCaught:ProfileRepository.kt$SubscriptionDownloader$failure: Exception</ID>
+    <ID>TooGenericExceptionCaught:TcpLatencyProbe.kt$TcpLatencyProbe$failure: Exception</ID>
+    <ID>TooManyFunctions:AppScreens.kt$dev.pingclash.app.AppScreens.kt</ID>
+    <ID>TooManyFunctions:AppViewModel.kt$AppViewModel : AndroidViewModel</ID>
+    <ID>TooManyFunctions:PingVpnService.kt$PingVpnService : VpnService</ID>
+    <ID>TooManyFunctions:ProfileRepository.kt$ProfileRepository</ID>
+    <ID>UnusedPrivateMember:AppScreens.kt$private fun bytes(value: Long): String</ID>
+    <ID>UnusedPrivateProperty:PingVpnService.kt$PingVpnService$val node = data.selected ?: error("node_required")</ID>
+    <ID>WildcardImport:AdvancedSettingsTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:AdvancedSettingsTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:AppScreens.kt$import androidx.compose.animation.*</ID>
+    <ID>WildcardImport:AppScreens.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:AppScreens.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:AppScreens.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:AppTheme.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:ClientIntegrationTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:ClientIntegrationTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:DelayCompatibilityTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:DelayCompatibilityTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:EncryptedStorageTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:GlassInteractionTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:GlassInteractionTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:GlassUi.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:GlassUi.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:GlassUi.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:GlassUi.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:GroupAvailabilityTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:GroupAvailabilityTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:HysteriaCompatibilityTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:HysteriaCompatibilityTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:NetworkReconnectionTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:NodeConnectivityTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ProxyPageTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:ProxyPageTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ProxyScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:ProxyScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:ProxyScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:RuntimeCards.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:RuntimeCards.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:RuntimeCards.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:SettingsHub.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:SettingsHub.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:SettingsHub.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:StrategyGroupsTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:StrategyGroupsTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:SubscriptionFeaturesTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:SubscriptionFeaturesTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:SubscriptionGroupsPriorityTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:SubscriptionImportTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:SubscriptionImportTest.kt$import javax.net.ssl.*</ID>
+    <ID>WildcardImport:SubscriptionImportTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:TerminalActivity.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:TerminalActivity.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:TerminalActivity.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:TerminalTest.kt$import androidx.compose.ui.test.*</ID>
+    <ID>WildcardImport:TerminalTest.kt$import org.junit.Assert.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

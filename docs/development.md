@@ -17,6 +17,8 @@ The release script generates a private project-local signing identity if none ex
 
 ## Verification
 
+The normal debug build runs detekt 1.23.8 with `config/detekt.yml` and a reviewed `config/detekt-baseline.xml`. This is syntax-only Kotlin analysis for the app and instrumentation source sets; Android Lint remains separate. New findings fail CI. Existing debt is not fixed or declared safe by generating a baseline. For an intentional formatting migration, run `./gradlew.bat detektBaseline` locally and review its diff; never regenerate it in CI. Run `./gradlew.bat detekt` for the gate alone.
+
 ```powershell
 .\tools\verify-core.ps1
 .\tools\verify-native-core.ps1

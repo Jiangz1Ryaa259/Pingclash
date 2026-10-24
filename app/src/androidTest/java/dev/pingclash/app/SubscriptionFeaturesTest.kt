@@ -19,6 +19,22 @@ class SubscriptionFeaturesTest {
     @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     private val app get()=compose.activity.application as PingClashApplication
 
+    @Test fun udpCardsShowNotApplicableBeforeAnyTcpTest() {
+        val before=app.repository.data.value
+        val profile=app.repository.importProfile("Synthetic UDP",
+            "proxies: [{name: UDP fixture, type: hysteria2, server: example.invalid, " +
+                "port: 443, password: synthetic-password}]")
+        try {
+            app.repository.activate(profile.id)
+            compose.onNodeWithTag("nav-1").performClick()
+            compose.onNodeWithText("TCP：N/A (UDP)").assertIsDisplayed()
+        } finally {
+            app.repository.delete(profile.id)
+            before.activeProfile?.let {app.repository.activate(it.id)}
+            before.selectedId?.let {app.repository.select(it)}
+        }
+    }
+
     @Test fun customUaQuotaRedirectAndEncryptedPersistence() {
         SubscriptionFixture().use {fixture ->
             fixture.quotaHeader="upload=1024; download=2048; total=8192; expire=2000000000"

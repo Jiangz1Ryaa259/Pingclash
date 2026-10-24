@@ -34,7 +34,7 @@ jobs:
       - name: Verify localization resources and format placeholders
         shell: pwsh
         run: ./tools/verify-localization.ps1
-      - name: Build APK, lint, and Java verification
+      - name: Build APK, detekt baseline gate, lint, and Java verification
         shell: pwsh
         run: ./tools/build-android.ps1
       - name: Build instrumentation APK

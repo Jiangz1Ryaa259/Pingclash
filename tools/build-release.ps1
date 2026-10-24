@@ -46,7 +46,7 @@ try {
 } finally { Remove-Item Env:PINGCLASH_SIGNING_PASSWORD -ErrorAction SilentlyContinue }
 Push-Location $projectRoot
 try {
-    & .\gradlew.bat --no-daemon --max-workers=2 :app:assembleRelease :app:lintRelease
+    & .\gradlew.bat --no-daemon --max-workers=2 detekt :app:assembleRelease :app:lintRelease
     if ($LASTEXITCODE -ne 0) { throw 'Release compilation or lint failed.' }
     [xml]$manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'app\build\intermediates\merged_manifests\release\processReleaseManifest\AndroidManifest.xml') -Raw
     $androidNamespace = 'http://schemas.android.com/apk/res/android'

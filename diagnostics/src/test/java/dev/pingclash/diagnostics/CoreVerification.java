@@ -55,6 +55,23 @@ public final class CoreVerification {
 
     public static void main(String[] args) throws Exception {
         installResources(args[1]);
+        check("canary credentials cannot escape diagnostic metadata, errors or exports", () -> {
+            String canary="CANARY-SUB-TOKEN-1234";
+            String password="CANARY-PASSWORD-1234";
+            String uuid="CANARY-UUID-1234";
+            Binding binding=new Binding() {
+                @Override public List<InetAddress> resolve(String h,int t,RunControl c) throws Exception {
+                    throw new UnknownHostException("https://example.invalid/?token="+canary+" password="+password+" uuid="+uuid);
+                }
+            };
+            Report normal=run(request("private.invalid",443,true,""),binding);
+            Report hostile=new Report(canary,password,uuid,Arrays.asList(
+                new Step(Stage.DNS,State.FAILED,Code.DNS_FAILED,0,canary,1)),0);
+            for(Report report:Arrays.asList(normal,hostile)) {
+                String output=ReportFormatter.markdown(report)+report.conclusion();
+                require(!output.contains("CANARY-"),"canary escaped diagnostic output");
+            }
+        });
         check("reject subscription URL and credentials", () -> {
             rejects(() -> request("https://secret.invalid/?token=secret", 443, false, ""));
             rejects(() -> request("password@server.invalid", 443, false, ""));

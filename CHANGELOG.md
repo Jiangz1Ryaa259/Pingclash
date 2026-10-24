@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Confirm HTTPS `clash://install-config` requests and persist imported profiles as inactive until a separate explicit selection.
+- Add a detekt baseline CI gate and mark UDP-only TCP metrics as `N/A (UDP)` before testing.
+- Add a 14-case public-example-derived provider corpus with explicit accepted/rejected outcomes, canary privacy regressions and strict diagnostic metadata formatting.
+- Prepare next-beta release notes with provider, OEM, terminal/export and remaining feature limitations; no release asset is replaced automatically.
+
 - Add per-subscription User-Agent and quota/expiry parsing with encrypted persistence.
 - Add a bounded HTTP/HTTPS provider subset, original group membership, rule expansion, private encrypted cache and transactional refresh.
 - Add direct TCP latency metrics separately from native Mihomo URLTest.

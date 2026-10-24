@@ -46,6 +46,7 @@ data class LocalProfile(
     val groupsDeclared: Boolean = false, val userSelections: Map<String, String> = emptyMap(),
     val rules: List<String> = emptyList(), val rulesOmitted: Int=0,
     val userAgent: String=DEFAULT_SUBSCRIPTION_UA, val quota: SubscriptionQuota?=null, val remote: RemoteProfile?=null,
+    val activationRequired: Boolean=false,
 ) {
     val unverifiedNodes get() = nodes.count { it.certificateVerificationSkipped }
     fun groupId(name: String) = "$id/group/$name"
@@ -76,8 +77,8 @@ data class AppData(
     val client: ClientSettings=ClientSettings(), val usage: LocalUsage=LocalUsage(),
 ) {
     val nodes get() = profiles.flatMap { it.nodes }
-    val activeProfile get() = profiles.firstOrNull { it.id==activeProfileId } ?: profiles.firstOrNull { it.containsTarget(selectedId) } ?: profiles.firstOrNull()
-    val selected get() = nodes.firstOrNull { it.id == selectedId } ?: profiles.firstNotNullOfOrNull { p -> p.groups.firstOrNull { it.supported && p.groupId(it.name)==selectedId }?.let(p::groupTarget) }
+    val activeProfile get() = profiles.firstOrNull { !it.activationRequired && it.id==activeProfileId } ?: profiles.firstOrNull { !it.activationRequired && it.containsTarget(selectedId) } ?: profiles.firstOrNull { !it.activationRequired }
+    val selected get() = profiles.filterNot {it.activationRequired}.flatMap {it.nodes}.firstOrNull { it.id == selectedId } ?: profiles.filterNot {it.activationRequired}.firstNotNullOfOrNull { p -> p.groups.firstOrNull { it.supported && p.groupId(it.name)==selectedId }?.let(p::groupTarget) }
     val selectedRuntimeConfig get() = selected?.let { node ->
         if(node.requiresProfile) profiles.single { p -> p.nodes.any { it.id==node.id } }.runtimeConfig(node.name) else node.config
     }
@@ -99,7 +100,7 @@ class ProfileRepository(context: Context) {
         }
     }
 
-    @Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map<String, String>? = null, userAgent: String? = null, subscriptionResponse: SubscriptionResponse? = null,remote: RemoteProfile? = null,providerRefresh: Boolean=false,startingVpn: Boolean=false): LocalProfile {
+    @Synchronized fun importProfile(name: String, text: String, source: String? = null, replaceId: String? = null, explicitSelections: Map<String, String>? = null, userAgent: String? = null, subscriptionResponse: SubscriptionResponse? = null,remote: RemoteProfile? = null,providerRefresh: Boolean=false,startingVpn: Boolean=false,requireActivation: Boolean=false): LocalProfile {
         if(providerRefresh)check(!mutableData.value.loadFailed && (!VpnRuntime.state.value.active || startingVpn && VpnRuntime.state.value.phase=="connecting")) else ensureMutable()
         require(name.isNotBlank() && name.length <= 100) { tr(R.string.message_e97cd33442) }
         var parsed = JSONObject(Mobile.importProfile(text))
@@ -133,7 +134,9 @@ class ProfileRepository(context: Context) {
         val updated = if (existing != null) current.profiles.map { if (it.id == replaceId) profile else it } else current.profiles + profile
         // Keep a refresh selection only when the complete node parameters still match.
         val previous = current.selected
+        val activationRequired=requireActivation || previousProfile?.activationRequired==true
         val selected = when {
+            activationRequired -> current.selectedId
             existing == null -> if(current.activeProfile==null) profile.defaultTargetId else current.selectedId
             existing.id==current.activeProfile?.id && (current.selectedId==null || !existing.hasSubscriptionGroups && profile.hasSubscriptionGroups) -> profile.defaultTargetId
             existing.groups.any { existing.groupId(it.name)==current.selectedId } -> profile.groups.firstOrNull { it.supported && it.name==previous?.name }?.let { profile.groupId(it.name) }
@@ -142,8 +145,9 @@ class ProfileRepository(context: Context) {
                 ?: nodes.filter { previous != null && it.name == previous.name && it.type == previous.type }.singleOrNull()?.id
         }
         val withRules=profile.copy(remote=if(explicitSelections!=null)previousProfile?.remote else remote,userAgent=userAgent?:previousProfile?.userAgent?:DEFAULT_SUBSCRIPTION_UA,quota=if(subscriptionResponse!=null)subscriptionResponse.quota else previousProfile?.quota,rules=if(explicitSelections!=null)previousProfile?.rules.orEmpty() else readRules(parsed.optJSONArray("rules")),rulesOmitted=if(explicitSelections!=null)previousProfile?.rulesOmitted?:0 else parsed.optInt("rulesOmitted").coerceAtLeast(0))
-        commit(current.copy(profiles = updated.map {if(it.id==profile.id)withRules else it}, selectedId = selected, activeProfileId = current.activeProfile?.id ?: profile.id))
-        return withRules
+        val imported=withRules.copy(activationRequired=activationRequired)
+        commit(current.copy(profiles = updated.map {if(it.id==profile.id)imported else it}, selectedId = selected, activeProfileId = current.activeProfile?.id ?: profile.id.takeUnless {activationRequired}))
+        return imported
     }
 
     fun importWithProviders(name: String,text: String,source: String?=null,replaceId: String?=null,userAgent: String=DEFAULT_SUBSCRIPTION_UA,response: SubscriptionResponse?=null): LocalProfile {
@@ -187,7 +191,7 @@ class ProfileRepository(context: Context) {
     @Synchronized fun select(id: String) {
         ensureMutable()
         val owner=mutableData.value.profiles.single {it.containsTarget(id)}
-        val next=mutableData.value.copy(selectedId=id,activeProfileId=owner.id)
+        val next=mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==owner.id)it.copy(activationRequired=false) else it},selectedId=id,activeProfileId=owner.id)
         require(next.selected != null)
         commit(next)
     }
@@ -195,7 +199,7 @@ class ProfileRepository(context: Context) {
     @Synchronized fun activate(profileId: String) {
         ensureMutable()
         val profile=mutableData.value.profiles.single {it.id==profileId}
-        commit(mutableData.value.copy(selectedId=profile.defaultTargetId,activeProfileId=profile.id))
+        commit(mutableData.value.copy(profiles=mutableData.value.profiles.map {if(it.id==profile.id)it.copy(activationRequired=false) else it},selectedId=profile.defaultTargetId,activeProfileId=profile.id))
     }
 
     @Synchronized fun selectGroup(profileId: String, groupName: String, choice: String): LocalProfile {
@@ -225,7 +229,7 @@ class ProfileRepository(context: Context) {
         ensureMutable()
         val profiles = mutableData.value.profiles.filterNot { it.id == id }
         val current=mutableData.value
-        val active=profiles.firstOrNull {it.id==current.activeProfile?.id} ?: profiles.firstOrNull()
+        val active=profiles.firstOrNull {!it.activationRequired && it.id==current.activeProfile?.id} ?: profiles.firstOrNull {!it.activationRequired}
         val selected=if(active?.id==current.activeProfile?.id) current.selectedId else active?.defaultTargetId
         commit(current.copy(profiles=profiles,selectedId=selected,activeProfileId=active?.id))
     }
@@ -331,6 +335,7 @@ class ProfileRepository(context: Context) {
         put("client",data.client.json());put("usage",data.usage.json())
         put("profiles", JSONArray().apply { data.profiles.forEach { profile -> put(JSONObject().apply {
             put("id", profile.id); put("name", profile.name); put("source", profile.source)
+            put("activationRequired",profile.activationRequired)
             put("unsupported", profile.unsupported); put("routingIgnored", profile.routingIgnored)
             put("rejections", JSONObject(profile.rejections))
             put("verificationEnabled", profile.verificationEnabled)
@@ -361,7 +366,7 @@ class ProfileRepository(context: Context) {
                 }, profile.optInt("unsupported"), profile.optBoolean("routingIgnored"), rejectionCounts(profile.optJSONObject("rejections")), profile.optInt("verificationEnabled").coerceIn(0,500), importFieldCounts(profile.optJSONObject("fieldIssues")),readGroups(profile.optJSONArray("groups")),profile.optInt("groupsUnsupported").coerceIn(0,64),profile.optString("definition"),profile.optBoolean("groupsDeclared"),profile.optJSONObject("userSelections")?.let { picks ->
                     require(picks.length()<=64)
                     picks.keys().asSequence().associateWith {picks.getString(it)}
-                }.orEmpty(),readRules(profile.optJSONArray("rules")),profile.optInt("rulesOmitted").coerceAtLeast(0),profile.optString("userAgent",DEFAULT_SUBSCRIPTION_UA).also {require(validSubscriptionUa(it))},SubscriptionQuota.read(profile.optJSONObject("quota")),RemoteProfile.read(profile.optJSONObject("remote")))
+                }.orEmpty(),readRules(profile.optJSONArray("rules")),profile.optInt("rulesOmitted").coerceAtLeast(0),profile.optString("userAgent",DEFAULT_SUBSCRIPTION_UA).also {require(validSubscriptionUa(it))},SubscriptionQuota.read(profile.optJSONObject("quota")),RemoteProfile.read(profile.optJSONObject("remote")),profile.optBoolean("activationRequired"))
         }, selectedId = root.optString("selected").takeIf { it.isNotBlank() && it != "null" },
             dnsAddress = root.getString("dns"), probeUrl = root.getString("probe"), certificateNoticeAcknowledged = root.optBoolean("certificateNoticeAcknowledged"),activeProfileId=root.optString("activeProfile").takeIf {it.isNotBlank()&&it!="null"},client=ClientSettings.read(root.optJSONObject("client")).also(::validateClientSettings),usage=LocalUsage.read(root.optJSONObject("usage")))
     }

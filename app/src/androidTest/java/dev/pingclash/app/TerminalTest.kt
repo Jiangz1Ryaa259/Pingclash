@@ -31,6 +31,24 @@ class TerminalTest {
         assertTrue(compose.activity.getSharedPreferences("terminal_ui",0).getBoolean("uid_notice_accepted",false))
         compose.onNodeWithTag("terminal-new").assertIsEnabled()
     }
+    @Test fun terminalDoesNotAutomaticallyExposeProfileCredentialsOrHistory() {
+        val app=compose.activity.application as PingClashApplication
+        val profile=app.repository.importProfile("Synthetic terminal privacy",
+            "proxies: [{name: fixture, type: anytls, server: example.invalid, " +
+                "port: 443, password: CANARY-PASSWORD-1234}]",
+            "https://example.invalid/?token=CANARY-SUB-TOKEN-1234")
+        try {
+            compose.onNodeWithTag("terminal-new").performClick()
+            compose.waitUntil(10000) {model.sessions.firstOrNull()?.pid?.let {it>0}==true}
+            command("env; history; printf 'PRIVACY_%s\\n' DONE")
+            awaitText("PRIVACY_DONE")
+            assertFalse(output().contains("CANARY-"))
+            assertTrue(output().contains("HISTFILE=/dev/null"))
+            // Standard shell output remains literal after an explicit command.
+            command("printf 'CANARY-USER-%s\\n' REQUESTED")
+            awaitText("CANARY-USER-REQUESTED")
+        } finally {compose.runOnUiThread {model.stopAll()};app.repository.delete(profile.id)}
+    }
     @Test fun realShellPtyPipesInteractiveInputAndInterrupt() {
         compose.onNodeWithTag("terminal-new").performClick()
         compose.waitUntil(10000) {model.sessions.firstOrNull()?.pid?.let {it>0}==true}

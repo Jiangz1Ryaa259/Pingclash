@@ -33,6 +33,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SubscriptionImportActivity" android:exported="true"
+            android:excludeFromRecents="true" android:launchMode="singleTop" android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="clash" android:host="install-config" />
+            </intent-filter>
+        </activity>
         <!-- User-authorized VPNs qualify for systemExempted independently of exact alarms:
         -->
         <activity android:name=".TerminalActivity" android:exported="false" android:excludeFromRecents="true" android:windowSoftInputMode="adjustResize" />

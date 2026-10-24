@@ -81,7 +81,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun publicFailure(failure: Exception): String = when (failure) {
+    internal fun publicFailure(failure: Exception): String = when (failure) {
         is ProviderFailure -> failure.publicMessage()
         is ProfileImportFailure -> failure.publicMessage
         is SettingsFailure -> failure.publicMessage
@@ -167,9 +167,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun exportProfile(id: String,uri: Uri)=operation {
         val profile=data.value.profiles.single {it.id==id}
-        val root=if(profile.definition.isNotBlank())JSONObject(profile.definition) else JSONObject().put("proxies",org.json.JSONArray(profile.nodes.map {JSONObject(it.config)}))
-        root.remove("pingclash-selections");if(profile.rules.isNotEmpty())root.put("rules",org.json.JSONArray(profile.rules))
-        val bytes=root.toString(2).toByteArray(Charsets.UTF_8);require(bytes.size<=3*1024*1024)
+        val bytes=configurationExport(profile).toByteArray(Charsets.UTF_8);require(bytes.size<=3*1024*1024)
         app.contentResolver.openOutputStream(uri,"wt")?.use {it.write(bytes)} ?: error("export_unavailable")
         tr(R.string.message_d6639c530f)
     }

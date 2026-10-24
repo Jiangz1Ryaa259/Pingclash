@@ -248,6 +248,7 @@ import org.json.JSONObject
                         TextButton({delete=profile},enabled=!locked) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}
                     }
                     Text(if(profile.hasSubscriptionGroups) tr(R.string.message_5076fa3a21) else tr(R.string.message_c7fab0a4c0),Modifier.padding(horizontal=20.dp,vertical=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)
+                    if(profile.activationRequired)Text(tr(R.string.deep_link_inactive),Modifier.padding(horizontal=20.dp,vertical=4.dp),color=Muted,style=MaterialTheme.typography.bodySmall)
                     SubscriptionDetails(profile)
                     if(profile.remote!=null)TextButton({model.refreshProviders(profile)},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)){Text(tr(R.string.provider_refresh))}
                     if(profile.source!=null) TextButton({uaProfile=profile;uaText=profile.userAgent},enabled=!locked,modifier=Modifier.padding(horizontal=12.dp)) {Text(tr(R.string.subscription_ua))}

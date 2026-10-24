@@ -8,7 +8,7 @@ $env:ANDROID_USER_HOME = Join-Path $projectRoot '.tools\android-user'
 New-Item -ItemType Directory -Path $env:ANDROID_USER_HOME -Force | Out-Null
 Push-Location $projectRoot
 try {
-    & .\gradlew.bat --no-daemon --max-workers=2 :app:assembleDebug :app:lintDebug :diagnostics:verifyCore
+    & .\gradlew.bat --no-daemon --max-workers=2 detekt :app:assembleDebug :app:lintDebug :diagnostics:verifyCore
     if ($LASTEXITCODE -ne 0) { throw 'Android build or verification failed.' }
     $output = Join-Path $projectRoot 'dist'
     New-Item -ItemType Directory -Path $output -Force | Out-Null

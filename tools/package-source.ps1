@@ -10,7 +10,7 @@ foreach($relative in @('README.md','NOTICE.md','LICENSE','SECURITY.md','PRIVACY.
     $target=Join-Path $root $relative;New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force|Out-Null
     Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination $target
 }
-foreach($relative in @('.github','app\src','terminal-emulator','terminal-view','diagnostics\src','core\mobile','core\tools','tools','docs','gradle')){
+foreach($relative in @('.github','config','app\src','terminal-emulator','terminal-view','diagnostics\src','core\mobile','core\tools','tools','docs','gradle')){
     $source=[IO.Path]::GetFullPath((Join-Path $projectRoot $relative)).TrimEnd('\')+'\'
     foreach($file in (Get-ChildItem -LiteralPath $source -File -Recurse)){
         if($file.FullName.Substring($source.Length) -match '^build\\'){continue}
