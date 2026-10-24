@@ -20,6 +20,9 @@ No upstream fonts, screenshots or image assets are included in the application.
 AndroidX, Kotlin and kotlinx.coroutines are used under their respective Apache-2.0
 notices. Go and golang.org/x/mobile retain their BSD notices. Gradle wrapper files
 retain the Apache-2.0 license in `gradle/wrapper/LICENSE-Gradle.txt`.
+VPN state morphing uses AndroidX graphics-shapes 1.0.1, Apache-2.0.
+Navigation blur uses Haze and haze-materials 1.6.8, copyright Christopher Banes
+and the Haze project contributors, Apache-2.0: https://github.com/chrisbanes/haze/tree/1.6.8.
 
 The APK includes license texts and module notices in its assets. Its accompanying
 source archive includes the project, build scripts, pinned module files, tests,

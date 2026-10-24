@@ -38,7 +38,7 @@ class SubscriptionImportActivity : ComponentActivity() {
         setContent {
             val state by model.state.collectAsStateWithLifecycle()
             val data by (application as PingClashApplication).repository.data.collectAsStateWithLifecycle()
-            PingClashTheme(data.client.theme) {
+            PingClashTheme(data.client.theme,data.client.dynamicColor) {
                 AlertDialog(
                     onDismissRequest = { if (state.phase != "importing") finish() },
                     title = { Text(tr(R.string.deep_link_title)) },

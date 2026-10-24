@@ -151,7 +151,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun delete(id: String) = operation { app.repository.delete(id); tr(R.string.message_df12a31f25) }
     fun settings(dns: String, target: String) = operation { app.repository.settings(dns, target); tr(R.string.message_bd03c0aad7) }
     fun clientSettings(value: ClientSettings,dns: String,target: String)=operation {app.repository.clientSettings(value,dns,target);""}
-    fun appearance(language: String,theme: String) {viewModelScope.launch(Dispatchers.IO) {runCatching {app.repository.appearance(language,theme)}.onFailure {message(tr(R.string.message_c7acc6686e))}}}
+    fun appearance(language: String,theme: String,dynamicColor: Boolean?=null,reduceEffects: Boolean?=null,
+        scenery: ScenePreferenceChange?=null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {app.repository.appearance(language,theme,dynamicColor,reduceEffects,scenery)}
+                .onFailure {message(tr(R.string.message_c7acc6686e))}
+        }
+    }
     fun resetUsage()=operation {app.repository.resetUsage();tr(R.string.message_90c913765d)}
     fun subscriptionUserAgent(id: String,value: String)=operation {app.repository.subscriptionUserAgent(id,value);""}
     fun rename(id: String,name: String)=operation {app.repository.rename(id,name);tr(R.string.message_e61b17d0d2)}

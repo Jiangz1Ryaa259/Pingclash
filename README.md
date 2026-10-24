@@ -4,7 +4,7 @@
 
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
-**Version: 0.1.0-beta.1 · Android 10+ · arm64-v8a / x86_64 · GPL-3.0-only**
+**Current source: 0.1.0-beta.2 (build 20) · Android 10+ · arm64-v8a / x86_64 · GPL-3.0-only**
 
 ## Features
 
@@ -15,10 +15,11 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - Standard Android `sh` terminal with PTY, keyboard input, pipes, redirection and Ctrl+C.
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
 - English / Simplified Chinese resources, Android 13+ system app-language settings, and automatic network reconnection with TUN retained during outages.
+- Local ocean/cloud scenery, foreground ambient motion and real navigation blur on Android 12+, with opaque fallback and reduced-motion/transparency settings.
 
 ## 状态与边界
 
-这是首个公开 Beta，功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+已发布的首个公开版本仍为 beta.1；当前 beta.2 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -36,11 +37,11 @@ This repository contains the current source, tests and build scripts. Local tool
 
 ## Screenshots
 
-Synthetic emulator data only; no personal subscription or credentials are shown.
+Synthetic emulator data only; no personal subscription or credentials are shown. The sample passing path and 84 ms value illustrate layout, not a real network measurement. See [UI design and accessibility](docs/ui-design.md).
 
-| Dashboard | Proxies | Settings | DNS |
+| Dashboard | Dark theme | Proxies | Settings |
 | --- | --- | --- | --- |
-| ![Dashboard](docs/images/dashboard.png) | ![Proxies](docs/images/proxies.png) | ![Settings](docs/images/settings.png) | ![DNS](docs/images/dns.png) |
+| ![Dashboard](docs/images/dashboard.png) | ![Dark theme](docs/images/dashboard-dark.png) | ![Proxies](docs/images/proxies.png) | ![Settings](docs/images/settings.png) |
 
 ## Development status
 
@@ -50,10 +51,12 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 当前签名候选 APK 29 项回归通过，无跳过；含 Doze、跨 UID 转发、重连与 providers 更新 |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 同一签名候选 APK 29 项回归通过，无跳过；含 UA/配额、TCP、终端及后台 VPN |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.2/build 20 正式签名候选 44 项通过、0 跳过；含真实玻璃像素、动效、VPN 转发和隐私回归 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 同一签名候选 9 项界面检查通过，包含真实玻璃采样和敏感窗口停止采样 |
+| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | 同一签名候选 9 项界面检查通过，验证实色回退、动效和大字体交互 |
+| GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |
 
-此前基线 GitHub CI 的 Android 12、13、14、15 / API 31、33、34、35 矩阵各 26 项全部通过，无跳过，包含受控 DNS 与跨 UID HTTP 转发：[运行记录](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40009562806)。对应应用与测试代码提交为 `daa738faf3de72548e59a6d3ad61acf0ba72e0b4`。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
+具体构建、范围和 APK 校验值见[验证记录](docs/security-testing.md)，公共源码审查见 [PR #16](https://github.com/Jiangz1Ryaa259/Pingclash/pull/16)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
 
 仪表盘会显示在最近任务中；Android 13+ 禁用该卡片的页面快照，终端和敏感页面继续保护截屏。最近任务卡片与前台 VPN 通知是两项独立功能，移除卡片不会自动断开 VPN。网络切换会重建出站连接；若希望系统杀进程期间也阻断直连，请参考[后台、始终开启 VPN 与锁定模式](docs/background-vpn.md)。
 

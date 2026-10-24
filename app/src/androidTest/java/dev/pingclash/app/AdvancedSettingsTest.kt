@@ -22,11 +22,27 @@ class AdvancedSettingsTest {
         compose.onNodeWithTag("nav-3").performClick()
         compose.onNodeWithTag("tool-settings").performClick()
     }
-    private fun section(id: String) {compose.onNodeWithTag("settings-$id").performScrollTo().performClick();compose.waitForIdle()}
-    private fun back() {compose.onNodeWithTag("settings-back").performScrollTo().performClick();compose.waitForIdle()}
+    private fun section(id: String) {
+        visibleControl("settings-$id").performClick();compose.waitForIdle()
+        compose.onNodeWithTag("settings-back").assertIsDisplayed()
+    }
+    private fun back() {visibleControl("settings-back").performClick();compose.waitForIdle()}
+    // ScrollTo sees the full viewport; an overlaid navigation bar still owns its taps.
+    private fun visibleControl(tag: String): SemanticsNodeInteraction {
+        val node=compose.onNodeWithTag(tag).performScrollTo()
+        val navTop=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot.top
+        val clearance=12*compose.activity.resources.displayMetrics.density
+        val distance=node.fetchSemanticsNode().boundsInRoot.bottom-navTop+clearance
+        if(distance>0)compose.onNodeWithTag("settings-page").performSemanticsAction(
+            androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {it(0f,distance)}
+        compose.waitForIdle()
+        assertTrue("Settings control remains behind navigation",
+            node.fetchSemanticsNode().boundsInRoot.bottom<=navTop)
+        return node
+    }
     private fun save() {
         hideFixtureKeyboard()
-        compose.onNodeWithTag("settings-save").performScrollTo().assertIsEnabled().performClick()
+        visibleControl("settings-save").assertIsEnabled().performClick()
         val model=ViewModelProvider(compose.activity)[AppViewModel::class.java]
         compose.waitUntil(10000) {!model.ui.value.busy}
         model.dismissMessage()

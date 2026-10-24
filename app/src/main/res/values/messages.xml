@@ -13,19 +13,15 @@
     <string name="message_03fae6b449">"Network &amp; connection"</string>
     <string name="message_051009442f">"Total sessions"</string>
     <string name="message_058ff47156">"DNS queries"</string>
-    <string name="message_05d0b75302">"Ready when you are"</string>
-    <string name="message_05fe638db2">"Your connection at a glance"</string>
     <string name="message_06351ff759">"Search apps"</string>
     <string name="message_08083cb518">"Import, update, rename and export"</string>
     <string name="message_0845a173b1">"Disconnect the VPN before changing forwarding settings."</string>
-    <string name="message_0853bf3c01">"Dashboard"</string>
-    <string name="message_087739b986">"Starting"</string>
+    <string name="message_0853bf3c01">Home</string>
     <string name="message_08f09e82cc">"Unsupported TLS options"</string>
     <string name="message_091a5b5cb6">"Name (optional)"</string>
     <string name="message_09ed073054">"Latency target (empty follows group)"</string>
     <string name="message_0a93b155bd">"The selected member cannot build this group. The original configuration and selection were preserved."</string>
     <string name="message_0a99277bee">"Rule %1$s has an invalid format"</string>
-    <string name="message_0cb3fb5b86">"Error"</string>
     <string name="message_0d0cbac2ee">"Rename"</string>
     <string name="message_0facf15a7b">"Parameter combination"</string>
     <string name="message_0fce3b3509">"Profiles are decrypted only locally. No external controller or telemetry endpoint."</string>
@@ -39,7 +35,6 @@
     <string name="message_113a2e4325">"Collecting connection evidence…"</string>
     <string name="message_11a3eb2648">"System battery settings"</string>
     <string name="message_1383e06670">"This page checks DNS, TCP and system TLS. Use proxy diagnostics for real proxy requests. These results alone cannot establish network interception."</string>
-    <string name="message_13aa8a49e0">"Current proxy"</string>
     <string name="message_145219e726">"Hide"</string>
     <string name="message_148d195e21">"Profiles"</string>
     <string name="message_14ee5380fc">"New terminal"</string>
@@ -115,9 +110,7 @@
         <item quantity="other">"%1$s: %2$s proxies"</item>
     </plurals>
     <string name="message_3d52574ce1">"Disconnected"</string>
-    <string name="message_3d68b50722">"Trace connection issues step by step"</string>
     <string name="message_3fd47edce4">"Close"</string>
-    <string name="message_40b1401f0d">"Add first subscription"</string>
     <string name="message_40ff6300f9">"Diagnostics"</string>
     <string name="message_4211d1e5e4">"Total uploaded"</string>
     <string name="message_423dd8c4db">"Redacted report preview"</string>
@@ -137,7 +130,6 @@
     <string name="message_4941596c41">"Requested diagnostics for the selected proxy."</string>
     <string name="message_495dc9e725">"About &amp; licenses"</string>
     <string name="message_498958cf3d">"Manage profiles"</string>
-    <string name="message_4a403931f2">"Choose from a subscription or local profile"</string>
     <string name="message_4af8010a74">"Could not save the notice preference. Try again."</string>
     <string name="message_4b7b90cbbe">"Subscription TLS handshake failed. Check the certificate, device clock and network."</string>
     <string name="message_4c3d16016b">"Rule %1$s has an unsupported type. Check the original rules or disable merging."</string>
@@ -178,7 +170,6 @@
     <string name="message_5be0323e8a">"Connected"</string>
     <string name="message_5ce51775a0">"Start diagnostics"</string>
     <string name="message_5cf607d225">"A maximum of 20 profiles can be saved"</string>
-    <string name="message_5d1cd38e0d">"Connection enabled"</string>
     <string name="message_5e3a9fc406">"Establishing VPN tunnel"</string>
     <string name="message_5e84ea61e8">"Proxies"</string>
     <string name="message_5edc4aac67">"Restore automatic selection"</string>
@@ -206,7 +197,6 @@
     <string name="message_6e7c33d963">"Invalid network options or encrypted DNS address"</string>
     <string name="message_6f25358701">"Use profile"</string>
     <string name="message_6fb64222da">"Enter a DNS IP address with an optional port"</string>
-    <string name="message_71cb1d7ea6">"No proxy selected"</string>
     <string name="message_7277c57f94">"Connectivity: result is no longer current"</string>
     <string name="message_72a607c93d">"Direct LAN"</string>
     <string name="message_73396c3856">"Open policy group %1$s"</string>
@@ -238,7 +228,6 @@
     <string name="message_84b0b71bc5">"Connect timeout (seconds)"</string>
     <string name="message_854d45ab64">"Updates, tests, DNS and proxy connections contact their respective services. Subscription and website TLS is always verified. Node certificate policy follows the subscription with a one-time notice."</string>
     <string name="message_868b06e262">"VPN service and task controls"</string>
-    <string name="message_86b4062627">"Select proxy"</string>
     <string name="message_87533a0a61">"Check a domain or IP manually →"</string>
     <string name="message_87f447012c">"Version, core and licenses"</string>
     <string name="message_891736e998">"Complete a proxy diagnostic first"</string>
@@ -333,10 +322,6 @@
     <string name="message_b41b084688">"Incomplete proxy configuration"</string>
     <string name="message_b4c7dabb18">"Structure or data type"</string>
     <string name="message_b4de26e01a">"All apps"</string>
-    <plurals name="message_b4e092f3e3">
-        <item quantity="one">"%1$s forwarding failure occurred. Run diagnostics."</item>
-        <item quantity="other">"%1$s forwarding failures occurred. Run diagnostics."</item>
-    </plurals>
     <string name="message_b6e30a8416">"Subscription download timed out"</string>
     <string name="message_b70091e752">"When enabled, time the second HEAD request on the reused connection. Otherwise time the first request. Use the same target and timing mode when comparing clients."</string>
     <string name="message_b718063f31">"Use current group as main proxy"</string>
@@ -347,7 +332,6 @@
     <string name="message_baac1eb8e6">"Address only; no password or subscription link"</string>
     <string name="message_bd03c0aad7">"Settings saved"</string>
     <string name="message_bdb39a7662">"Share diagnostic report"</string>
-    <string name="message_be0ea23874">"Data stays on this device · No telemetry"</string>
     <string name="message_beab869615">"Entry DNS → TCP → auxiliary TLS → HTTPS request through the proxy."</string>
     <string name="message_beae79496b">"Outbound rules"</string>
     <string name="message_bec328ac8e">"Enable UDP"</string>
@@ -440,7 +424,6 @@
     <string name="message_ec5dbb4b87">"help\ndiag node\ndiag dns &lt;domain or IP&gt;\nlogs --recent\nreport preview\n\nThis console only runs these diagnostic commands. Root is not required."</string>
     <string name="message_ec808f283f">"Local profile storage limit exceeded"</string>
     <string name="message_ee2fa91fe1">"Cleaning up VPN connection"</string>
-    <string name="message_ef50e7f638">"Add a profile and choose a proxy"</string>
     <string name="message_efe16032c9">"Ethernet"</string>
     <string name="message_f006455e3b">"Stopped"</string>
     <string name="message_f1880deaae">"Global proxy"</string>

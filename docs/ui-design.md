@@ -1,15 +1,29 @@
-# current beta 界面与交互
+# Scenery, glass and interaction
 
-current beta 重画本地图标，统一 24 单位网格、1.7 单位描边、圆角端点与连接，使用缓存的 Compose ImageVector。仪表盘 / 代理 / 配置 / 设置分别使用仪表、分层、折角文件和齿轮；设置类别按实际功能区分，不再大量复用地球或齿轮。图标不重复朗读按钮文字，可访问标签由原交互控件保留。
+The current source is 0.1.0-beta.2, build 20. Both the home header and About page read the package version/build instead of a hardcoded label. Earlier beta.1 previews shared build 19; their small control changes were difficult to distinguish.
 
-桌面图标为蓝底白色圆角 P，与通知图标统一。使用 Android 自适应背景 / 前景和单色层，前景留在安全区域内；实现依据 [Android 自适应图标文档](https://developer.android.com/develop/ui/compose/system/icon_design_adaptive)。所有路径由本项目绘制，不下载图标、引入图标 SDK 或修改连接逻辑。
+## Backgrounds
 
-依据设计参考的 Minimalism 风格图，使用系统无衬线字体、黑白灰层次、蓝色强调和细轮廓图标。借鉴 iPhone 的留白、分组和浮动导航，以及 Android 的状态按钮、触觉反馈与权限流程；不打包 Apple 字体、图标或第三方客户端素材。
+Home defaults to an illustrated ocean: sky, sun/moon, drifting cloud silhouettes, a horizon, reflections and moving wave crests. Clouds and a plain background are alternate choices in Settings → Language and appearance. Artwork is local Canvas geometry, not a downloaded image or weather feed. Retained paths are reused, and animated state is read in the drawing phase.
 
-- 普通页面以内容为主，白色 / 中性深灰卡片和细边框建立层级。代理组保留订阅原始顺序、直接成员与嵌套引用；选中态使用轻蓝底色和轮廓，搜索、测速、配置操作继续使用原逻辑。
-- 底部导航使用半透明渐变、高光与弹簧位移形成玻璃质感。拖动时只有指示块跟手，松手提交一次切页，取消不切页；也支持点击与无障碍选择。页面短距离滑移与淡入，策略组仍由自己的横向分页响应，不叠加整页滑动手势。
-- 首页电源控制按压缩放、松手回弹，真实服务 established 后才转蓝、变形并完成外环。connecting / stopping 保留进度指示；connecting 可停止，stopping 禁止重复点击。VPN 隧道建立不等于节点或所有目标均已验证，连通性仍通过用户主动诊断判断。
-- 读取 Android 的动画缩放与触摸探索设置，关闭动画或启用触摸探索时取消装饰性位移、回弹和颜色补间。没有空闲时永久循环装饰动画。大字体扩展电源控制与导航高度，代理网格在字体放大时改成单列。
-- 玻璃效果直接绘制渐变和高光，不捕获页面、建立模糊位图缓存或读取屏幕；不是 Apple Liquid Glass 渲染器。敏感窗口保护、一次性证书提示、加密资料和路由边界保持原逻辑。系统偏好监听仅在界面组合存活时存在，不发送网络请求、不新增权限。
+Ambient scenery now moves while the home page is foreground-visible, including while disconnected. Reduce effects, Android animator settings, touch exploration and leaving the foreground stop decorative movement. This intentionally replaces the earlier connecting-only animation. Other pages use neutral surfaces. Scenery and Reduce transparency are persisted with existing encrypted settings, without changing subscription or routing state.
 
-验证入口：`GlassInteractionTest` 检查导航松手提交、取消回退、无障碍选择、取消电源按压不启动 VPN，以及系统动画切换；原有真 VPN / 分组 / 加密 / 大字体 / 深色测试一起执行。
+## Real glass
+
+`ScenicFrame` hosts the source content and navigation as siblings. The source fills the screen and the navigation overlays it; the navigation itself is excluded from the source. Each scrolling page/grid receives bottom content padding for the navigation height and system inset, so its final action remains reachable while intermediate rows can pass underneath the glass.
+
+Haze and haze-materials are pinned to 1.6.8, with Compose BOM 2025.06.01 (UI/runtime/foundation 1.8.3; Material3 remains 1.3.2). The older 1.5.4 default disabled blur on API 31; the 1.6 compatibility implementation restores it with pre-draw invalidation. See the [pinned Android implementation](https://github.com/chrisbanes/haze/blob/1.6.8/haze/src/androidMain/kotlin/dev/chrisbanes/haze/HazeEffectNode.android.kt). Navigation uses a 20 dp blur and light/dark tints, with a thin highlight and a spring-driven selection capsule. Labels use high-contrast black/white. This is background blur, not Apple's refraction renderer.
+
+Android 10–11, Reduce transparency and protected windows use a fully opaque fallback. `SecurePage` disables source sampling while protection is active, including the existing replacement-frame delay. Haze's source is detached in the background. The terminal is a separate activity with no shared navigation/source, so its AndroidView does not enter this effect.
+
+Sampling uses transient app-owned graphics layers; production code does not invoke screen-capture APIs, save sampled pixels or upload them. New libraries add no telemetry, image service or permission. Existing backup, storage and sensitive-window rules remain in place.
+
+## Controls and evidence
+
+The dashboard still separates native URL latency from TCP reachability. Its device/DNS/node/web path reflects the selected node's last diagnostic evidence; VPN establishment does not mark unmeasured stages successful. Unknown timeouts remain incomplete. Semantic status colors are paired with text.
+
+Switches retain a single accessible whole-row action, cancellation and disabled/RTL behavior. The VPN glyph uses official graphics-shapes Morph; only working states rotate. Reduced motion applies to both controls. Type uses system sans-serif/CJK fallback and tabular figures.
+
+`ScenicGlassTest` / `FrameGlassProbe` sample a controlled stripe source through the actual rendered bar: a real blur must remove high-frequency detail while remaining visibly translucent. It also checks the opaque fallback, protected-window source shutdown, large-font final-action clearance, actual idle-frame changes and frozen reduced-motion frames. Other UI, privacy and VPN regressions remain enabled. Tests/screenshots/video use only dedicated cleared AVDs and synthetic or empty configurations; they are not observations of a personal subscription.
+
+The real-render probe advances frames and polls with a five-second deadline instead of requiring Espresso global idleness. API 31 Haze deliberately invalidates on pre-draw; other Espresso functional fixtures on that API use Reduce transparency, while this dedicated probe keeps real blur enabled and checks actual pixels. The older-API fallback is tested separately.

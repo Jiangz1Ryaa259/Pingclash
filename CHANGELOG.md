@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Prepare beta.2/build 20 with package-derived version labels, local ocean/cloud scenery and foreground ambient motion.
+- Replace the tinted bottom bar with sibling-source Haze blur on Android 12+, opaque older-API/privacy fallback and Reduce transparency.
+- Preserve scrolling clearance, protected-window timing and existing routing; add pixel-level blur, actual-motion and large-font layout regressions.
+
+- Add spring-driven glass-style settings switches and official graphics-shapes VPN glyph morphing; preserve cancellation, disabled/RTL behavior and reduced motion.
+
+- Redesign the dashboard around connection control, native URL latency and a truthful four-stage diagnostic path.
+- Add custom light/dark sea palettes, tabular typography, a tinted sliding navigation capsule, grouped settings and accessible whole-row switches.
+- Make dynamic wallpaper colors optional; persist Reduce effects locally and stop decorative loops outside foreground connection attempts.
+- Add four UI/evidence/contrast regressions and synthetic light/dark/large-font previews; retain existing VPN/privacy coverage.
+
 - Confirm HTTPS `clash://install-config` requests and persist imported profiles as inactive until a separate explicit selection.
 - Add a detekt baseline CI gate and mark UDP-only TCP metrics as `N/A (UDP)` before testing.
 - Add a 14-case public-example-derived provider corpus with explicit accepted/rejected outcomes, canary privacy regressions and strict diagnostic metadata formatting.

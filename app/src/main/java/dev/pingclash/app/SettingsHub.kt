@@ -53,7 +53,9 @@ import org.json.JSONArray
     val titles=mapOf("live" to tr(R.string.message_caaf859d56),"connections" to tr(R.string.message_fc16aec85d),"dns" to "DNS","network" to tr(R.string.message_03fae6b449),"apps" to tr(R.string.message_d8618b5e19),"rules" to tr(R.string.message_beae79496b),"lan" to tr(R.string.message_4f8389a45d),"appearance" to tr(R.string.message_f3d6b6c03b),"usage" to tr(R.string.message_e7370f8097),"control" to tr(R.string.message_4f51d0285e),"privacy" to tr(R.string.message_58e6ce61a6),"about" to tr(R.string.message_495dc9e725))
     val dirty=draft!=data.client||dns!=data.dnsAddress||target!=data.probeUrl
     key(page) {
-        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(horizontal=20.dp,vertical=12.dp).testTag("settings-page"),verticalArrangement=Arrangement.spacedBy(16.dp)) {
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
+            .padding(horizontal=20.dp,vertical=12.dp).padding(bottom=LocalNavigationClearance.current)
+            .testTag("settings-page"),verticalArrangement=Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically) {
                 if(page.isNotEmpty()) TextButton({page=""},Modifier.testTag("settings-back")){Text((tr(R.string.message_572cf45ba4)))}
                 Text((titles[page]?:tr(R.string.message_df3d58c7d8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
@@ -128,7 +130,7 @@ import org.json.JSONArray
                 }
                 "rules" -> {
                     SettingsCard {
-                        Choices(tr(R.string.message_daae3125b8),draft.mode,listOf("global" to tr(R.string.message_f1880deaae),"rule" to tr(R.string.message_1123245d1b),"direct" to tr(R.string.message_b06325c566)),!locked) {draft=draft.copy(mode=it)}
+                        ModeSegments(draft.mode,!locked) {draft=draft.copy(mode=it)}
                         Text((tr(R.string.message_2843c2d9dd)),color=Warning,style=MaterialTheme.typography.bodySmall)
                         SettingSwitch(tr(R.string.message_8f93778b08),draft.useProviderRules,!locked) {draft=draft.copy(useProviderRules=it)}
                         StatLine(tr(R.string.message_148d195e21),data.activeProfile?.name?:"—")
@@ -137,7 +139,10 @@ import org.json.JSONArray
                     }
                     SettingsCard {
                         Text((tr(R.string.message_b34cdfde80)),style=MaterialTheme.typography.titleMedium)
-                        OutlinedTextField(draft.customRules,{if(it.toByteArray().size<=64*1024)draft=draft.copy(customRules=it)},Modifier.fillMaxWidth().heightIn(min=200.dp,max=400.dp).testTag("custom-rules"),enabled=!locked,label={Text((tr(R.string.message_51c22886b5)))},shape=RoundedCornerShape(16.dp))
+                        OutlinedTextField(draft.customRules,
+                            {if(it.toByteArray().size<=64*1024)draft=draft.copy(customRules=it)},
+                            Modifier.fillMaxWidth().heightIn(min=200.dp,max=400.dp).testTag("custom-rules"),
+                            enabled=!locked,label={Text((tr(R.string.message_51c22886b5)))},shape=UiCorners.Compact)
                         Text("DOMAIN-SUFFIX,example.com,PROXY\nIP-CIDR,192.168.0.0/16,DIRECT,no-resolve\nDST-PORT,443,PROXY\nNETWORK,udp,REJECT\nMATCH,PROXY",style=MaterialTheme.typography.bodySmall,color=Muted)
                         Text((tr(R.string.message_5103a81309)),color=Muted,style=MaterialTheme.typography.bodySmall)
                     }
@@ -147,6 +152,26 @@ import org.json.JSONArray
                     SettingsCard {
                         Choices(tr(R.string.message_9f6fee1aba),data.client.language,listOf("system" to tr(R.string.message_217cfe7db1),"zh" to tr(R.string.message_9937e365aa),"en" to tr(R.string.message_d1648bacbc)),true) {model.appearance(it,data.client.theme)}
                         Choices(tr(R.string.message_788db1cfec),data.client.theme,listOf("system" to tr(R.string.message_217cfe7db1),"light" to tr(R.string.message_aa0819dfc4),"dark" to tr(R.string.message_a6b75d0680)),true) {model.appearance(data.client.language,it)}
+                        SettingSwitch(tr(R.string.ui_dynamic_color),data.client.dynamicColor,
+                            android.os.Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.S) {
+                            model.appearance(data.client.language,data.client.theme,dynamicColor=it)
+                        }
+                        Text(tr(R.string.ui_dynamic_color_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+                        SettingSwitch(tr(R.string.ui_reduce_effects),data.client.reduceEffects,true) {
+                            model.appearance(data.client.language,data.client.theme,reduceEffects=it)
+                        }
+                        Text(tr(R.string.ui_reduce_effects_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+                        Choices(tr(R.string.ui_scene),data.client.scene,listOf(
+                            "ocean" to tr(R.string.ui_scene_ocean),"clouds" to tr(R.string.ui_scene_clouds),
+                            "none" to tr(R.string.ui_scene_none)),true) {
+                            model.appearance(data.client.language,data.client.theme,
+                                scenery=ScenePreferenceChange(scene=it))
+                        }
+                        SettingSwitch(tr(R.string.ui_reduce_transparency),data.client.reduceTransparency,true) {
+                            model.appearance(data.client.language,data.client.theme,
+                                scenery=ScenePreferenceChange(reduceTransparency=it))
+                        }
+                        Text(tr(R.string.ui_transparency_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
                     }
                     SettingsCard {
                         Text((tr(R.string.message_02ae2080b8)),style=MaterialTheme.typography.titleMedium)
@@ -210,28 +235,43 @@ private fun Context.hostActivity(): Activity? {
 }
 
 @Composable private fun SettingLink(id: String,title: String,description: String,onClick:()->Unit) {
-    Row(Modifier.fillMaxWidth().testTag("settings-$id").clickable(onClick=onClick).padding(vertical=7.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-        Box(Modifier.size(34.dp).background(MaterialTheme.colorScheme.surfaceVariant,RoundedCornerShape(10.dp)),contentAlignment=Alignment.Center) {
-            AppGlyph(when(id) {"live","diagnosis"->2;"usage"->19;"connections"->20;"network"->22;"dns"->21;"lan"->23;"apps"->27;"profiles"->7;"rules"->17;"about"->24;"privacy"->6;"control"->0;"appearance"->18;"groups"->14;else->12},Modifier.size(19.dp),Muted)
+    Column {
+        Row(Modifier.fillMaxWidth().heightIn(min=60.dp).testTag("settings-$id").clickable(onClick=onClick)
+            .padding(vertical=7.dp),verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+            AppGlyph(when(id) {
+                "live","diagnosis"->2;"usage"->19;"connections"->20;"network"->22;"dns"->21;"lan"->23
+                "apps"->27;"profiles"->7;"rules"->17;"about"->24;"privacy"->6;"control"->0
+                "appearance"->18;"groups"->14;else->12
+            },Modifier.size(21.dp),Muted)
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text(title,style=MaterialTheme.typography.titleMedium)
+                Text(description,color=Muted,style=MaterialTheme.typography.bodySmall)
+            }
+            AppGlyph(5,Modifier.size(18.dp),Muted)
         }
-        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {Text((title),style=MaterialTheme.typography.titleMedium);Text((description),color=Muted,style=MaterialTheme.typography.bodySmall)}
-        AppGlyph(5,tint=Muted)
+        if(id !in listOf("appearance","lan","usage","about")) {
+            HorizontalDivider(Modifier.padding(start=33.dp),color=MaterialTheme.colorScheme.outlineVariant)
+        }
     }
-}
-@Composable private fun SettingSwitch(title: String,value: Boolean,enabled: Boolean,onChange:(Boolean)->Unit) {
-    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {Text((title),Modifier.weight(1f));Switch(value,onChange,enabled=enabled,modifier=Modifier.testTag("switch-$title"))}
 }
 @Composable private fun Choices(title: String,value: String,choices: List<Pair<String,String>>,enabled: Boolean,onChange:(String)->Unit) {
     Text((title),color=Muted,style=MaterialTheme.typography.labelLarge)
     choices.forEach {(id,name) -> Row(Modifier.fillMaxWidth().clickable(enabled=enabled){onChange(id)}.testTag("choice-$title-$id"),verticalAlignment=Alignment.CenterVertically) {RadioButton(value==id,{onChange(id)},enabled=enabled);Text((name),Modifier.weight(1f))}}
 }
 @Composable private fun SettingField(title: String,value: String,enabled: Boolean,onChange:(String)->Unit) {
-    OutlinedTextField(value,onChange,Modifier.fillMaxWidth().testTag("field-$title"),enabled=enabled,singleLine=true,label={Text((title))},shape=RoundedCornerShape(16.dp))
+    OutlinedTextField(value,onChange,Modifier.fillMaxWidth().testTag("field-$title"),enabled=enabled,
+        singleLine=true,label={Text((title))},shape=UiCorners.Compact)
 }
 @Composable private fun NumberSetting(title: String,value: Int,range: IntRange,enabled: Boolean,onChange:(Int)->Unit) {
     var raw by remember {mutableStateOf(value.toString())}
     val valid=raw.toIntOrNull() in range
-    OutlinedTextField(raw,{if(it.length<=6&&it.all(Char::isDigit)){raw=it;onChange(it.toIntOrNull()?:0)}},Modifier.fillMaxWidth().testTag("number-$title"),enabled=enabled,singleLine=true,label={Text((title))},isError=!valid,supportingText={Text("${range.first}–${range.last}")},keyboardOptions=androidx.compose.foundation.text.KeyboardOptions(keyboardType=androidx.compose.ui.text.input.KeyboardType.Number),shape=RoundedCornerShape(16.dp))
+    OutlinedTextField(raw,{if(it.length<=6&&it.all(Char::isDigit)){raw=it;onChange(it.toIntOrNull()?:0)}},
+        Modifier.fillMaxWidth().testTag("number-$title"),enabled=enabled,singleLine=true,label={Text((title))},
+        isError=!valid,supportingText={Text("${range.first}–${range.last}")},
+        keyboardOptions=androidx.compose.foundation.text.KeyboardOptions(
+            keyboardType=androidx.compose.ui.text.input.KeyboardType.Number),
+        shape=UiCorners.Compact)
 }
 private data class VisibleApp(val name: String,val packageName: String)
 @Composable private fun AppRoutingPanel(draft: ClientSettings,enabled: Boolean,onChange:(ClientSettings)->Unit) {
@@ -281,7 +321,7 @@ private data class ConnectionRow(val id: Long,val network: String,val route: Str
     var license by remember {mutableStateOf<String?>(null)}
     SettingsCard {
         Text("PingClash",style=MaterialTheme.typography.titleLarge)
-        Text("0.1.0-beta.1 · GPL-3.0",color=Muted)
+        Text(buildIdentity()+" · GPL-3.0",color=Muted)
         StatLine(tr(R.string.message_3b50348ec3),if(ready)"mihomo v1.19.32" else "—")
         Text((tr(R.string.message_0fce3b3509)),color=Muted,style=MaterialTheme.typography.bodySmall)
         listOf("NOTICE.md","GPL-3.0.txt","Apache-2.0.txt").forEach {file -> TextButton({license=file}) {Text(file)}}

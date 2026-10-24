@@ -13,19 +13,15 @@
     <string name="message_03fae6b449">"网络与连接"</string>
     <string name="message_051009442f">"累计会话"</string>
     <string name="message_058ff47156">"DNS 查询"</string>
-    <string name="message_05d0b75302">"准备就绪，轻点即可连接"</string>
-    <string name="message_05fe638db2">"你的连接，一目了然"</string>
     <string name="message_06351ff759">"搜索应用"</string>
     <string name="message_08083cb518">"添加、刷新、重命名与导出"</string>
     <string name="message_0845a173b1">"先断开 VPN，再修改转发设置。"</string>
-    <string name="message_0853bf3c01">"仪表盘"</string>
-    <string name="message_087739b986">"正在启动"</string>
+    <string name="message_0853bf3c01">首页</string>
     <string name="message_08f09e82cc">"TLS 相关选项未兼容"</string>
     <string name="message_091a5b5cb6">"名称（可选）"</string>
     <string name="message_09ed073054">"测速目标（留空跟随策略组）"</string>
     <string name="message_0a93b155bd">"所选成员仍无法构建此策略组，原配置与选择已保留。"</string>
     <string name="message_0a99277bee">"第 %1$s 条规则格式无效"</string>
-    <string name="message_0cb3fb5b86">"发生错误"</string>
     <string name="message_0d0cbac2ee">"重命名"</string>
     <string name="message_0facf15a7b">"参数组合"</string>
     <string name="message_0fce3b3509">"配置仅在本机解密；未开放外部控制端口或后台遥测接口。"</string>
@@ -39,7 +35,6 @@
     <string name="message_113a2e4325">"正在收集连接证据…"</string>
     <string name="message_11a3eb2648">"系统电池设置"</string>
     <string name="message_1383e06670">"本页检查 DNS、TCP 和系统 TLS。实际代理访问请使用节点诊断；无法仅凭这些结果确认基站拦截。"</string>
-    <string name="message_13aa8a49e0">"当前节点"</string>
     <string name="message_145219e726">"隐藏"</string>
     <string name="message_148d195e21">"配置"</string>
     <string name="message_14ee5380fc">"新建终端"</string>
@@ -112,9 +107,7 @@
         <item quantity="other">"%1$s：%2$s 个节点"</item>
     </plurals>
     <string name="message_3d52574ce1">"未连接"</string>
-    <string name="message_3d68b50722">"连接不顺畅？逐步查找原因"</string>
     <string name="message_3fd47edce4">"关闭"</string>
-    <string name="message_40b1401f0d">"添加第一个订阅"</string>
     <string name="message_40ff6300f9">"诊断"</string>
     <string name="message_4211d1e5e4">"累计上传"</string>
     <string name="message_423dd8c4db">"脱敏报告预览"</string>
@@ -134,7 +127,6 @@
     <string name="message_4941596c41">"已请求诊断当前选中节点。"</string>
     <string name="message_495dc9e725">"关于与许可"</string>
     <string name="message_498958cf3d">"管理配置"</string>
-    <string name="message_4a403931f2">"从订阅或本地配置中选择"</string>
     <string name="message_4af8010a74">"提示设置保存失败，请重试"</string>
     <string name="message_4b7b90cbbe">"订阅 TLS 握手未完成，请检查证书、设备时间和网络"</string>
     <string name="message_4c3d16016b">"第 %1$s 条规则类型暂未支持，请检查原配置规则或关闭合并"</string>
@@ -174,7 +166,6 @@
     <string name="message_5be0323e8a">"已连接"</string>
     <string name="message_5ce51775a0">"开始诊断"</string>
     <string name="message_5cf607d225">"最多保存 20 份资料"</string>
-    <string name="message_5d1cd38e0d">"连接已开启"</string>
     <string name="message_5e3a9fc406">"正在建立 VPN 隧道"</string>
     <string name="message_5e84ea61e8">"代理"</string>
     <string name="message_5edc4aac67">"恢复自动选择"</string>
@@ -201,7 +192,6 @@
     <string name="message_6e7c33d963">"网络选项或加密 DNS 地址无效"</string>
     <string name="message_6f25358701">"使用配置"</string>
     <string name="message_6fb64222da">"请输入 DNS IP，可附带端口"</string>
-    <string name="message_71cb1d7ea6">"尚未选择节点"</string>
     <string name="message_7277c57f94">"连通性：本次测试已失效"</string>
     <string name="message_72a607c93d">"内网直连"</string>
     <string name="message_73396c3856">"打开 %1$s 策略组"</string>
@@ -232,7 +222,6 @@
     <string name="message_84b0b71bc5">"连接超时（秒）"</string>
     <string name="message_854d45ab64">"订阅更新、测速、解析 DNS 和代理连接会联系对应服务。订阅和网站 TLS 始终校验；节点证书策略沿用原订阅，首次提示后不常驻。"</string>
     <string name="message_868b06e262">"VPN 服务与任务控制"</string>
-    <string name="message_86b4062627">"选择节点"</string>
     <string name="message_87533a0a61">"手动检查域名 / IP →"</string>
     <string name="message_87f447012c">"版本、内核与开源声明"</string>
     <string name="message_891736e998">"请先完成一次节点诊断"</string>
@@ -324,9 +313,6 @@
     <string name="message_b41b084688">"节点格式不完整"</string>
     <string name="message_b4c7dabb18">"结构或数据类型"</string>
     <string name="message_b4de26e01a">"全部代理"</string>
-    <plurals name="message_b4e092f3e3">
-        <item quantity="other">"已有 %1$s 次转发异常，请运行诊断。"</item>
-    </plurals>
     <string name="message_b6e30a8416">"订阅下载超时"</string>
     <string name="message_b70091e752">"开启后以连接复用的第二次 HEAD 请求计时；关闭则测首次请求。比较客户端时请使用相同目标与计时方式。"</string>
     <string name="message_b718063f31">"设当前组为主代理"</string>
@@ -337,7 +323,6 @@
     <string name="message_baac1eb8e6">"仅填写地址，无需密码或订阅链接"</string>
     <string name="message_bd03c0aad7">"设置已保存"</string>
     <string name="message_bdb39a7662">"分享诊断报告"</string>
-    <string name="message_be0ea23874">"资料仅存本机 · 无使用情况收集"</string>
     <string name="message_beab869615">"入口 DNS → TCP → 辅助 TLS → 指定节点访问 HTTPS 目标。"</string>
     <string name="message_beae79496b">"出站规则"</string>
     <string name="message_bec328ac8e">"启用 UDP"</string>
@@ -429,7 +414,6 @@
     <string name="message_ec5dbb4b87">"help\ndiag node\ndiag dns &lt;域名或 IP&gt;\nlogs --recent\nreport preview\n\n控制台只执行以上诊断命令，无需 root。"</string>
     <string name="message_ec808f283f">"本地资料总量超过限制"</string>
     <string name="message_ee2fa91fe1">"正在清理 VPN 连接"</string>
-    <string name="message_ef50e7f638">"添加订阅，选择一个节点"</string>
     <string name="message_efe16032c9">"以太网"</string>
     <string name="message_f006455e3b">"已停止"</string>
     <string name="message_f1880deaae">"全局代理"</string>

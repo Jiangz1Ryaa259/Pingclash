@@ -59,7 +59,10 @@ try {
     $buildTools = Join-Path $projectRoot '.tools\android-sdk\build-tools\35.0.0'
     $dist = Join-Path $projectRoot 'dist'
     New-Item -ItemType Directory -Path $dist -Force | Out-Null
-    $apk = Join-Path $dist 'PingClash-0.1.0-beta.1.apk'
+    $metadata=Get-Content -LiteralPath (Join-Path $projectRoot 'app\build\outputs\apk\release\output-metadata.json') -Raw | ConvertFrom-Json
+    $version=$metadata.elements[0].versionName
+    if($version -notmatch '\A[0-9A-Za-z.+-]{1,60}\z'){throw 'Invalid release version name'}
+    $apk=Join-Path $dist ('PingClash-'+$version+'.apk')
     & (Join-Path $buildTools 'apksigner.bat') sign --ks $key --ks-key-alias pingclash-release --ks-pass ("file:"+$passwordFile) `
         --v2-signing-enabled true --v3-signing-enabled true --v4-signing-enabled false `
         --out $apk (Join-Path $projectRoot 'app\build\outputs\apk\release\app-release-unsigned.apk')
