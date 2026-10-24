@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -70,6 +71,11 @@ class OceanDesignTest {
                 contrast(selector, scheme.primaryContainer) >= 3)
             assertTrue("Switch off outline is not visible", contrast(scheme.outline, scheme.surfaceVariant) >= 3)
             assertTrue(contrast(scheme.onSurfaceVariant, scheme.surfaceVariant) >= 3)
+            for (sample in 0..20) {
+                val background=lerp(scheme.primary,scheme.primaryContainer,sample/20f)
+                assertTrue("Connection label loses contrast while animating",
+                    contrast(controlForeground(scheme.onPrimaryContainer,background),background)>=4.5)
+            }
         }
     }
 

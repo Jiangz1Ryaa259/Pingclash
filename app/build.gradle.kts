@@ -45,6 +45,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.activity.compose)
     implementation(libs.compose.material3)
+    implementation(libs.graphics.shapes)
     implementation(libs.compose.preview)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.runtime)

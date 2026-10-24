@@ -51,10 +51,10 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 新界面 debug 构建 40 项回归通过，无跳过；含路径证据、对比度、减少动效、VPN 转发与原有隐私回归 |
-| GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 前一轮源码提交的 36 项回归各版本通过，不能代替本次界面变更的 CI 结果 |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 开关动画签名候选 41 项回归通过，无跳过；含路径证据、对比度、减少动效、VPN 转发与原有隐私回归 |
+| GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 前一轮源码提交的 40 项回归各版本通过，不能代替本次界面变更的 CI 结果 |
 
-新界面的本地构建和签名候选结果见[验证记录](docs/security-testing.md)。前一轮 CI 完整记录：[Actions 40072428282](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40072428282)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
+新界面的本地构建和签名候选结果见[验证记录](docs/security-testing.md)。前一轮 CI 完整记录：[Actions 40088332873](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40088332873)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
 
 仪表盘会显示在最近任务中；Android 13+ 禁用该卡片的页面快照，终端和敏感页面继续保护截屏。最近任务卡片与前台 VPN 通知是两项独立功能，移除卡片不会自动断开 VPN。网络切换会重建出站连接；若希望系统杀进程期间也阻断直连，请参考[后台、始终开启 VPN 与锁定模式](docs/background-vpn.md)。
 

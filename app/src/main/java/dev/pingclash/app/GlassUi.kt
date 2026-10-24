@@ -126,14 +126,14 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     val motion=LocalMotionAllowed.current
     val foregroundVisible=rememberForeground()
     val connected=phase=="established"
-    val working=phase=="connecting"||phase=="stopping"
     val interactions=remember {MutableInteractionSource()}
     val pressed by interactions.collectIsPressedAsState()
     val scale=animateFloatAsState(if(pressed) .97f else 1f,
         if(motion)spring(.85f,600f) else snap(),label="vpn-press")
     val color by animateColorAsState(if(connected) MaterialTheme.colorScheme.primaryContainer else Mint,
         if(motion)tween(280) else snap(),label="vpn-color")
-    val foreground=if(connected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+    val preferred=if(connected)MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+    val foreground=controlForeground(preferred,color)
     val haptic=LocalHapticFeedback.current
     val description=vpnControlDescription(phase)
     Box(Modifier.fillMaxWidth(),contentAlignment=Alignment.Center) {
@@ -146,7 +146,7 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
                 .semantics {stateDescription=description}) {
             Row(Modifier.padding(horizontal=18.dp,vertical=12.dp),verticalAlignment=Alignment.CenterVertically,
                 horizontalArrangement=Arrangement.spacedBy(10.dp,Alignment.CenterHorizontally)) {
-                PowerGlyph(working,motion&&foregroundVisible,foreground)
+                VpnStateGlyph(phase,motion&&foregroundVisible,foreground)
                 Text(label,textAlign=TextAlign.Center,style=MaterialTheme.typography.labelLarge)
             }
         }
@@ -158,12 +158,6 @@ private fun vpnControlDescription(phase: String): String = tr(when(phase) {
     "connecting","stopping" -> R.string.message_694b71bc80
     else -> R.string.message_3d52574ce1
 })
-
-@Suppress("MagicNumber")
-@Composable private fun PowerGlyph(working: Boolean,animate: Boolean,color: Color) {
-    if(working&&animate)CircularProgressIndicator(Modifier.size(20.dp),color=color,strokeWidth=2.dp)
-    else AppGlyph(if(working)16 else 0,Modifier.size(22.dp),color)
-}
 
 @Suppress("MagicNumber")
 @Composable private fun ConnectingRipples(modifier: Modifier) {

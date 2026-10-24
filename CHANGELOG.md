@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add spring-driven glass-style settings switches and official graphics-shapes VPN glyph morphing; preserve cancellation, disabled/RTL behavior and reduced motion.
+
 - Redesign the dashboard around connection control, native URL latency and a truthful four-stage diagnostic path.
 - Add custom light/dark sea palettes, tabular typography, a tinted sliding navigation capsule, grouped settings and accessible whole-row switches.
 - Make dynamic wallpaper colors optional; persist Reduce effects locally and stop decorative loops outside foreground connection attempts.

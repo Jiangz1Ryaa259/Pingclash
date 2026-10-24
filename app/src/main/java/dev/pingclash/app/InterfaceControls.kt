@@ -11,16 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -29,14 +30,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
 @Composable internal fun SettingSwitch(title: String,value: Boolean,enabled: Boolean,onChange:(Boolean)->Unit) {
+    val interactions=remember {MutableInteractionSource()}
     Row(Modifier.fillMaxWidth().heightIn(min=48.dp).testTag("switch-$title")
-        .toggleable(value=value,enabled=enabled,role=Role.Switch,onValueChange=onChange),
+        .toggleable(value=value,interactionSource=interactions,indication=LocalIndication.current,
+            enabled=enabled,role=Role.Switch,onValueChange=onChange),
         verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
         Text(title,Modifier.weight(1f))
-        Switch(value,null,enabled=enabled,colors=SwitchDefaults.colors(
-            checkedTrackColor=Mint,checkedThumbColor=MaterialTheme.colorScheme.onPrimary,checkedBorderColor=Mint,
-            uncheckedTrackColor=MaterialTheme.colorScheme.surfaceVariant,uncheckedThumbColor=Muted,
-            uncheckedBorderColor=MaterialTheme.colorScheme.outline))
+        LiquidSwitch(value,enabled,interactions)
     }
 }
 

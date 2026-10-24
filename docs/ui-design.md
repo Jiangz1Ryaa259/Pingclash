@@ -23,3 +23,11 @@ Default palette tests check text contrast of at least 4.5:1 over each tinted wav
 `OceanDesignTest` covers actual palette tokens, diagnostic evidence mapping, encrypted motion preferences, system animation disabling, theme foreground inheritance, light/dark/large-font layouts and accessible controls. Existing `GlassInteractionTest` retains release/cancel, accessibility selection and cancelled power-press checks. Full VPN and privacy integration tests remain enabled.
 
 README screenshots use synthetic emulator fixtures. Their node names, speeds, 84 ms measurement and passing path illustrate layout and are not observations of a real subscription. Screenshot capture exists only in the test APK; the production app does not collect or upload screenshots.
+
+## Switch and connection-control motion
+
+Settings switches now use a passive Canvas thumb inside the existing accessible 48 dp whole-row switch. Position, pressure and color use short finite spring/tween transitions; the thumb briefly stretches during travel or press, and local highlights provide a glass-like edge without captured blur. Cancellation never commits a setting. The visual mirrors in RTL, follows externally committed state and snaps when reduced effects or background visibility disables motion.
+
+The VPN glyph uses the official AndroidX graphics-shapes 1.0.1 `Morph` between a circle and rounded rectangle. Only connection work rotates it; idle/established states have no loop. Button text contrast is checked over intermediate background colors. Material3 remains at the existing 1.3.2 version; this implementation does not depend on Material3 1.4 Expressive APIs.
+
+`SwitchAnimationTest` checks cancelled presses, rapid reversals with a controlled frame clock, disabled input and synthetic RTL/reduced-motion layouts. The normal VPN action and connection permission flow remain unchanged.

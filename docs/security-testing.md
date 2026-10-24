@@ -1,3 +1,15 @@
+# 开关与 VPN 图标动画验证
+
+本轮签名候选仍为 0.1.0-beta.1，不替换已有 Release。
+
+- Android 15 / API 35，正式签名候选 41 项通过、0 跳过，160.626 秒。含新增取消按压、快速反向切换、禁用状态、RTL/减少动效视觉夹具，以及完整 VPN、导入和隐私回归；受控 DNS 与独立 UID HTTP 转发均有实际记录，run-as 被拒绝。
+- 针对性交互检查另有 6 项通过。按钮中间色采样保持文字对比度至少 4.5:1。官方 graphics-shapes 1.0.1 的新增 6 个校验项均与 Google Maven / Maven Central 发布方文件和校验值核对，原有 872 个摘要保持不变。
+- detekt 基线门禁、严格 release lint 和 583 组中英资源检查通过。包含 release instrumentation 的 lint 报告为 0 错误、42 警告、3 信息项；主要是依赖/AGP、KTX 与排印建议，未发现安全或本地化错误。未重新生成 detekt 基线。
+- 候选包 PingClash-0.1.0-beta.1-switch.apk：125194702 字节，SHA256 5af3546bc2e9e6b5be532827eb2d65d0386f5c63d6818b5b1398a23f3a002768。原有签名身份、v2/v3 签名、非 debug 标记及 16 KiB 原生对齐通过；指定私人/测试凭据标记扫描未发现命中。
+- 此候选的本地全套设备验证只覆盖 API 35 模拟器。上一版界面的 API 31/33/34/35 公共矩阵已通过：[Actions 40088332873](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40088332873)，不能当作本次动画变更的矩阵结果。国产 OEM 真机和长时间后台行为仍需验证。
+
+---
+
 # 海色界面与诊断路径验证
 
 本轮只更新界面、加密外观偏好和测试证据，不替换现有 GitHub Release。
