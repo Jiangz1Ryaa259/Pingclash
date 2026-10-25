@@ -4,7 +4,7 @@
 
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
-**Current source: 0.1.0-beta.6 (build 24) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
+**Current source: 0.1.0-beta.7 (build 25) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
 
 ## Features
 
@@ -15,12 +15,13 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - Standard Android `sh` terminal with PTY, keyboard input, pipes, redirection and Ctrl+C.
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
 - English / Simplified Chinese resources, Android 13+ system app-language settings, and automatic network reconnection with TUN retained during outages.
-- Full-screen photographic ocean/cloud scenery, scroll-linked surface-to-underwater transition and native mesh motion; real navigation blur on Android 12+, with opaque fallback and reduced-motion/transparency settings.
+- Full-screen procedural animated ocean/clouds on Android 13+, animated photographic fallback on Android 10–12, circular light/dark reveal and refractive glass navigation. Reduced motion/transparency and protected-window fallbacks remain available.
+- A three-section home: draggable VPN card with uptime, configuration/routing mode and explicit Google/ChatGPT/Gemini reachability tests. Compact quota cards, scroll-collapsing import button and sensitive subscription-copy feedback.
 - Top-anchored hanging card using the supplied React Bits geometry, PBR materials, woven normals and physics in an isolated offline Three.js renderer. Native Compose retains long-press input, VPN actions and accessibility; unsupported WebGL devices use a native fallback.
 
 ## 状态与边界
 
-已发布的首个公开版本仍为 beta.1；当前 beta.6 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+已发布的首个公开版本仍为 beta.1；当前 beta.7 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -38,7 +39,7 @@ This repository contains the current source, tests and build scripts. Local tool
 
 ## Screenshots
 
-Synthetic emulator data only; no personal subscription or credentials are shown. The sample passing path and 84 ms value illustrate layout, not a real network measurement. See [UI design and accessibility](docs/ui-design.md).
+Synthetic emulator data only; no personal subscription or credentials are shown. These screenshots show the earlier beta.6 layout; beta.7 reorganizes Home and Profiles. Any sample passing path or latency illustrates layout, not a real network measurement. See [UI design and accessibility](docs/ui-design.md).
 
 | Front face | Reverse face (synthetic renderer fixture) | Proxies | Settings |
 | --- | --- | --- | --- |

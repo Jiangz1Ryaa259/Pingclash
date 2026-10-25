@@ -25,6 +25,7 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     var scrollOffset by mutableFloatStateOf(0f);private set
     var hasControl by mutableStateOf(false);private set
     var active=false;private set
+    var dragging by mutableStateOf(false);private set
     private var view: WebView?=null
     private val handler=Handler(Looper.getMainLooper())
     private var loaded=false
@@ -70,8 +71,10 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     }
     fun visible(value: Boolean) {
         if(active==value)return
-        active=value;flush();handler.removeCallbacks(poll)
-        if(value) {view?.onResume();handler.post(poll)} else view?.onPause()
+        active=value;handler.removeCallbacks(poll)
+        if(value) {
+            view?.onResume();lastFrame="";polling=false;flush();handler.post(poll)
+        } else {flush();view?.onPause()}
     }
     fun slot(top: Float,height: Float) {
         if(!top.isFinite()||!height.isFinite())return
@@ -82,7 +85,7 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
         slotTop=top;slotHeight=height;scrollOffset=top-(initialTop?:top);schedule()
     }
     fun pose(value: LanyardPose,offset: Offset,density: Density,allowMotion: Boolean,text: ThreeControlText) {
-        dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;motion=allowMotion
+        dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;dragging=held;motion=allowMotion
         phase=text.phase.takeIf {it in listOf("idle","connecting","established","stopping","error")}?:"idle"
         label=text.label.take(120);status=text.status.take(120);fontScale=density.fontScale.coerceIn(1f,2f)
         schedule()

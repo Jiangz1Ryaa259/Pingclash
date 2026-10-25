@@ -65,8 +65,7 @@ private enum class CardPress {TAP,CANCEL}
                         try {
                             drag(down.id) {change ->
                                 val delta=change.positionChange();change.consume()
-                                if(moving)pose.drag=Offset((pose.drag.x+delta.x/density).coerceIn(-38f,38f),
-                                    (pose.drag.y+delta.y/density).coerceIn(-18f,26f))
+                                if(moving)pose.drag=Offset(pose.drag.x+delta.x/density,pose.drag.y+delta.y/density)
                             }
                         } finally {pose.holding=false}
                     }

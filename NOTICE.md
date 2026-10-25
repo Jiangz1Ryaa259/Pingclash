@@ -36,3 +36,10 @@ and vendored Go dependency sources. Android build dependencies are resolved from
 the pinned Gradle declarations through Google's repository and Maven Central.
 
 Standard terminal: Termux terminal-emulator / terminal-view v0.118.3. Vendored sources and local modifications are included; see terminal-emulator/LICENSE.md, terminal-view/LICENSE.md and their Apache-2.0 exceptions.
+
+The beta.7 glass backdrop direction references FlClash v0.9.2 (GPL-3.0),
+`lib/ui/liquid_glass.dart` and `shaders/liquid_glass.frag`:
+https://github.com/chen08209/FlClash/blob/v0.9.2/lib/ui/liquid_glass.dart
+https://github.com/chen08209/FlClash/blob/v0.9.2/shaders/liquid_glass.frag
+PingClash implements a Compose/Haze backdrop with AGSL capsule refraction;
+no Flutter runtime or upstream visual assets are copied.

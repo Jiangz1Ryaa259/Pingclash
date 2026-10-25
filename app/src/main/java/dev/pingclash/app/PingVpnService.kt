@@ -107,7 +107,10 @@ class PingVpnService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == DISCONNECT) { requestStop(); return START_NOT_STICKY }
         val settings=(application as PingClashApplication).repository.data.value.client
-        val resume=intent==null&&settings.autoReconnect&&getSharedPreferences("vpn_runtime",0).getBoolean("resume_requested",false)&&prepare(this)==null
+        if(intent?.action==RECONFIGURE) {
+            return reconfigure(settings)
+        }
+        val resume=shouldResume(intent,settings)
         if (intent?.action != CONNECT && !isAlwaysOn && !resume) { requestStop(); return START_NOT_STICKY }
         if (!starting.compareAndSet(false, true)) return START_NOT_STICKY
         stopRequested.set(false)
@@ -210,13 +213,16 @@ class PingVpnService : VpnService() {
         }==true
     }
 
-    private suspend fun rebindNetwork() {
+    private suspend fun rebindNetwork(force: Boolean=false) {
         val next=currentNetwork()
         val running=runCatching {JSONObject(Mobile.vpnStatus()).optBoolean("running")}.getOrDefault(false)
-        if(next==boundNetwork&&(running||next==null))return
-        if(!(application as PingClashApplication).repository.data.value.client.autoReconnect) {
-            shutdown(tr(R.string.message_8d668116e3));return
-        }
+        val unchanged=next==boundNetwork&&(running||next==null)
+        if(!force&&unchanged)return
+        if(!force&&!(application as PingClashApplication).repository.data.value.client.autoReconnect)
+            shutdown(tr(R.string.message_8d668116e3)) else reestablish(next)
+    }
+
+    private suspend fun reestablish(next: Network?) {
         statisticsJob?.cancel();statisticsJob=null
         saveUsage();usageStarted=false
         // Stop old outbound sockets before installing the new physical route.
@@ -229,6 +235,20 @@ class PingVpnService : VpnService() {
         VpnRuntime.publish(VpnUiState("connecting",message))
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID,notification(message))
         establish()
+    }
+
+    private fun shouldResume(intent: Intent?,settings: ClientSettings)=intent==null&&settings.autoReconnect&&
+        getSharedPreferences("vpn_runtime",0).getBoolean("resume_requested",false)&&prepare(this)==null
+
+    private fun reconfigure(settings: ClientSettings): Int {
+        scope.launch {mutex.withLock {
+            if(descriptor!=null&&!stopRequested.get()) {
+                try {rebindNetwork(true)}
+                catch(cancelled: kotlinx.coroutines.CancellationException) {throw cancelled}
+                catch(_: Exception) {shutdown(tr(R.string.message_5567ea6394))}
+            }
+        }}
+        return if(isAlwaysOn||settings.autoReconnect) START_STICKY else START_NOT_STICKY
     }
 
     private fun requestStop(message: String? = null) {
@@ -287,6 +307,7 @@ class PingVpnService : VpnService() {
 
     companion object {
         const val CONNECT = "dev.pingclash.CONNECT"
+        const val RECONFIGURE = "dev.pingclash.RECONFIGURE"
         const val DISCONNECT = "dev.pingclash.DISCONNECT"
         private const val CHANNEL = "vpn"
         private const val NOTIFICATION_ID = 1

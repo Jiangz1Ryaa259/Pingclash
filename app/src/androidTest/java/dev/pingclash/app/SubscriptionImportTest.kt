@@ -141,6 +141,7 @@ class SubscriptionImportTest {
         assertEquals(1, ProfileRepository(app).data.value.profiles.single { it.id == profile.id }.fieldIssues["vless.tfo"])
         compose.onNodeWithTag("nav-2").performClick()
         if (app.repository.data.value.profiles.size > 1) compose.onNode(hasText("字段诊断测试") and hasClickAction()).performClick()
+        openProfileDetails(compose,profile.id)
         compose.onNodeWithText("查看未导入详情").performScrollTo().performClick()
         compose.onNodeWithText("VLESS · tfo：1 个节点").assertIsDisplayed()
         compose.onNodeWithText("synthetic-secret", substring=true).assertDoesNotExist()
@@ -207,7 +208,7 @@ class SubscriptionImportTest {
         }
         compose.onNodeWithTag("nav-2").performClick()
         assertCaptureProtected(false)
-        compose.onNodeWithText("添加订阅").performClick()
+        compose.onNodeWithTag("profile-add").performClick()
         compose.onNodeWithTag("subscription-content").performTextInput("https://example.invalid/subscribe?token=synthetic-private")
         device.pressBack() // Dismiss the keyboard before checking the import sheet.
         assertCaptureProtected(false)
@@ -223,7 +224,7 @@ class SubscriptionImportTest {
         // Changing the input type may reopen the IME; the first back closes it.
         if (compose.onAllNodesWithText("添加配置").fetchSemanticsNodes().isNotEmpty()) device.pressBack()
         compose.waitUntil(5000) { compose.onAllNodesWithText("添加配置").fetchSemanticsNodes().isEmpty() }
-        compose.onNodeWithText("添加订阅").assertIsDisplayed()
+        compose.onNodeWithTag("profile-add").assertIsDisplayed()
         assertCaptureProtected(false)
     }
     @Test fun realHttpsRedirectBase64ImportAndFailureRetainsInput() {
@@ -233,8 +234,9 @@ class SubscriptionImportTest {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         SubscriptionFixture().use { fixture ->
             compose.onNodeWithTag("nav-2").performClick()
-            compose.onNodeWithText("添加订阅").performClick()
+            compose.onNodeWithTag("profile-add").performClick()
             compose.onNodeWithTag("subscription-content").performTextInput(fixture.html)
+            compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("下载并导入").performScrollTo().performClick()
             compose.waitUntil(15_000) { model.ui.value.importIssue?.contains("网页") == true }
             compose.onNodeWithText("添加配置").assertExists()
@@ -242,6 +244,7 @@ class SubscriptionImportTest {
             assertEquals(before, app.repository.data.value.profiles.size)
             captureSyntheticFixture(compose, device, "import-error-light.png")
             compose.onNodeWithTag("subscription-content").performTextReplacement(fixture.source)
+            compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("下载并导入").performScrollTo().performClick()
             compose.waitUntil(15_000) { app.repository.data.value.profiles.size == before + 1 }
             app.repository.activate(app.repository.data.value.profiles.last().id)
@@ -322,4 +325,13 @@ internal fun approveSyntheticVpn(device: UiDevice,compose: AndroidComposeTestRul
     check(button!=null&&button.isEnabled) {"System VPN consent action missing or disabled"}
     button.click()
     check(device.wait(androidx.test.uiautomator.Until.gone(androidx.test.uiautomator.By.pkg("com.android.vpndialogs")),5000)) {"System VPN consent was not accepted"}
+}
+
+internal fun openProfileDetails(compose: androidx.compose.ui.test.junit4.AndroidComposeTestRule<*,MainActivity>,
+    id: String) {
+    val app=compose.activity.application as PingClashApplication
+    val index=app.repository.data.value.profiles.indexOfFirst {it.id==id}+1
+    compose.onNodeWithTag("profiles-list").performScrollToIndex(index)
+    compose.onNodeWithTag("profile-menu-$id").performClick()
+    compose.onNodeWithText("配置详情").performClick()
 }

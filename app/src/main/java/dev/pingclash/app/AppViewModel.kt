@@ -46,17 +46,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val diagnosis = mutableDiagnosis.asStateFlow()
     private val mutableProxyTests=MutableStateFlow(ProxyTestState())
     val proxyTests=mutableProxyTests.asStateFlow()
+    internal val serviceChecks=ServiceChecks(viewModelScope)
     private var testJob: Job?=null
     private val tcpRuns=ConcurrentHashMap.newKeySet<RunControl>()
     private val testRuns=ConcurrentHashMap.newKeySet<String>()
     @Volatile private var control: RunControl? = null
     @Volatile private var nativeRun: String? = null
 
-    private fun requestKey(data: AppData) = Triple(data.selectedId, data.selectedRuntimeConfig, data.probeUrl)
+    private fun requestKey(data: AppData) =
+        Triple(data.selectedId, data.selectedRuntimeConfig, data.probeUrl) to data.client.mode
     init {
         viewModelScope.launch {
             data.map(::requestKey).distinctUntilChanged().drop(1).collect {
                 cancelProxyTests();mutableProxyTests.value=ProxyTestState()
+                serviceChecks.cancel()
                 if (mutableDiagnosis.value.running) cancelDiagnosis()
                 else mutableDiagnosis.value = DiagnosticUiState()
             }
@@ -151,6 +154,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun delete(id: String) = operation { app.repository.delete(id); tr(R.string.message_df12a31f25) }
     fun settings(dns: String, target: String) = operation { app.repository.settings(dns, target); tr(R.string.message_bd03c0aad7) }
     fun clientSettings(value: ClientSettings,dns: String,target: String)=operation {app.repository.clientSettings(value,dns,target);""}
+    fun routeMode(mode: String)=operation {
+        app.repository.routeMode(mode)
+        if(vpn.value.phase=="established")app.startService(android.content.Intent(app,PingVpnService::class.java)
+            .setAction(PingVpnService.RECONFIGURE))
+        ""
+    }
     fun appearance(language: String,theme: String,dynamicColor: Boolean?=null,reduceEffects: Boolean?=null,
         scenery: ScenePreferenceChange?=null) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -389,6 +398,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) { current?.cancel(); if (id != null) Mobile.cancel(id) }
     }
     override fun onCleared() {
+        serviceChecks.cancel()
         cancelProxyTests()
         control?.cancel(); nativeRun?.let { Mobile.cancel(it) }
         super.onCleared()

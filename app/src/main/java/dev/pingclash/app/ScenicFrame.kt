@@ -51,12 +51,12 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
     val depth=remember {mutableFloatStateOf(0f)}
     val cable=remember {mutableStateOf<androidx.compose.ui.geometry.Offset?>(null)}
     val three=rememberLanyardThreeState()
-    val immersive=selected==0&&scene!="none"
+    val immersive=scene!="none"
     val parentColors=MaterialTheme.colorScheme
     SideEffect {
         window?.let {
             androidx.core.view.WindowCompat.getInsetsController(it,it.decorView).apply {
-                isAppearanceLightStatusBars=!immersive&&parentColors.background.luminance()>.5f
+                isAppearanceLightStatusBars=parentColors.background.luminance()>.5f
                 isAppearanceLightNavigationBars=isAppearanceLightStatusBars
             }
         }
@@ -68,8 +68,6 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
         Box(Modifier.fillMaxSize().background(Ink)) {
             Box(Modifier.fillMaxSize().then(if(blur)Modifier.hazeSource(haze) else Modifier)) {
                 OceanBackdrop(TrailTone.PENDING,false,Modifier.fillMaxSize(),scene)
-                if(!immersive&&scene!="none")Box(Modifier.fillMaxSize().background(
-                    Brush.verticalGradient(listOf(Ink.copy(alpha=.97f),Ink.copy(alpha=.84f)))))
                 LanyardSceneLayers(three,cable,selected,secure)
                 content()
             }
@@ -77,7 +75,5 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
         }
     }
     }
-    if(immersive)MaterialTheme(colorScheme=oceanColors(true)) {
-        CompositionLocalProvider(LocalContentColor provides Color.White) {frame()}
-    } else frame()
+    frame()
 }

@@ -19,3 +19,4 @@ profiles.enc*
 dist/
 **/node_modules/
 
+videos/

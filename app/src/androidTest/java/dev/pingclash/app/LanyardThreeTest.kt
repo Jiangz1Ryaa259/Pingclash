@@ -78,6 +78,13 @@ class LanyardThreeTest {
         compose.onNodeWithTag("vpn-power").performClick()
         compose.waitForIdle()
         await {evaluate(view,"window.__pingclashFrame.back")=="false"}
+        compose.runOnIdle {motion.value=true;phase.value="idle"}
+        compose.waitForIdle()
+        val beforePause=status(view).getInt("frames")
+        compose.runOnUiThread {control.visible(false)}
+        Thread.sleep(200)
+        compose.runOnUiThread {control.visible(true)}
+        await {status(view).optBoolean("active")&&status(view).getInt("frames")>beforePause}
         assertFalse(VpnRuntime.state.value.active)
     }
 
@@ -115,7 +122,7 @@ class LanyardThreeTest {
 
     private fun fixture(content: @androidx.compose.runtime.Composable ()->Unit) {
         compose.runOnUiThread {compose.activity.setContent {
-            PingClashTheme("dark") {ScenicFrame(0,"ocean",true,{}) {
+            PingClashTheme("dark") {ScenicFrame(0,"none",true,{}) {
                 val renderer=LocalLanyardThree.current
                 SideEffect {control=requireNotNull(renderer)}
                 Column(Modifier.fillMaxSize().padding(horizontal=24.dp,vertical=100.dp)) {content()}

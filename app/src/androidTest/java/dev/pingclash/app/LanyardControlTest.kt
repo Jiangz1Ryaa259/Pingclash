@@ -60,7 +60,7 @@ class LanyardControlTest {
             card.performTouchInput {down(center);moveBy(Offset(60f,0f),160);up()}
             compose.mainClock.advanceTimeBy(80)
             assertEquals(0f,displacement(),0f);assertEquals(0,calls)
-            card.performTouchInput {down(center);advanceEventTime(800);moveBy(Offset(60f,28f),160)}
+            card.performTouchInput {down(center);advanceEventTime(800);moveBy(Offset(180f,280f),160)}
             // Recomposition delivers the new target before the animation coroutine's frame.
             compose.mainClock.advanceTimeBy(80)
             assertTrue("Held card did not move: ${displacement()}",displacement()>5f);assertEquals(0,calls)

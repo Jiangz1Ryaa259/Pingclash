@@ -95,7 +95,8 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
             .width((cardHeight-26.dp)*(1.6f/2.25f)).height(cardHeight)
             .graphicsLayer {
                 translationX=x*density.density;translationY=y*density.density
-                rotationZ=x*.19f;rotationX=-y*.38f;rotationY=turn+x*.30f
+                rotationZ=(x*.19f).coerceIn(-25f,25f);rotationX=(-y*.38f).coerceIn(-20f,20f)
+                rotationY=turn+(x*.30f).coerceIn(-20f,20f)
                 transformOrigin=TransformOrigin(.5f,.04f);cameraDistance=1100f*density.density
                 alpha=cardOpacity(available)
             }

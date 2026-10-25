@@ -63,11 +63,12 @@ class ClientIntegrationTest {
                 .put("server", "127.0.0.1").put("port", fixture.socks.localPort)
                 .put("username", "fixture-user").put("password", "fixture-private-password").toString()
             compose.onNodeWithTag("nav-2").performClick()
-            compose.onNodeWithText("添加订阅").performClick()
+            compose.onNodeWithTag("profile-add").performClick()
             compose.onNodeWithText("节点配置").performClick()
             compose.onNodeWithText("名称（可选）").performTextInput(name)
             compose.onNodeWithText("节点 JSON / Clash YAML").performTextInput(config)
             hideFixtureKeyboard() // Dismiss only IME before scrolling on small displays.
+            compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("导入", useUnmergedTree = false).performScrollTo().performClick()
             compose.waitUntil(10_000) { app.repository.data.value.nodes.isNotEmpty() }
             compose.waitUntil(5000) { compose.onAllNodesWithText("知道了").fetchSemanticsNodes().isNotEmpty() }

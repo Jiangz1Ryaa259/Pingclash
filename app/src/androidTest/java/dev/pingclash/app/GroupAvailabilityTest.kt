@@ -42,6 +42,7 @@ class GroupAvailabilityTest {
             assertEquals("主代理",app.repository.data.value.selected?.name)
             captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),"group-availability.png")
             compose.onNodeWithTag("nav-2").performClick()
+            openProfileDetails(compose,profile.id)
             compose.onNodeWithTag("profile-reparse-${profile.id}").performScrollTo().performClick()
             val model=ViewModelProvider(compose.activity)[AppViewModel::class.java]
             compose.waitUntil(10000) {!model.ui.value.busy};model.dismissMessage()

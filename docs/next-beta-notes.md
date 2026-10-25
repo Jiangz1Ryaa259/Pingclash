@@ -4,6 +4,14 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.7/build 25 keeps Home to the hanging control/uptime, configuration/routing
+  mode and explicit website checks. Move telemetry and full diagnostics to Settings.
+- Add full-app procedural ocean/clouds (API 33+), circular light/dark reveal,
+  refractive navigation, expanded selected labels, quota cards and collapsing import FAB.
+- Add copy/check feedback with sensitive, conditionally expiring clipboard content;
+  two-step import review and inline validation errors. No preview video is generated.
+- Remove the small dragging limits and restart renderer state after pause/resume.
+
 - Beta.6/build 24 replaces the material approximation with the supplied Lanyard
   component's Three.js geometry, physical materials, weave normals, metal clasp
   and environment. It runs offline with no JavaScript-to-native interface;
@@ -25,6 +33,13 @@ This is a draft, not a published release or new version tag. The existing beta.1
 - Add offline provider compatibility fixtures and canary regression coverage for errors, diagnostic exports, encrypted storage, app logs and terminal startup.
 
 ## Known limitations — retain in the published release notes
+
+- Android 10–12 retain the photographic mesh background, not the API 33+ procedural
+  water shader. Real navigation blur needs API 31+; optical refraction needs API 33+.
+  Reduced transparency/protected pages use an opaque fallback. GPU/OEM behavior varies.
+- Google/ChatGPT/Gemini tests measure HTTPS reachability only, not accounts, regional
+  access or full service functionality; an HTTP error response is distinguished from
+  a failed connection. They run only after an explicit user action.
 
 - The Three.js card requires a WebGL-capable Android System WebView. Unsupported
   devices use a native material fallback. GPU performance and OEM WebView variants

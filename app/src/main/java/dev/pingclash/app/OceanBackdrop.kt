@@ -30,7 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 internal val DecorativeEffectRunning = SemanticsPropertyKey<Boolean>("DecorativeEffectRunning")
 internal val SceneDiveProgress = SemanticsPropertyKey<Float>("SceneDiveProgress")
 internal const val CONNECTION_TINT_ALPHA = .94f
-internal const val NAV_SELECTOR_EDGE_ALPHA = .8f
+internal const val NAV_SELECTOR_EDGE_ALPHA = .80f
 
 @Composable internal fun rememberForeground(): Boolean =
     LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState().value == Lifecycle.State.RESUMED
@@ -39,6 +39,7 @@ internal const val NAV_SELECTOR_EDGE_ALPHA = .8f
 @Composable internal fun OceanBackdrop(tone: TrailTone,connecting: Boolean,modifier: Modifier=Modifier,
     scene: String="ocean") {
     if(scene=="none")return
+    if(android.os.Build.VERSION.SDK_INT>=33) {RealtimeOcean(modifier,scene=="clouds");return}
     val motion=LocalMotionAllowed.current
     val animate=motion&&rememberForeground()
     val phase: State<Float> = if (animate) {

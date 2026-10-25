@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
             val systemLanguage=androidx.compose.ui.platform.LocalConfiguration.current.locales[0].language
             val language=if(data.client.language=="system") {if(systemLanguage=="zh")"zh" else "en"} else data.client.language
             CompositionLocalProvider(LocalUiLanguage provides language) {
+                ThemeRevealHost(data.client.theme+data.client.dynamicColor,data.client.reduceEffects) {
                 PingClashTheme(data.client.theme,data.client.dynamicColor) {
                     val light=MaterialTheme.colorScheme.background.luminance()>.5f
                     SideEffect {
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     Surface(Modifier.fillMaxSize(), color = Ink) { PingClashApp() }
+                }
                 }
             }
         }

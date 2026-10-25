@@ -18,6 +18,10 @@ import kotlin.math.sin
 
 // Original, local vectors: one optical grid, rounded terminals and joins.
 // Icons are decorative; their parent control owns the accessible action label.
+internal const val GLYPH_COPY=28
+internal const val GLYPH_SUN=29
+internal const val GLYPH_MOON=30
+
 private object AppIcons {
     private fun gear(): String {
         val points=(0 until 32).map {i ->
@@ -34,6 +38,10 @@ private object AppIcons {
     }
     private val paths=mapOf(
         0 to "M12 3.2 V11 M6.8 6.1 C4.8 7.6 3.7 9.8 3.7 12.3 A8.3 8.3 0 0 0 20.3 12.3 C20.3 9.8 19.2 7.6 17.2 6.1",
+        GLYPH_COPY to "M8 8 H18 A2 2 0 0 1 20 10 V20 H10 A2 2 0 0 1 8 18 Z M16 8 V4 H4 V16 H8",
+        GLYPH_SUN to ("M16 12 A4 4 0 1 1 8 12 A4 4 0 1 1 16 12 M12 2 V4 M12 20 V22 M2 12 H4 M20 12 H22 "+
+            "M5 5 L6.5 6.5 M17.5 17.5 L19 19 M5 19 L6.5 17.5 M17.5 6.5 L19 5"),
+        GLYPH_MOON to "M20.2 14.3 A8.5 8.5 0 1 1 9.7 3.8 A7 7 0 0 0 20.2 14.3 Z",
         1 to "M20.5 12 A8.5 8.5 0 1 1 3.5 12 A8.5 8.5 0 1 1 20.5 12 Z M3.8 12 H20.2 M12 3.5 C8 7.8 8 16.2 12 20.5 C16 16.2 16 7.8 12 3.5",
         2 to "M3 12 H6.5 L9.2 6.2 Q9.7 5.2 10.1 6.4 L13.8 17.6 Q14.2 18.8 14.7 17.6 L17.5 12 H21",
         3 to gear(),

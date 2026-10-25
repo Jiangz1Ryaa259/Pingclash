@@ -47,7 +47,7 @@ class SubscriptionFeaturesTest {
                 val restored=ProfileRepository(app).data.value.profiles.single {it.id==profile.id}
                 assertEquals(response.quota,restored.quota);assertEquals("mihomo/synthetic-fixture",restored.userAgent)
                 compose.onNodeWithTag("nav-2").performClick()
-                if(app.repository.data.value.profiles.size>1)compose.onNode(hasText("Synthetic quota") and hasClickAction()).performClick()
+                openProfileDetails(compose,profile.id)
                 compose.onNodeWithText("已用：",substring=true).performScrollTo().assertIsDisplayed()
                 compose.onNodeWithText("有效期至：",substring=true).performScrollTo().assertIsDisplayed()
                 val bytes=java.io.File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1)

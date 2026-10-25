@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
@@ -61,7 +62,8 @@ internal fun createLanyardView(context: Context,state: LanyardThreeState): Lanya
 @Composable internal fun LanyardThreeLayer(state: LanyardThreeState,active: Boolean) {
     SideEffect {state.visible(active)}
     DisposableEffect(state) {onDispose {state.dispose()}}
-    AndroidView(factory={createLanyardView(it,state)},modifier=Modifier.fillMaxSize()
+    AndroidView(factory={createLanyardView(it,state)},
+        modifier=Modifier.fillMaxSize().zIndex(if(state.dragging)1f else 0f)
         .onSizeChanged {state.viewport(it.width,it.height)}
         .graphicsLayer {alpha=if(state.ready&&active)1f else 0f;translationY=state.scrollOffset})
 }

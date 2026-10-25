@@ -1,21 +1,27 @@
-# Full-screen photographic scenery and native UI
+# Interface and motion
 
-The current source is 0.1.0-beta.5, build 23. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer. The home card now hangs from the top of the window, requires long-press dragging and flips with VPN start/stop; see [its interaction and material boundaries](lanyard-ui.md).
+The current source is 0.1.0-beta.7, build 25. Home has three sections: the hanging VPN card and uptime; configuration and rule/global/direct routing mode; and explicit website reachability checks. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
-## Scene and interaction
+## Background and glass
 
-The local surface, underwater and cloud PNGs in `drawable-nodpi` were created for this app using the built-in imagegen tool. Their original prompts and paths are recorded in [scene-assets.md](scene-assets.md). No artwork or video frames were taken from the user's reference. There is no runtime image host, weather feed, extra resolver, telemetry or new permission.
+On Android 13+ an AGSL shader draws procedural waves, reflected sky and moving clouds. It does not play a video or display a captured reference frame. All tabs share this root background. Android 10–12 retain the locally generated photographic mesh fallback documented in [scene assets](scene-assets.md); this is not the same real-time water renderer. Plain background mode is available.
 
-Scenery occupies the complete root behind system insets, content and navigation. On Home, scrolling drives the ocean surface/underwater crossfade and a small camera offset. Retained 16-by-28 bitmap meshes produce subtle refraction and cloud drift; no bitmap is allocated or captured each frame. This is photographic 2.5D composition, not live ocean simulation or video scrubbing. Other pages tint the scene for readable controls and retain their chosen theme.
+Content and navigation are sibling layers. Haze samples the content behind the bar on API 31+, with 20 dp blur. On API 33+ a separate render node adds capsule-edge refraction and subtle dispersion to the backdrop only; text and icons stay sharp. Geometry/tint direction references FlClash v0.9.2, attributed in [NOTICE](../NOTICE.md). This is not Apple's proprietary renderer. Lower APIs, reduced transparency, protected windows and background lifecycle use an opaque fallback. The terminal is a separate protected activity.
 
-Home uses light text, a freestanding hanging-card control and compact URL measurement. The diagnostic path and telemetry remain available below; no success, traffic or latency is synthesized. Plain background mode uses the same card and retains its themed diagnostic surface. Photos do not establish a network connection.
+## Interactions
 
-Foreground lifecycle, Reduce effects, system motion settings and touch exploration control decorative motion. Reduced effects also stop scroll-linked camera movement. A plain background and Reduce transparency remain available. The scene settings retain existing encrypted storage and do not change subscriptions or routes.
+- The session timer uses VPN state, with an animated numeric label and minute bar; it does not fabricate a start time or preserve a misleading connected duration after a failed reconnect.
+- Tap operates the existing VPN action. A stationary long press begins an unrestricted drag; releasing returns the card through its physical solver. App pause/resume restarts the renderer without relying on a stale animation-frame handle.
+- The theme button expands a circular reveal from its center. One transient app-window PixelCopy frame exists only in memory and is cleared on completion, protection or backgrounding; it is never saved or uploaded. Protected windows do not capture a frame. System/reduced-motion preferences suppress the transition.
+- The selected navigation label expands while switching. All tabs retain accessible labels and large-font navigation clearance.
+- Profiles use stable-ID cards, quota/expiry details and a three-dot menu. The add button collapses while scrolling and remains accessible. Imports remain disabled during active VPN under the existing repository guard.
+- Copying a subscription is an explicit menu action: copy changes to a check, without putting the URL into feedback. The clip is marked sensitive and cleared after 60 seconds only if its ownership marker still matches; another application's clipboard is never cleared.
+- Importing has input and review steps. Review shows the HTTPS host, then requires a final action before download/write. Errors expand inline with a short shake; editing removes stale errors. Details and profile selection use expanding content and dropdowns.
 
-## Glass and privacy
+Decorative animation stops outside the foreground and respects system motion settings, touch exploration and Reduce effects. The same settings suppress shake, card motion and circular reveal. No new permissions or remote artwork are required.
 
-The content source and navigation are siblings under `ScenicFrame`; the bar is excluded from its own source. Haze and haze-materials stay at 1.6.8 with Compose BOM 2025.06.01. Navigation uses 20 dp blur, contrasting labels and a spring-driven capsule. It is background diffusion, not Apple's optical refraction renderer.
+## Website checks
 
-Android 10–11, Reduce transparency and protected windows use an opaque fallback. Source sampling stops during `FLAG_SECURE` protection, including the replacement-frame delay, and when the window leaves the foreground. The terminal is in a separate activity and is outside this source. Transient app-owned graphics layers are not exported or uploaded.
+Google uses its lightweight generate_204 URL; ChatGPT and Gemini use their public HTTPS home pages. Tests run only on demand through the selected Mihomo definition, with bounded timeouts and cancellation. An HTTP 403/429 is displayed as an HTTP response, not misclassified as an unreachable server. Reachability does not prove account access, regional availability or usable AI service. No login, body, cookies or raw response text is collected.
 
-Every scrolling page/grid reserves navigation clearance, including large fonts. The actual source-sampling probe checks rendered stripe pixels and opaque fallback with bounded frame polling; API 31's pre-draw invalidation is tested without relying on Espresso global idleness. An additional test drives the real dashboard's scroll action and observes the background depth state. Existing VPN, import, privacy and interaction regressions remain enabled.
+See [validation](security-testing.md) for measured evidence and [the card renderer](lanyard-ui.md) for source/license boundaries. No preview video is generated for this iteration.

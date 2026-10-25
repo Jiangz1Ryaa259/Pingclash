@@ -16,6 +16,8 @@ npm test
 `adapt.mjs` preserves the mesh construction, shaders, normal textures, environment
 and physics. Its narrow integration changes bind native long-press displacement,
 VPN face state and lifecycle/reduced-motion state, and bound the image cache.
+The host drag is not clamped to the former small slot; the adapter extends and
+restores the strap rest length, then resumes frame scheduling after backgrounding.
 `src/entry.jsx` supplies local card-face artwork and viewport framing. The bundle
 and its license notices are committed under `app/src/main/assets/`; Gradle can
 build those committed assets without Node. After changing renderer sources,
@@ -24,6 +26,6 @@ CI reproduces the build, checks the diff and tests source fidelity/integrity.
 
 The WebView loads three fixed app assets, blocks network and file/content access,
 and exposes no JavaScript-to-native interface. It receives fixed UI text, phase
-and bounded geometry only. Native Compose owns VPN actions, input and accessibility.
+and viewport/drag geometry only. Native Compose owns VPN actions, input and accessibility.
 Rendering pauses off-home, in background and on protected pages. WebGL-unavailable
 devices use the native card fallback; emulator evidence is not OEM validation.

@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Beta.7/build 25 reduces Home to its hanging VPN control/uptime, profile/routing mode
+  and explicit Google/ChatGPT/Gemini checks. Detailed diagnostics and telemetry remain in Settings.
+- Remove small drag clamps; preserve tap versus stationary long-press semantics and
+  restart the offline renderer after activity pause/resume.
+- Add procedural ocean/cloud shaders across tabs on API 33+, circular theme reveal,
+  refractive navigation, selected-label expansion and reduced-motion/privacy fallbacks.
+- Replace profile blocks with selectable quota/expiry cards, a scroll-collapsing import
+  button, menus and sensitive clipboard copy/check feedback with conditional expiry.
+- Add a two-step import review, bounded input validation, expanding details and inline
+  error feedback. Downloads and writes require the final import action.
+- Reconfigure explicitly selected routing mode while retaining the VPN TUN; other
+  settings and profile mutations keep their existing active-VPN guards.
+- Pin the CI emulator build after the previous runner's emulator process exited;
+  preserve the full integration suite and report results per exact source revision.
+
 - Beta.6/build 24 integrates the supplied React Bits Lanyard geometry, PBR materials,
   woven normal map, metal hardware, environment and physics in an isolated offline
   Three.js renderer. Native Compose retains actions, long-press input and accessibility.

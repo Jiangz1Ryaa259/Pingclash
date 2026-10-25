@@ -44,99 +44,33 @@ import androidx.compose.ui.unit.dp
 internal data class DashboardState(
     val data: AppData, val vpn: VpnUiState, val diagnosis: DiagnosticUiState,
     val tests: ProxyTestState, val ready: Boolean, val busy: Boolean,
+    val services: ServiceCheckState=ServiceCheckState(),
 )
 
 internal data class DashboardActions(
     val connect: () -> Unit, val nodes: () -> Unit, val diagnose: () -> Unit, val test: () -> Unit,
+    val mode: (String)->Unit={},val selectProfile: (String)->Unit={},
+    val themeMode: (String)->Unit={},val serviceTest: ()->Unit={},
 )
 
 @Composable internal fun DashboardScreen(state: DashboardState, actions: DashboardActions) {
     val scroll=rememberScrollState()
-    val depth=LocalSceneDepth.current
-    val immersive=LocalImmersiveScene.current
-    val motion=LocalMotionAllowed.current
-    val travel=with(LocalDensity.current) {LocalConfiguration.current.screenHeightDp.dp.toPx()*.6f}
-    LaunchedEffect(scroll,immersive,motion,travel) {
-        snapshotFlow {scroll.value}.collectLatest {
-            depth.floatValue=if(immersive&&motion)(it/travel).coerceIn(0f,1f) else 0f
+    Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(horizontal=20.dp,vertical=8.dp)
+        .padding(bottom=LocalNavigationClearance.current).testTag("dashboard"),
+        verticalArrangement=Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.testTag("home-control")) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+                Text("PingClash",Modifier.weight(1f),style=MaterialTheme.typography.titleLarge)
+                SessionTimer(state.vpn)
+                ThemeToggle(state.data.client,actions.themeMode)
+            }
+            if(!state.ready||state.data.loadFailed)InputIssue(tr(
+                if(!state.ready)R.string.message_0fef4c3028 else R.string.message_9e30b1eb6a))
+            LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),actions.connect)
+            if(state.vpn.phase=="error")InputIssue(state.vpn.message)
         }
-    }
-    Column(
-        Modifier.fillMaxSize().verticalScroll(scroll).padding(horizontal = 24.dp, vertical = 16.dp)
-            .padding(bottom=LocalNavigationClearance.current)
-            .testTag("dashboard"), verticalArrangement = Arrangement.spacedBy(18.dp),
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("PingClash", style = MaterialTheme.typography.titleLarge)
-                Text(buildIdentity(),color=if(immersive)Color.White else Muted,
-                    style=MaterialTheme.typography.labelSmall)
-            }
-            Text(tr(when (state.data.client.mode) {
-                "rule" -> R.string.message_1123245d1b
-                "direct" -> R.string.message_b06325c566
-                else -> R.string.message_f1880deaae
-            }), color = if(immersive)Color.White else Muted, style = MaterialTheme.typography.labelMedium)
-        }
-        if (!state.ready || state.data.loadFailed) {
-            Surface(color = MaterialTheme.colorScheme.errorContainer, shape = UiCorners.Card) {
-                Text(tr(if (!state.ready) R.string.message_0fef4c3028 else R.string.message_9e30b1eb6a),
-                    Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
-            }
-        }
-        if(immersive)ImmersiveDashboardHero(state,actions) else ConnectionPanel(state, actions)
-        CurrentRoute(state, actions.nodes)
-        DashboardTelemetry(state.data.client, state.vpn)
-        Text(tr(R.string.ui_diagnostic_boundary), color = Muted, style = MaterialTheme.typography.bodySmall)
-        Spacer(Modifier.height(4.dp))
-    }
-}
-
-@Composable private fun ConnectionPanel(state: DashboardState, actions: DashboardActions) {
-    val vpn = state.vpn
-    val canTest = measurementEnabled(state)
-    Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-    LanyardPowerControl(vpn.phase,connectionControlEnabled(state),connectLabel(state),actions.connect)
-    Surface(shape = UiCorners.Sheet, color = Panel.copy(alpha = CONNECTION_TINT_ALPHA),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
-        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(tr(R.string.ui_connection), Modifier.weight(1f), color = Muted,
-                    style = MaterialTheme.typography.labelLarge)
-                ConnectionBadge(vpn)
-            }
-            if (LocalDensity.current.fontScale >= 1.6f) {
-                SelectedName(state.data)
-                UrlMeasurement(selectedUrlDelay(state.data, state.tests),
-                    Modifier.fillMaxWidth().clickable(enabled = canTest, role = Role.Button,
-                        onClickLabel = tr(R.string.ui_test_latency), onClick = actions.test)
-                        .testTag("dashboard-url-test"))
-            } else Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) { SelectedName(state.data) }
-                UrlMeasurement(selectedUrlDelay(state.data, state.tests),
-                    Modifier.widthIn(min = 96.dp, max = 132.dp).heightIn(min = 64.dp)
-                        .clickable(enabled = canTest, role = Role.Button,
-                            onClickLabel = tr(R.string.ui_test_latency), onClick = actions.test)
-                        .testTag("dashboard-url-test"))
-            }
-            if (vpn.phase == "error") {
-                Text(vpn.message, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(tr(R.string.ui_connection_path), style = MaterialTheme.typography.titleSmall)
-                    Text(tr(if (state.diagnosis.running) R.string.ui_checking else R.string.ui_snapshot),
-                        color = Muted, style = MaterialTheme.typography.labelSmall)
-                }
-                TextButton(actions.diagnose, enabled = canTest, modifier = Modifier.testTag("dashboard-diagnose")) {
-                    Text(tr(R.string.message_625924befc))
-                }
-            }
-            ConnectionTrail(diagnosticTrail(state.diagnosis, state.data.selectedId))
-        }
-    }
+        HomeConfiguration(state,actions)
+        HomeServiceChecks(state,actions.serviceTest)
     }
 }
 
@@ -149,7 +83,7 @@ internal fun measurementEnabled(state: DashboardState): Boolean {
 
 internal fun connectionControlEnabled(state: DashboardState): Boolean {
     val usable = state.ready && !state.data.loadFailed && !state.busy
-    val testing = state.diagnosis.running || state.tests.running
+    val testing = state.diagnosis.running || state.tests.running || state.services.running
     return usable && (state.vpn.active || !testing)
 }
 
@@ -174,12 +108,6 @@ internal fun connectionControlEnabled(state: DashboardState): Boolean {
     }
 }
 
-@Composable private fun SelectedName(data: AppData) {
-    Text(data.selected?.name ?: tr(R.string.ui_choose_configuration),
-        style = MaterialTheme.typography.titleLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
-    Text(data.selected?.type?.uppercase().orEmpty(), color = Muted, style = MaterialTheme.typography.bodySmall)
-}
-
 @Composable internal fun UrlMeasurement(delay: ProxyDelay?, modifier: Modifier) {
     Column(modifier.padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         if (delay?.state == "passed") {
@@ -199,24 +127,6 @@ internal fun connectionControlEnabled(state: DashboardState): Boolean {
             Text(tr(R.string.ui_url_note), color = Muted, style = MaterialTheme.typography.bodySmall)
         }
         Text(tr(R.string.ui_tap_latency), color = Mint, style = MaterialTheme.typography.labelSmall)
-    }
-}
-
-@Composable private fun CurrentRoute(state: DashboardState, onNodes: () -> Unit) {
-    val enabled = !state.vpn.active && !state.tests.running && !state.diagnosis.running && !state.busy
-    Surface(shape = UiCorners.Card, color = Panel.copy(alpha = if(LocalImmersiveScene.current).86f else .96f)) {
-        Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(enabled = enabled, onClick = onNodes)
-            .padding(16.dp), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            AppGlyph(14, Modifier.size(22.dp), Muted)
-            Column(Modifier.weight(1f)) {
-                Text(tr(R.string.ui_current_route), style = MaterialTheme.typography.titleSmall)
-                Text(state.data.activeProfile?.name ?: tr(R.string.ui_choose_configuration), color = Muted,
-                    style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            Text(tr(R.string.ui_switch_route), color = if (enabled) Mint else Muted,
-                style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium)
-        }
     }
 }
 

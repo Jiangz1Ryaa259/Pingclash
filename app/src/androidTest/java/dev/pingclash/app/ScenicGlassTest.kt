@@ -86,7 +86,8 @@ class ScenicGlassTest {
         captureSyntheticFixture(compose,device,"glass-large-font-clearance.png")
     }
 
-    @Test fun dashboardScrollDrivesSurfaceToUnderwaterScene() {
+    @Test fun animatedBackgroundRemainsAvailableAcrossAllTabs() {
+        val selected=mutableStateOf(0)
         val scale=device.executeShellCommand("settings get global animator_duration_scale").trim()
         try {
             device.executeShellCommand("settings put global animator_duration_scale 1")
@@ -94,7 +95,7 @@ class ScenicGlassTest {
             compose.runOnUiThread {compose.activity.setContent {
                 PingClashTheme("dark") {
                     CompositionLocalProvider(LocalMotionAllowed provides true) {
-                        ScenicFrame(0,"ocean",Build.VERSION.SDK_INT==31,{}) {
+                        ScenicFrame(selected.value,"ocean",Build.VERSION.SDK_INT==31,{selected.value=it}) {
                             Box(Modifier.fillMaxSize().statusBarsPadding()) {
                                 DashboardScreen(DashboardState(AppData(),VpnUiState(),DiagnosticUiState(),
                                     ProxyTestState(),true,false),DashboardActions({}, {}, {}, {}))
@@ -105,13 +106,14 @@ class ScenicGlassTest {
             }}
             compose.mainClock.advanceTimeBy(64)
             captureSyntheticFixture(compose,device,"immersive-surface.png")
-            compose.onNodeWithTag("dashboard").performSemanticsAction(SemanticsActions.ScrollBy) {it(0f,1800f)}
-            compose.mainClock.advanceTimeBy(128)
-            compose.waitUntil(5000) {
-                compose.mainClock.advanceTimeBy(32)
-                compose.onNodeWithTag("ocean-backdrop").fetchSemanticsNode().config[SceneDiveProgress]>.7f
+            for(index in 0..3) {
+                compose.runOnUiThread {selected.value=index}
+                compose.mainClock.advanceTimeBy(128)
+                assertTrue("Background animation detached from tab $index",
+                    compose.onNodeWithTag("ocean-backdrop").fetchSemanticsNode()
+                        .config[DecorativeEffectRunning])
             }
-            captureSyntheticFixture(compose,device,"immersive-depth.png")
+            captureSyntheticFixture(compose,device,"immersive-all-tabs.png")
         } finally {
             compose.mainClock.autoAdvance=true
             val command=if(scale=="null")"settings delete global animator_duration_scale"

@@ -151,7 +151,7 @@ import org.json.JSONArray
                 "appearance" -> {
                     SettingsCard {
                         Choices(tr(R.string.message_9f6fee1aba),data.client.language,listOf("system" to tr(R.string.message_217cfe7db1),"zh" to tr(R.string.message_9937e365aa),"en" to tr(R.string.message_d1648bacbc)),true) {model.appearance(it,data.client.theme)}
-                        Choices(tr(R.string.message_788db1cfec),data.client.theme,listOf("system" to tr(R.string.message_217cfe7db1),"light" to tr(R.string.message_aa0819dfc4),"dark" to tr(R.string.message_a6b75d0680)),true) {model.appearance(data.client.language,it)}
+                        ThemePicker(data.client.theme) {model.appearance(data.client.language,it)}
                         SettingSwitch(tr(R.string.ui_dynamic_color),data.client.dynamicColor,
                             android.os.Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.S) {
                             model.appearance(data.client.language,data.client.theme,dynamicColor=it)
