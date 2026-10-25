@@ -20,6 +20,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -61,13 +63,24 @@ class InteractionUpgradeTest {
         compose.onNodeWithTag("home-service-checks").assertExists()
         compose.onNodeWithTag("dashboard-diagnose").assertDoesNotExist()
         assertEquals(0,calls)
-        compose.onNodeWithTag("mode-rule").performScrollTo().performClick()
+        clickHomeControl("mode-rule")
         assertEquals("rule",mode)
-        compose.onNodeWithTag("service-check-start").performScrollTo().performClick()
+        clickHomeControl("service-check-start")
         assertEquals(1,calls)
         compose.onNodeWithText("Google").assertExists()
         compose.onNodeWithText("ChatGPT").assertExists()
         compose.onNodeWithText("Gemini").assertExists()
+    }
+
+    private fun clickHomeControl(tag: String) {
+        val node=compose.onNodeWithTag(tag).performScrollTo()
+        val nav=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot
+        val distance=node.fetchSemanticsNode().boundsInRoot.bottom-nav.top+
+            16*compose.activity.resources.displayMetrics.density
+        if(distance>0)compose.onNodeWithTag("dashboard").performSemanticsAction(SemanticsActions.ScrollBy) {
+            it(0f,distance)
+        }
+        node.performClick()
     }
 
     @Test fun profileCopyIsSensitiveAndCollapsedAddRemainsAccessible() {

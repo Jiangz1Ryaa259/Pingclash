@@ -53,9 +53,9 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.6/build 24 正式签名候选 51 项通过、0 跳过；含真实 WebGL 场景、资源隔离、VPN 转发和原生手势回归 |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.6 同一签名候选 16 项通过，含实际 Three.js 渲染和资源隔离 |
-| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.6 同一签名候选 14 项原生界面/手势回归通过；旧 WebView 的三维能力不作保证 |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.7/build 25 正式签名候选 55 项通过、0 跳过；含真实 WebGL 场景、暂停恢复、资源隔离、VPN 转发和新版交互回归 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.7 同一签名候选 20 项通过，含实际 Three.js 渲染、暂停恢复、资源隔离及新版交互 |
+| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.7 同一签名候选 18 项原生界面/手势与新版交互回归通过；旧 WebView 的三维能力不作保证 |
 | GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |
 
 具体构建、范围和 APK 校验值见[验证记录](docs/security-testing.md)，公共源码审查见 [PR #16](https://github.com/Jiangz1Ryaa259/Pingclash/pull/16)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。

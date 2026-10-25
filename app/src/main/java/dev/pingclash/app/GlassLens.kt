@@ -6,12 +6,14 @@ package dev.pingclash.app
 import android.graphics.RuntimeShader
 import android.graphics.RenderEffect
 import android.os.Build
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -35,7 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
             drawLayer(layer)
         }) {
             // Separate render nodes: Haze owns its blur effect; the outer node refracts that result.
-            Box(Modifier.fillMaxSize().navGlassMaterial())
+            Canvas(Modifier.fillMaxSize().navGlassMaterial()) {drawRect(Color.Transparent)}
         }
     } else Box(modifier.fillMaxSize().clip(UiCorners.Pill).navGlassMaterial())
 }
