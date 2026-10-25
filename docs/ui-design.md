@@ -1,6 +1,6 @@
 # Full-screen photographic scenery and native UI
 
-The current source is 0.1.0-beta.4, build 22. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer. The home power control is now a native hanging card; see [its interaction and implementation boundaries](lanyard-ui.md).
+The current source is 0.1.0-beta.5, build 23. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer. The home card now hangs from the top of the window, requires long-press dragging and flips with VPN start/stop; see [its interaction and material boundaries](lanyard-ui.md).
 
 ## Scene and interaction
 

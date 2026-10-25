@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
@@ -44,7 +45,7 @@ internal fun controlForeground(preferred: Color,background: Color): Color {
         else if(b>.179f)Color.Black else Color.White
 }
 
-@Composable internal fun VpnStateGlyph(phase: String,animate: Boolean,color: Color) {
+@Composable internal fun VpnStateGlyph(phase: String,animate: Boolean,color: Color,diameter: Dp=28.dp) {
     val working=phase=="connecting"||phase=="stopping"
     val progress=animateFloatAsState(if(working||phase=="established")1f else 0f,
         if(animate)spring(.82f,500f) else snap(),label="vpn-shape")
@@ -54,7 +55,7 @@ internal fun controlForeground(preferred: Color,background: Color): Color {
     } else remember {mutableStateOf(0f)}
     val morph=remember {Morph(RoundedPolygon.circle(numVertices=12),
         RoundedPolygon.rectangle(width=1.6f,height=1.6f,rounding=CornerRounding(.28f)))}
-    Box(Modifier.size(28.dp),contentAlignment=Alignment.Center) {
+    Box(Modifier.size(diameter),contentAlignment=Alignment.Center) {
         Canvas(Modifier.matchParentSize()) {
             val factor=(size.minDimension-4.dp.toPx())/2
             withTransform({
@@ -65,6 +66,6 @@ internal fun controlForeground(preferred: Color,background: Color): Color {
                     style=Stroke(1.5.dp.toPx()/factor))
             }
         }
-        AppGlyph(if(working)16 else if(phase=="established")15 else 0,Modifier.size(14.dp),color)
+        AppGlyph(if(working)16 else if(phase=="established")15 else 0,Modifier.size(diameter/2),color)
     }
 }

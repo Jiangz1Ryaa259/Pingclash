@@ -4,6 +4,8 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.5/build 23 fixes the strap at the screen's top edge and requires a stationary long press before dragging. Starting VPN flips to the reverse face; stopping/failure returns to the front without treating animation as proof of connectivity. Add shader-lit satin/bevels on Android 13+ and native material fallback on older APIs.
+
 - Beta.4/build 22 removes the dashboard button container and adds a native hanging-card control with bounded perspective dragging, spring return and a connected-face transition. Tap actions remain separate from drag/cancel; reduced motion, disabled states and large-text/RTL access are retained. No new permissions or runtime dependencies.
 
 - Beta.3/build 21 uses full-screen local photographic ocean/cloud layers with scroll-linked immersion and native mesh motion. It is not a realtime 3D ocean or video scrubber. Assets and prompts are documented; no reference-video frames, image downloads or new permissions are included.

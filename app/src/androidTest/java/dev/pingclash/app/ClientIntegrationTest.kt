@@ -94,6 +94,11 @@ class ClientIntegrationTest {
             assertTrue("VPN foreground notification missing",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1&&it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT!=0})
             compose.waitForIdle()
             compose.onNodeWithText("VPN 隧道已建立").assertIsDisplayed()
+            assertEquals(180f,compose.onNodeWithTag("lanyard-stage").fetchSemanticsNode().config[LanyardFaceAngle],.1f)
+            compose.onNodeWithTag("vpn-power").performTouchInput {
+                down(center);advanceEventTime(800);moveBy(androidx.compose.ui.geometry.Offset(60f,0f),160);cancel()
+            }
+            assertTrue("Dragging the connected card stopped VPN",VpnRuntime.state.value.active)
             captureSyntheticFixture(compose, device, "connection-light.png")
             device.waitForIdle(2000)
 
@@ -151,8 +156,11 @@ class ClientIntegrationTest {
             assertFalse("Export leaked a credential", exported.contains("fixture-private-password"))
             device.pressBack()
 
-            VpnRuntime.disconnect(app)
+            compose.onNodeWithTag("nav-0").performClick()
+            compose.onNodeWithTag("vpn-power").performClick()
             compose.waitUntil(10_000) { !VpnRuntime.state.value.active }
+            compose.waitForIdle()
+            assertEquals(0f,compose.onNodeWithTag("lanyard-stage").fetchSemanticsNode().config[LanyardFaceAngle],.1f)
             assertFalse(JSONObject(Mobile.vpnStatus()).getBoolean("running"))
             Mobile.stopVPN(); Mobile.stopVPN()
             VpnRuntime.connect(app)

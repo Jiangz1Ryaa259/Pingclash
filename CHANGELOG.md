@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Beta.5/build 23 anchors the lanyard at the screen's top edge, separates stationary long-press dragging from taps/swipes, and flips as VPN starts or stops.
+- Add light/dark satin faces, shader-lit bevels and reflections on Android 13+, native material fallback on older APIs, and regression coverage for anchor tracking and on/off transitions.
+
 - Beta.4/build 22 replaces the dashboard power-button container with a native hanging card: woven strap, metallic clasp, perspective drag, spring return and connected-face transition.
 - Keep tap actions separate from drag/cancel gestures; retain reduced motion, disabled states, accessibility and large-text support. No new runtime dependencies or permissions.
 

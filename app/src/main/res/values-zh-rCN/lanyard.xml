@@ -1,3 +1,3 @@
 <resources>
-    <string name="ui_lanyard_hint">轻点操作 · 拖动回弹</string>
+    <string name="ui_lanyard_hint">轻点翻牌 · 长按拖动</string>
 </resources>
