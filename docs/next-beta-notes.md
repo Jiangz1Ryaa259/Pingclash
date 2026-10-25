@@ -17,6 +17,7 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Known limitations — retain in the published release notes
 
+- One local API 31 instrumentation run crashed during group layout; a full rerun of the unchanged signed app passed all 45 tests. This is retained for investigation rather than claimed fixed. See `security-testing.md` for the run-specific record.
 - Providers support the bounded HTTP/HTTPS YAML/text subset in `subscriptions.md`. MRS, file/inline, arbitrary overrides, group-routed downloads and cross-source duplicate names remain unsupported. The corpus distinguishes accepted and rejected cases.
 - Provider polling can be delayed by Doze or process termination. Live VPN paths change only at the next establishment/reconnect.
 - Network recovery is implemented and emulator-tested. Physical OEM ROM behavior, vendor task killers and long-running Doze still need real-device verification. Do not claim universal background survival.

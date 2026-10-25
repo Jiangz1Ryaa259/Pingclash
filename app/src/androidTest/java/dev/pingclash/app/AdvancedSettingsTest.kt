@@ -62,16 +62,16 @@ class AdvancedSettingsTest {
             compose.waitUntil(10000) {repo.data.value.client.mtu==1400}
             assertEquals(8,ProfileRepository(app).data.value.client.connectTimeout)
             back();section("dns")
-            compose.onNodeWithTag("choice-模式-https").performScrollTo().performClick()
+            visibleControl("choice-模式-https").performClick()
             compose.onNodeWithTag("field-加密 DNS 地址").performScrollTo().performTextReplacement("https://example.invalid/dns-query")
             save();compose.waitUntil(10000) {repo.data.value.client.dnsMode=="https"}
             assertEquals("https://example.invalid/dns-query",ProfileRepository(app).data.value.client.dnsHttps)
             assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("example.invalid/dns-query"))
             captureSyntheticFixture(compose,device,"settings-dns.png")
             back();section("appearance")
-            compose.onNodeWithTag("choice-主题-dark").performScrollTo().performClick()
+            visibleControl("choice-主题-dark").performClick()
             compose.waitUntil(10000) {repo.data.value.client.theme=="dark"}
-            compose.onNodeWithTag("choice-语言-en").performScrollTo().performClick()
+            visibleControl("choice-语言-en").performClick()
             compose.waitUntil(10000) {repo.data.value.client.language=="en"}
             compose.waitUntil(10000) {compose.onAllNodesWithText("Theme").fetchSemanticsNodes().isNotEmpty()}
             compose.onNodeWithText("Theme").assertIsDisplayed()

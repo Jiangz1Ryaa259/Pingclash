@@ -123,7 +123,16 @@ class ClientIntegrationTest {
             assertTrue(report.steps.any { it.stage == dev.pingclash.diagnostics.Models.Stage.PROXY })
             compose.onNodeWithTag("nav-3").performClick()
             compose.onNodeWithTag("tool-diagnosis").performClick()
-            compose.onNodeWithText("预览脱敏报告").performScrollTo().performClick()
+            val previewControl=compose.onNodeWithText("预览脱敏报告").performScrollTo()
+            val navTop=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot.top
+            val distance=previewControl.fetchSemanticsNode().boundsInRoot.bottom-navTop+
+                16*compose.activity.resources.displayMetrics.density
+            if(distance>0)compose.onNode(hasScrollAction() and hasAnyDescendant(hasText("预览脱敏报告")))
+                .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {it(0f,distance)}
+            compose.waitForIdle()
+            assertTrue("Report preview control remains behind navigation",
+                previewControl.fetchSemanticsNode().boundsInRoot.bottom<=navTop)
+            previewControl.performClick()
             compose.onNodeWithText("脱敏报告预览").assertIsDisplayed()
             device.waitForIdle(2000)
             compose.onNodeWithText("保存 .md").performClick()

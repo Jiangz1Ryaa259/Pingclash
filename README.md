@@ -52,7 +52,7 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
 | 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.3/build 21 正式签名候选 45 项通过、0 跳过；含真实玻璃像素、动效、VPN 转发和隐私回归 |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 同一签名候选 10 项界面检查通过，包含真实玻璃采样和敏感窗口停止采样 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 同一签名候选完整重跑 45 项通过，另有 10 项界面检查通过；首次布局崩溃及复测情况见验证记录 |
 | 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | 同一签名候选 10 项界面检查通过，验证实色回退、动效和大字体交互 |
 | GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |
 
