@@ -1,12 +1,35 @@
 # Interface and motion
 
-The current source is 0.1.0-beta.9, build 27. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a compact native face on small screens. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.0-beta.10, build 28. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a compact native face on small screens. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
 On Android 13+ an AGSL shader draws procedural waves, reflected sky and moving clouds. It does not play a video or display a captured reference frame. All tabs share this root background. Android 10–12 retain the locally generated photographic mesh fallback documented in [scene assets](scene-assets.md); this is not the same real-time water renderer. Plain background mode is available.
 
-Content and navigation are sibling layers. Haze samples the content behind the bar on API 31+, with 20 dp blur. On API 33+ a separate render node adds capsule-edge refraction and subtle dispersion to the backdrop only; text and icons stay sharp. Geometry/tint direction references FlClash v0.9.2, attributed in [NOTICE](../NOTICE.md). This is not Apple's proprietary renderer. Current pixel tests establish real blur and fallback, not identical optical output on every GPU; the refraction layer is a best-effort enhancement. Lower APIs, reduced transparency, protected windows and background lifecycle use an opaque fallback. The terminal is a separate protected activity.
+Content and navigation are sibling layers. Android 13+ uses the actual pinned
+Backdrop 1.0.4 source module for GPU source capture, color controls, blur, rounded
+lens refraction, highlights and inner/outer shadows. A second, small lens samples
+the same original source for the selected tab; the bar is not repeatedly tinted.
+API 31/32 keep Haze 1.6.8 blur. Older APIs, Reduce transparency, protected windows
+and background lifecycle detach captures and draw a solid fallback. The terminal
+is a separate protected activity. No production screenshot file or CPU bitmap is
+created by this navigation renderer.
+
+| Material | Previous implementation | Beta.10 |
+| --- | --- | --- |
+| Source and optics | Haze in two material layers plus a custom shader | One source; upstream Backdrop capture/lens/highlight pipeline |
+| Light/dark tint | 60% / 66% | 18% white / 28% dark |
+| Selector | Flat fill and heavy outline | Independent refracted capsule; spring following and press stretch |
+| Foreground | Relied on a thick material | Crisp original vectors and thin two-tone text/icon contours |
+| Controls | Distributed constants | `NavigationGlassStyle` and shared contour tokens |
+
+The actual Backdrop source, version/commit, Apache-2.0 license and four Kotlin/
+Compose compatibility shims are preserved under `third-party/backdrop`. The
+upstream optical shaders and algorithms are hash-verified. `LiquidBottomTabs`
+and FlClash v0.9.2 inform interaction/layout; no Flutter migration, upstream demo
+APK, fonts or artwork is included. This is an Android implementation with measured
+pixel behavior, not a claim of identical Apple rendering or performance on all GPUs.
+Harmony-style particles and other light-effect additions are outside this iteration.
 
 ## Interactions
 

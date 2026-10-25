@@ -50,7 +50,7 @@ internal class FrameGlassProbe(private val activity: MainActivity,private val de
                             val density=LocalDensity.current
                             val inset=WindowInsets.navigationBars.getBottom(density)
                             val height=with(density) {navigationHeight().toPx()}
-                            val blur=LocalNavHaze.current!=null
+                            val blur=LocalNavHaze.current!=null||LocalNavigationBackdrop.current!=null
                             SideEffect {enabled.set(blur)}
                             Canvas(Modifier.fillMaxSize().onGloballyPositioned {
                                 val bounds=it.boundsInWindow()

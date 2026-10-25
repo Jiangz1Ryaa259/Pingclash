@@ -1,3 +1,17 @@
+# Backdrop glass validation (0.1.0-beta.10 / build 28)
+
+- Exact signed APK: **131294770 bytes**, SHA256 `1b840c344b6e0c97cec797e7d210b9d66ef7791acbe8ad89d60b4f5c0e02977a`. Existing v2/v3 signing identity, non-debuggable/run-as denial, six native libraries and 20 LOAD segments aligned for 16 KiB. APK signing/user/test marker matches: zero. No runtime permission was added.
+- API 35/AOSP x86_64: **61/61 full tests, zero skipped, 287.255 seconds**. Controlled DNS 1 and separate-UID HTTP 1; includes native VPN, cancellation, protected input, actual WebGL/card-face recovery, terminal, timer, parser/provider and navigation regressions.
+- Same APK on API 31: **14/14 focused checks, 33.113 seconds**; Haze fallback, privacy source detachment, contrasts, no-scroll Home and native navigation/timer interactions. API 29: **14/14, 24.626 seconds** with the solid fallback. These are focused tests, not the full VPN/WebGL suite on the older APIs.
+- Real causal optical test: identical static two-dimensional color tiles with refraction enabled/disabled. Mean RGB displacement difference at the capsule rim is **9.986729**, while the flat center difference is **0**. The asserted limits remain rim > 2 and center < 2. This verifies actual source displacement, not only a blur flag or a changed tint.
+- The initial vertical-only stripes could not reveal vertical displacement along a flat horizontal rim. The fixture was corrected to two-dimensional tiles; no optical assertion was relaxed. First candidate passed 14 focused and 61 full checks; final screenshots prompted thinner, softer foreground contours. The final signed APK above was rerun in full after that polish.
+- All **27** pinned Backdrop 1.0.4 source files hash-match upstream after reversing four explicit Kotlin/Compose compatibility shims. Shaders, layer-capture algorithms, highlights and shadows are unchanged. The Apache-2.0 license, copyright, source revision and patch descriptions are included. CI verifies this before building.
+- Detekt passes without regenerating its baseline. Release Lint: **0 errors, 72 warnings, 2 information**, with no newly added warning. **629** en/zh resource/format pairs pass. The preserved offline Lanyard renderer was not edited.
+- Actual final light/dark empty-profile screenshots were inspected. No preview video, user subscription/account, particle effect or sensor was used. Production navigation records transient GPU layers only; protected, background and reduced-transparency states release/detach sampling and use the solid fallback.
+- Public CI must be evaluated for this exact source revision independently. Physical OEM/GPU performance, long-running Doze, real subscriptions and public website access remain unverified. Full optical effects require API 33+; API 31/32 use Haze blur and older APIs use the solid fallback. No new Release/tag/APK asset is published.
+
+---
+
 # Top timer and authoritative card face validation (0.1.0-beta.9 / build 27)
 
 - Exact signed APK: **131159517 bytes**, SHA256 `3f61de3a5ae4578eca361a0fb5fecdf1340f773835df0e380747684f6e095e16`. Existing v2/v3 signing identity, non-debuggable, run-as denial and 16 KiB alignment pass. Six native libraries / 20 LOAD segments; private signing/user/test markers: zero.

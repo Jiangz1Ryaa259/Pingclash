@@ -13,7 +13,7 @@ $env:Path = $env:JAVA_HOME + '\bin;' + $env:Path
 
 The native bridge pins Go 1.27.3, Mihomo v1.19.32 and the exact module graph in core/go.mod / core/go.sum. Terminal sources are included in terminal-emulator and terminal-view; the same NDK builds their JNI libraries. Gradle wrapper and dependency hashes are pinned in gradle/verification-metadata.xml.
 
-The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.0-beta.9/build 27). Debug builds use tools/build-android.ps1.
+The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.0-beta.10/build 28). Debug builds use tools/build-android.ps1.
 
 ## Verification
 
@@ -38,3 +38,5 @@ Node 24.14.0 and run `npm ci --ignore-scripts --no-fund --no-audit`, `npm run bu
 and `npm test` in `ui/lanyard/`. Commit the source, emitted assets and integrity
 manifest together. CI rebuilds and checks that they match. See the renderer
 [build instructions and upstream license](../ui/lanyard/README.md).
+
+The pinned Backdrop source module is built with the existing Kotlin/Compose toolchain. Run `python tools/verify-backdrop.py` to check upstream source fidelity and the four documented compatibility shims.

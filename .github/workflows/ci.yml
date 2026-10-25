@@ -47,6 +47,9 @@ jobs:
       - name: Install pinned SDK and native tools
         shell: pwsh
         run: ./tools/bootstrap.ps1 -AcceptSdkLicense
+      - name: Verify pinned Backdrop source and compatibility shims
+        shell: pwsh
+        run: python tools/verify-backdrop.py
       - name: Verify localization resources and format placeholders
         shell: pwsh
         run: ./tools/verify-localization.ps1

@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -69,58 +70,52 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     return enabled&&!reduceEffects
 }
 
-// Real sibling-source blur on supported devices, with an opaque-tint fallback.
+// One optical material over one source; labels and original native actions stay sharp.
 @Suppress("MagicNumber")
 @Composable internal fun GlassNavigation(selected: Int,modifier: Modifier=Modifier,onSelect: (Int)->Unit) {
     val motion=LocalMotionAllowed.current
     val current by rememberUpdatedState(selected)
     val select by rememberUpdatedState(onSelect)
     val haptic=LocalHapticFeedback.current
-    var dragPosition by remember {mutableStateOf<Float?>(null)}
+    val rtl=androidx.compose.ui.platform.LocalLayoutDirection.current==androidx.compose.ui.unit.LayoutDirection.Rtl
+    val drag=remember {NavigationDragState()}
+    val dragPosition=drag.position
     val position by animateFloatAsState(dragPosition?:selected.toFloat(),
-        animationSpec=if(motion&&dragPosition==null) spring(dampingRatio=.86f,stiffness=550f) else snap(),label="glass-navigation-position")
+        if(motion&&dragPosition==null)spring(.78f,430f) else snap(),label="glass-navigation-position")
+    val pressed by animateFloatAsState(if(dragPosition!=null&&motion)1f else 0f,
+        if(motion)spring(.78f,550f) else snap(),label="glass-navigation-press")
     val dark=Ink.luminance()<.5f
+    val style=LocalNavigationGlassStyle.current?:navigationGlassStyle(dark)
     val foreground=navLabelColor(dark)
-    val line=if(dark)Color.White.copy(alpha=.24f) else Color.Black.copy(alpha=.12f)
-    val accent=Color.White.copy(alpha=if(dark).10f else .30f)
-    val blur=LocalNavHaze.current!=null
+    val backdrop=LocalNavigationBackdrop.current
+    val blur=backdrop!=null||LocalNavHaze.current!=null
     val fontScale=LocalDensity.current.fontScale
     val height=navigationHeight()
     BoxWithConstraints(modifier.navigationBarsPadding().padding(horizontal=18.dp,vertical=12.dp).fillMaxWidth()
-        .height(height).testTag("glass-navigation").semantics {this[NavBlurEnabled]=blur}) {
+        .height(height).testTag("glass-navigation").semantics {this[NavBlurEnabled]=blur
+            this[NavOpticalBackend]=if(backdrop!=null)"backdrop" else if(blur)"haze" else "opaque"}) {
         val cellWidth=with(LocalDensity.current) {maxWidth.toPx()/4f}
-        Box(Modifier.fillMaxSize().graphicsLayer {shadowElevation=4.dp.toPx();shape=UiCorners.Pill;clip=false}
-            .clip(UiCorners.Pill)
-            .navGlassMaterial()
-            .pointerInput(cellWidth) {
-                detectHorizontalDragGestures(
-                    onDragStart={dragPosition=current.toFloat()},
-                    onHorizontalDrag={change,amount -> change.consume();dragPosition=((dragPosition?:current.toFloat())+amount/cellWidth).coerceIn(0f,3f)},
-                    onDragCancel={dragPosition=null},
-                    onDragEnd={val target=(dragPosition?:current.toFloat()).roundToInt().coerceIn(0,3);dragPosition=null
-                        if(target!=current) {haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(target)}})
+        val cellSize=maxWidth/4
+        val visualPosition=if(rtl)3f-position else position
+        Box(Modifier.fillMaxSize().navGlassMaterial(style)
+            .navigationDrag(NavigationDragGeometry(cellWidth,rtl,current),drag) {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(it)
             }) {
-            GlassLensBackdrop(Modifier.matchParentSize())
-            Canvas(Modifier.matchParentSize()) {
-                val inset=5.dp.toPx();val w=size.width/4f
-                drawRoundRect(line,cornerRadius=CornerRadius(size.height/2f),style=Stroke(1.dp.toPx()))
-                val x=position*w+inset
-                drawRoundRect(accent,Offset(x,inset),Size(w-inset*2,size.height-inset*2),
-                    CornerRadius((size.height-inset*2)/2f))
-                drawRoundRect(foreground.copy(alpha=NAV_SELECTOR_EDGE_ALPHA),Offset(x,inset),
-                    Size(w-inset*2,size.height-inset*2),
-                    CornerRadius((size.height-inset*2)/2f),style=Stroke(1.dp.toPx()))
-                drawLine(Color.White.copy(alpha=.34f),Offset(30.dp.toPx(),1.dp.toPx()),Offset(size.width-30.dp.toPx(),1.dp.toPx()),1.dp.toPx(),StrokeCap.Round)
-            }
+            Box(Modifier.offset {androidx.compose.ui.unit.IntOffset((visualPosition*cellWidth+4.dp.toPx()).roundToInt(),4.dp.roundToPx())}
+                .width(cellSize-8.dp).height(height-8.dp).testTag("glass-selector")
+                .graphicsLayer {scaleX=1f+pressed*.06f;scaleY=1f-pressed*.035f}
+                .navGlassMaterial(style.copy(refractionHeight=14.dp,refractionAmount=12.dp),selector=true))
             Row(Modifier.fillMaxSize()) {
-                listOf(tr(R.string.message_0853bf3c01),tr(R.string.message_5e84ea61e8),tr(R.string.message_148d195e21),tr(R.string.message_df3d58c7d8)).forEachIndexed {index,label ->
+                listOf(tr(R.string.message_0853bf3c01),tr(R.string.message_5e84ea61e8),
+                    tr(R.string.message_148d195e21),tr(R.string.message_df3d58c7d8)).forEachIndexed {index,label ->
                     val chosen=selected==index
-                    val tint=foreground
                     Column(Modifier.weight(1f).fillMaxHeight().testTag("nav-$index").semantics {contentDescription=label}
-                        .selectable(chosen,role=Role.Tab,onClick={if(index!=current){haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(index)}}),
-                        horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp,Alignment.CenterVertically)) {
-                        AppGlyph(listOf(12,14,7,3)[index],Modifier.size(23.dp),tint)
-                        NavigationLabel(label,chosen,fontScale,motion,tint)
+                        .selectable(chosen,role=Role.Tab,onClick={if(index!=current){
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove);select(index)}}),
+                        horizontalAlignment=Alignment.CenterHorizontally,
+                        verticalArrangement=Arrangement.spacedBy(4.dp,Alignment.CenterVertically)) {
+                        NavigationGlyph(listOf(12,14,7,3)[index],Modifier.size(23.dp),foreground)
+                        NavigationLabel(label,chosen,fontScale,motion,foreground)
                     }
                 }
             }
@@ -133,9 +128,15 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     androidx.compose.animation.AnimatedVisibility(chosen||fontScale>=1.6f,
         enter=if(motion)fadeIn()+expandVertically() else fadeIn(snap()),
         exit=if(motion)fadeOut()+shrinkVertically() else fadeOut(snap())) {
-        Text(label,style=MaterialTheme.typography.labelSmall,
-            fontWeight=if(chosen)FontWeight.SemiBold else FontWeight.Normal,color=tint,
-            maxLines=if(fontScale>=1.6f)2 else 1)
+        val contour=navLabelOutline(tint==Color.White).copy(alpha=NAV_LABEL_CONTOUR_ALPHA)
+        val stroke=with(LocalDensity.current) {NAV_LABEL_CONTOUR_WIDTH.dp.toPx()}
+        Box {
+            Text(label,style=MaterialTheme.typography.labelSmall.copy(drawStyle=Stroke(stroke)),
+                modifier=Modifier.clearAndSetSemantics {},fontWeight=FontWeight.SemiBold,color=contour,
+                maxLines=if(fontScale>=1.6f)2 else 1)
+            Text(label,style=MaterialTheme.typography.labelSmall,fontWeight=FontWeight.SemiBold,color=tint,
+                maxLines=if(fontScale>=1.6f)2 else 1)
+        }
     }
 }
 

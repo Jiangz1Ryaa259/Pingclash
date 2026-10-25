@@ -31,6 +31,8 @@ $lines.Add('Offline Lanyard renderer: user-supplied React Bits component, MIT + 
 $lines.Add('AndroidX, Kotlin, kotlinx.coroutines and Gradle: Apache-2.0 notices. Go and its mobile binding runtime: BSD notices.')
 $lines.Add('VPN state morphing: AndroidX graphics-shapes 1.0.1, Apache-2.0.')
 $lines.Add('Navigation blur: Haze and haze-materials 1.6.8, copyright Christopher Banes and the Haze project contributors, Apache-2.0; https://github.com/chrisbanes/haze/tree/1.6.8.')
+$lines.Add('Liquid Glass navigation: Backdrop 1.0.4, copyright 2025 Kyant, Apache-2.0; pinned source module and compatibility changes in third-party/backdrop. Upstream commit cf0f35d8c597c06ea8bd42ff7a48821678d74669.')
+Copy-Item -LiteralPath (Join-Path $projectRoot 'third-party\backdrop\LICENSE') -Destination (Join-Path $assets 'Backdrop-Apache-2.0.txt') -Force
 $lines.Add('Full corresponding Go dependency sources and notices are included in the accompanying source archive.')
 $lines.Add('')
 foreach($entry in ($modules|Where-Object {$_ -match '\|' -and $_ -notmatch '^dev\.pingclash/core\|'}|Sort-Object -Unique)){

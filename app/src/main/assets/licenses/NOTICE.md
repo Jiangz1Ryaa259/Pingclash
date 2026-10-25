@@ -109,3 +109,5 @@ Full corresponding Go dependency sources and notices are included in the accompa
 - golang.org/x/text v0.43.0
 - golang.org/x/time v0.10.0
 - google.golang.org/protobuf v1.34.2
+
+Liquid Glass navigation: Backdrop 1.0.4, copyright 2025 Kyant, Apache-2.0; pinned source module and compatibility changes accompany the app in third-party/backdrop.

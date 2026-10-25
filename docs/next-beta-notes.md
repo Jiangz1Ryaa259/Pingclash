@@ -4,6 +4,12 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.10/build 28 uses pinned Backdrop 1.0.4 source for actual glass capture and
+  refraction on API 33+, with Haze on API 31/32 and solid privacy/legacy fallback.
+  Light/dark tint is 18%/28%; the selected tab is a separate spring-driven lens.
+  Thin local foreground contours preserve contrast without making the whole bar opaque.
+  Source algorithms and all four compatibility shims are checked against pinned hashes.
+  Pixel tests distinguish real rim refraction from simply making the background blurry.
 - Beta.9/build 27 adds the top elapsed-time capsule: it widens when leaving Home,
   expands to Home/Disconnect actions on tap and collapses after 4.5 seconds idle.
   Restore lanyard face/twist after resets and lifecycle changes. Label selected-node

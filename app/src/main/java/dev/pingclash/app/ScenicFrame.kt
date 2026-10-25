@@ -32,9 +32,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
 
 internal val LocalNavigationClearance=staticCompositionLocalOf {0.dp}
 internal val LocalNavHaze=staticCompositionLocalOf<HazeState?> {null}
+internal val LocalNavigationBackdrop=staticCompositionLocalOf<LayerBackdrop?> {null}
 internal val LocalSceneDepth=staticCompositionLocalOf {mutableFloatStateOf(0f)}
 internal val LocalImmersiveScene=staticCompositionLocalOf {false}
 internal val LocalSessionOverlay=staticCompositionLocalOf<(@Composable ()->Unit)?> {null}
@@ -51,6 +55,8 @@ internal val LocalSessionOverlay=staticCompositionLocalOf<(@Composable ()->Unit)
     val revision=SecurePage.revision
     val secure=remember(window,revision) {SecurePage.isProtected(window)}
     val blur=Build.VERSION.SDK_INT>=Build.VERSION_CODES.S&&!reduceTransparency&&!secure&&rememberForeground()
+    val backdrop=if(blur&&Build.VERSION.SDK_INT>=33)rememberLayerBackdrop() else null
+    val legacyBlur=blur&&backdrop==null
     val clearance=navigationHeight()+24.dp+WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val depth=remember {mutableFloatStateOf(0f)}
     val cable=remember {mutableStateOf<androidx.compose.ui.geometry.Offset?>(null)}
@@ -67,10 +73,11 @@ internal val LocalSessionOverlay=staticCompositionLocalOf<(@Composable ()->Unit)
     }
     val frame: @Composable ()->Unit = {
     CompositionLocalProvider(LocalNavigationClearance provides clearance,LocalSceneDepth provides depth,
-        LocalImmersiveScene provides immersive,LocalNavHaze provides if(blur)haze else null,
+        LocalImmersiveScene provides immersive,LocalNavHaze provides if(legacyBlur)haze else null,
+        LocalNavigationBackdrop provides backdrop,
         LocalLanyardCable provides cable,LocalLanyardThree provides three) {
         Box(Modifier.fillMaxSize().background(Ink)) {
-            Box(Modifier.fillMaxSize().then(if(blur)Modifier.hazeSource(haze) else Modifier)) {
+            Box(Modifier.fillMaxSize().navigationSource(backdrop,haze,legacyBlur)) {
                 OceanBackdrop(TrailTone.PENDING,false,Modifier.fillMaxSize(),scene)
                 LanyardSceneLayers(three,cable,selected,secure)
                 Box(Modifier.fillMaxSize().padding(top=if(session!=null)52.dp else 0.dp)) {content()}
@@ -83,3 +90,9 @@ internal val LocalSessionOverlay=staticCompositionLocalOf<(@Composable ()->Unit)
     }
     frame()
 }
+
+private fun Modifier.navigationSource(backdrop: LayerBackdrop?,haze: HazeState,legacy: Boolean)=then(when {
+    backdrop!=null->Modifier.layerBackdrop(backdrop)
+    legacy->Modifier.hazeSource(haze)
+    else->Modifier
+})

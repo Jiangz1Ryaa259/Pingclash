@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Beta.10/build 28 replaces repeated Haze tinting and the custom navigation lens
+  with pinned Backdrop 1.0.4 source capture, refraction, color controls and highlights.
+- Use 18% light / 28% dark tint, an independent refracted selector, spring following,
+  press stretch and thin local foreground contours. Preserve native tab semantics.
+- Retain Haze blur on API 31/32 and solid privacy/legacy fallbacks. Add a causal
+  two-dimensional pixel test comparing lens-on/off rim displacement and flat center.
+- Preserve the upstream license, record all source hashes and gate four explicit
+  Kotlin/Compose compatibility shims in CI. No particles or new runtime permissions.
+
 - Beta.9/build 27 moves elapsed VPN time into an activity-owned top capsule. Leaving
   Home widens it; tapping expands Home/Disconnect actions; 4.5 seconds idle collapses it.
 - Restore native-controlled lanyard orientation and twist after renderer resets and

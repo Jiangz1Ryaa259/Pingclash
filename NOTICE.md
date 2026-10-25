@@ -50,3 +50,15 @@ and lib/views/dashboard/widgets/service_status.dart:
 https://github.com/chen08209/FlClash/tree/v0.9.2/lib/views/dashboard/widgets
 PingClash uses its existing Mihomo URLTest bridge for latency only; it does not
 copy the service-unlock checkers or collect response bodies/IP/region data.
+
+## Liquid Glass navigation
+
+Backdrop (AndroidLiquidGlass) 1.0.4, copyright 2025 Kyant, Apache-2.0.
+Pinned source: https://github.com/Kyant0/AndroidLiquidGlass/tree/cf0f35d8c597c06ea8bd42ff7a48821678d74669/backdrop
+The actual source module is included under `third-party/backdrop`, with LICENSE,
+upstream hashes and documented Kotlin/Compose compatibility shims. Its optical
+shaders, layer capture, highlights and shadows are preserved. `LiquidBottomTabs`
+is the reference for the app's independently adapted native selection interactions.
+No upstream demo APK, artwork or fonts are bundled. Haze 1.6.8 remains the API 31/32
+blur fallback. Android 13+ uses Backdrop; reduced transparency and protected pages
+use a solid material with no background capture.
