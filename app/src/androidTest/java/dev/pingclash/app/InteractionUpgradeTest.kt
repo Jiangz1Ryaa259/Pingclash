@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -69,18 +70,15 @@ class InteractionUpgradeTest {
         assertEquals(1,calls)
         compose.onNodeWithText("Google").assertExists()
         compose.onNodeWithText("ChatGPT").assertExists()
-        compose.onNodeWithText("Gemini").assertExists()
+        compose.onNodeWithTag("theme-toggle").assertDoesNotExist()
+        compose.onNodeWithTag("service-check-more").performClick()
+        assertEquals(1,calls)
+        compose.onNodeWithTag("service-detail-gemini").assertExists()
+        compose.onNodeWithTag("service-detail-github").assertExists()
     }
 
     private fun clickHomeControl(tag: String) {
-        val node=compose.onNodeWithTag(tag).performScrollTo()
-        val nav=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot
-        val distance=node.fetchSemanticsNode().boundsInRoot.bottom-nav.top+
-            16*compose.activity.resources.displayMetrics.density
-        if(distance>0)compose.onNodeWithTag("dashboard").performSemanticsAction(SemanticsActions.ScrollBy) {
-            it(0f,distance)
-        }
-        node.performClick()
+        compose.onNodeWithTag(tag).assertIsDisplayed().performClick()
     }
 
     @Test fun profileCopyIsSensitiveAndCollapsedAddRemainsAccessible() {

@@ -14,8 +14,10 @@ export async function adaptReference() {
     '      if (!hostFrame?.height && viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;');
   replace('      const cardTop = viewHeight / 2 - viewHeight * mix(0.12, 0.42, clamp(s.strapLength, 0, 1));',
     '      const cardTop = viewHeight / 2 - viewHeight * (hostFrame?.height > 0 ? hostFrame.top / hostFrame.viewportHeight : mix(0.12, 0.42, clamp(s.strapLength, 0, 1)));');
+  replace('      const anchorX = ((ANCHORS[s.anchor] ?? 0.5) - 0.5) * viewWidth;',
+    '      const anchorX = ((hostFrame?.height > 0 ? hostFrame.centerX / hostFrame.viewportWidth : ANCHORS[s.anchor] ?? 0.5) - 0.5) * viewWidth;');
   replace('      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}`;',
-    '      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}|${window.__pingclashFrame?.height}|${window.__pingclashFrame?.top}`;');
+    '      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}|${window.__pingclashFrame?.height}|${window.__pingclashFrame?.top}|${window.__pingclashFrame?.centerX}`;');
   replace('      renderer.render(scene, camera);', `      renderer.render(scene, camera);
       window.__lanyardReady = canvas.clientHeight > 100 && !!images.front && !!images.back && renderer.info.render.calls > 0 && !renderer.getContext().isContextLost();
       window.__lanyardFrames = (window.__lanyardFrames || 0) + 1;`);

@@ -69,7 +69,7 @@ class AdvancedSettingsTest {
             assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("example.invalid/dns-query"))
             captureSyntheticFixture(compose,device,"settings-dns.png")
             back();section("appearance")
-            visibleControl("choice-主题-dark").performClick()
+            visibleControl("theme-toggle").performClick()
             compose.waitUntil(10000) {repo.data.value.client.theme=="dark"}
             visibleControl("choice-语言-en").performClick()
             compose.waitUntil(10000) {repo.data.value.client.language=="en"}

@@ -28,4 +28,14 @@
     <string name="ui_show_details">展开详情</string>
     <string name="ui_hide_details">收起详情</string>
     <string name="ui_import_too_large">配置内容超过 2 MiB。</string>
+    <string name="ui_session_duration">VPN 开启时长</string>
+    <string name="ui_session_duration_note">从本次 VPN 首次建立开始计时，切网与等待重连不归零。断开后重置；计时不代表网络持续可用。</string>
+    <string name="ui_dark_mode">深色模式</string>
+    <string name="ui_follow_system">跟随系统外观</string>
+    <string name="ui_mode_global_short">全局</string>
+    <string name="ui_site_latency">网站延迟</string>
+    <string name="ui_more">更多</string>
+    <string name="ui_measure">测速</string>
+    <string name="ui_measure_all">测试全部</string>
+    <string name="ui_site_latency_note">使用所选代理的 Mihomo URLTest（HEAD），最多同时测试 4 项。延迟表示收到 HTTP 响应的耗时，不判断账号、地区、服务解锁或 HTTP 成功状态。Google/YouTube 使用轻量 204 目标。只测试你明确选择的项目；展开列表不联网。</string>
 </resources>

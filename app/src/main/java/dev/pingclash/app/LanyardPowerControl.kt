@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +51,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 
 internal val LanyardDisplacement=SemanticsPropertyKey<Float>("LanyardDisplacement")
 internal val LanyardAnimating=SemanticsPropertyKey<Boolean>("LanyardAnimating")
@@ -61,7 +63,8 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
 }
 
 /** Native hanging control. Dragging only changes its pose; VPN actions come from clicks. */
-@Composable internal fun LanyardPowerControl(phase: String,enabled: Boolean,label: String,onClick: ()->Unit) {
+@Composable internal fun LanyardPowerControl(phase: String,enabled: Boolean,label: String,stageHeight: Dp?=null,
+    onClick: ()->Unit) {
     val moving=LocalMotionAllowed.current&&rememberForeground()
     val available=enabled&&phase!="stopping"
     val density=LocalDensity.current
@@ -75,7 +78,8 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
     val turn by animateFloatAsState(if(lanyardBackFace(phase))180f else 0f,
         if(moving)spring(.83f,180f) else snap(),label="lanyard-face")
     val large=density.fontScale>=1.6f
-    val cardHeight=if(large)350.dp else 292.dp
+    val metrics=lanyardMetrics(large,stageHeight)
+    val height=metrics.height;val cardHeight=metrics.card;val top=metrics.top
     val three=LocalLanyardThree.current
     DisposableEffect(three) {onDispose {three?.slot(0f,0f)}}
     val description=vpnControlDescription(phase)
@@ -84,14 +88,15 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
     val cardText=ThreeControlText(phase,label,lanyardPhaseText(phase))
     SideEffect {three?.pose(pose,Offset(x,y),density,moving,cardText)}
     LaunchedEffect(available,moving) {pose.drag=Offset.Zero;pose.holding=false}
-    Box(Modifier.fillMaxWidth().height(cardHeight+84.dp).onGloballyPositioned {
-        three?.slot(it.positionInRoot().y+92*density.density,(cardHeight.value-26)*density.density)
+    Box(Modifier.fillMaxWidth().height(height).onGloballyPositioned {
+        three?.slot(it.positionInRoot().y+(top.value+26)*density.density,(cardHeight.value-26)*density.density,
+            it.positionInRoot().x+it.size.width/2f)
     }.testTag("lanyard-stage")
         .semantics {this[LanyardDisplacement]=kotlin.math.abs(x)+kotlin.math.abs(y)
             this[LanyardFaceAngle]=turn
             this[LanyardAnimating]=lanyardInMotion(moving,pose.holding,kotlin.math.abs(x)+kotlin.math.abs(y))}) {
         LocalLanyardStrap(x,y,Modifier.fillMaxSize())
-        Box(Modifier.align(Alignment.TopCenter).padding(top=66.dp)
+        Box(Modifier.align(Alignment.TopCenter).padding(top=top)
             .width((cardHeight-26.dp)*(1.6f/2.25f)).height(cardHeight)
             .graphicsLayer {
                 translationX=x*density.density;translationY=y*density.density
@@ -128,6 +133,31 @@ internal fun lanyardPhaseText(phase: String)=tr(when(phase) {
 })
 
 @Composable private fun LanyardFace(phase: String,label: String,reverse: Boolean,tilt: Float,modifier: Modifier) {
+    BoxWithConstraints(modifier) {
+        if(maxHeight<200.dp)CompactLanyardFace(phase,label,reverse)
+        else LanyardDetailedFace(phase,label,reverse,tilt,Modifier.fillMaxSize())
+    }
+}
+
+@Composable private fun CompactLanyardFace(phase: String,label: String,reverse: Boolean) {
+    val ink=if(reverse)Color(0xFFEAF0F0) else Color(0xFF172329)
+    BoxWithConstraints(Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp))) {
+        val showGlyph=maxHeight>=116.dp||LocalDensity.current.fontScale<1.6f
+        LanyardSurface(reverse,0f,Modifier.matchParentSize())
+        Column(Modifier.fillMaxSize().padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally,
+            verticalArrangement=Arrangement.Center) {
+            if(showGlyph) {
+                CardPowerMark(phase,ink)
+                Spacer(Modifier.height(6.dp))
+            }
+            Text(label,color=ink,style=MaterialTheme.typography.labelMedium,textAlign=TextAlign.Center,
+                maxLines=2,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@Composable private fun LanyardDetailedFace(phase: String,label: String,reverse: Boolean,tilt: Float,
+    modifier: Modifier) {
     val ink=if(reverse)Color(0xFFEAF0F0) else Color(0xFF172329)
     val accent=if(reverse)Color(0xFF9DDDD0) else Color(0xFF263A43)
     val shape=RoundedCornerShape(15.dp)

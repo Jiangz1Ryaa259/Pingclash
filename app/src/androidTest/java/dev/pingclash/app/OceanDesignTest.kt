@@ -142,7 +142,7 @@ class OceanDesignTest {
         compose.onNodeWithTag("vpn-power").assertIsDisplayed()
         captureSyntheticFixture(compose, device, "ocean-home-dark.png")
         gallery("light", 1.8f)
-        compose.onNodeWithTag("vpn-power").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("vpn-power").assertIsDisplayed()
         captureSyntheticFixture(compose, device, "ocean-home-large.png")
         compose.runOnUiThread { compose.activity.setContent { ControlFixture() } }
         val toggle = compose.onNodeWithTag("switch-Synthetic switch")

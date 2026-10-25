@@ -110,12 +110,13 @@ import org.json.JSONObject
                             diagnose={tab=3;tool=0;model.diagnose()},test={data.activeProfile?.let {profile ->
                                 data.selected?.let {model.testProxies(profile,listOf(it.name))}
                             }},mode=model::routeMode,selectProfile=model::activate,
-                            themeMode={model.appearance(data.client.language,it)},serviceTest={
+                            themeMode={model.appearance(data.client.language,it)},serviceTest={targets ->
                                 if(serviceTests.running)model.serviceChecks.cancel() else {
                                     val config=if(data.client.mode=="direct")data.activeProfile?.runtimeConfig("DIRECT")
                                         else data.selectedRuntimeConfig
                                     if(model.nativeReady)config?.let {
-                                        model.serviceChecks.start(it,data.client.probeTimeout)
+                                        model.serviceChecks.start(it,data.client.probeTimeout,
+                                            targets,data.client.unifiedDelay)
                                     }
                                 }
                             },connect={

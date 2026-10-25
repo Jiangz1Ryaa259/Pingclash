@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 @Composable internal fun ImmersiveDashboardHero(state: DashboardState,actions: DashboardActions) {
     val canTest=measurementEnabled(state)
     Column(Modifier.fillMaxWidth().padding(top=8.dp,bottom=12.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),actions.connect)
+        LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),onClick=actions.connect)
         state.data.selected?.let {Text(it.name,
             modifier=Modifier.align(Alignment.CenterHorizontally),style=MaterialTheme.typography.titleSmall,
             color=Color.White,maxLines=2,overflow=TextOverflow.Ellipsis)}

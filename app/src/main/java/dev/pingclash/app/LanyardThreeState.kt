@@ -36,6 +36,7 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     private var initialTop: Float?=null
     private var slotTop=0f
     private var slotHeight=0f
+    private var slotCenterX: Float?=null
     private var label=""
     private var status=""
     private var phase="idle"
@@ -76,13 +77,14 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
             view?.onResume();lastFrame="";polling=false;flush();handler.post(poll)
         } else {flush();view?.onPause()}
     }
-    fun slot(top: Float,height: Float) {
+    fun slot(top: Float,height: Float,centerX: Float?=null) {
         if(!top.isFinite()||!height.isFinite())return
         val newControl=!hasControl||slotHeight!=height
         val lowerAnchor=top>(initialTop?:top)
         if(initialTop==null||newControl||lowerAnchor)initialTop=top
         hasControl=height>0
-        slotTop=top;slotHeight=height;scrollOffset=top-(initialTop?:top);schedule()
+        slotTop=top;slotHeight=height;slotCenterX=centerX?.takeIf {it.isFinite()}
+        scrollOffset=top-(initialTop?:top);schedule()
     }
     fun pose(value: LanyardPose,offset: Offset,density: Density,allowMotion: Boolean,text: ThreeControlText) {
         dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;dragging=held;motion=allowMotion
@@ -101,6 +103,7 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
             .put("back",lanyardBackFace(phase)).put("phase",phase).put("label",label).put("status",status)
             .put("viewportWidth",viewportWidth).put("viewportHeight",viewportHeight)
             .put("top",initialTop?:slotTop).put("height",slotHeight).put("fontScale",fontScale)
+            .put("centerX",slotCenterX?:viewportWidth/2f)
             .put("dx",dx).put("dy",dy).toString()
         if(frame!=lastFrame) {
             lastFrame=frame

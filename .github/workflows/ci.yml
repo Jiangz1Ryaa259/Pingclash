@@ -108,6 +108,8 @@ jobs:
           target: default
           arch: x86_64
           avd-name: pingclash-ci
+          cores: 2
+          ram-size: 2048M
           disable-animations: true
           emulator-build: '13610412' # 35.6.11; 37.2.12 exited at the first WebView test on all four APIs.
           emulator-options: -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect -feature -Vulkan -no-metrics -prop persist.sys.locale=zh-CN

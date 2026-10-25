@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Lanyard from './Lanyard.jsx';
 
 const state = { active: false, motion: true, held: false, back: false, dx: 0, dy: 0,
-  viewportHeight: 800, viewportWidth: 360, top: 180, height: 266, fontScale: 1,
+  viewportHeight: 800, viewportWidth: 360, centerX: 180, top: 180, height: 266, fontScale: 1,
   phase: 'idle', label: '', status: '' };
 window.__pingclashFrame = state;
 let configure;
@@ -62,7 +62,7 @@ function App() {
 window.PingClashScene = Object.freeze({
   frame(data) {
     if (!data || typeof data !== 'object') return;
-    for (const key of ['viewportHeight', 'viewportWidth', 'top', 'height', 'fontScale', 'dx', 'dy']) {
+    for (const key of ['viewportHeight', 'viewportWidth', 'centerX', 'top', 'height', 'fontScale', 'dx', 'dy']) {
       if (Number.isFinite(data[key])) state[key] = Math.max(-10000, Math.min(10000, data[key]));
     }
     for (const key of ['active', 'motion', 'held', 'back']) state[key] = data[key] === true;
@@ -75,7 +75,7 @@ window.PingClashScene = Object.freeze({
     for (const element of [document.documentElement, document.body, document.getElementById('root')]) {
       element.style.height = `${height}px`;
     }
-    const key = [state.viewportHeight, state.viewportWidth, state.top, state.height,
+    const key = [state.viewportHeight, state.viewportWidth, state.centerX, state.top, state.height,
       state.fontScale, state.phase, state.label, state.status].join('|');
     if (key !== previousKey && configure) { previousKey = key; configure(options()); }
     window.dispatchEvent(new Event('pingclash-frame'));

@@ -4,6 +4,13 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.8/build 26 keeps Home on one page, separates the session timer from Appearance,
+  and moves the circular theme transition to a settings switch. Session time survives
+  network/core restarts and resets on disconnect.
+- Show 2–4 website latency targets; expand for 12, testing only explicitly selected
+  targets via native Mihomo URLTest with at most four concurrent probes. Latency does
+  not prove account/region/unlock/HTTP-success status.
+
 - Beta.7/build 25 keeps Home to the hanging control/uptime, configuration/routing
   mode and explicit website checks. Move telemetry and full diagnostics to Settings.
 - Add full-app procedural ocean/clouds (API 33+), circular light/dark reveal,

@@ -8,6 +8,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,27 +57,34 @@ internal data class DashboardState(
 internal data class DashboardActions(
     val connect: () -> Unit, val nodes: () -> Unit, val diagnose: () -> Unit, val test: () -> Unit,
     val mode: (String)->Unit={},val selectProfile: (String)->Unit={},
-    val themeMode: (String)->Unit={},val serviceTest: ()->Unit={},
+    val themeMode: (String)->Unit={},val serviceTest: (List<String>)->Unit={},
 )
 
 @Composable internal fun DashboardScreen(state: DashboardState, actions: DashboardActions) {
-    val scroll=rememberScrollState()
-    Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(horizontal=20.dp,vertical=8.dp)
-        .padding(bottom=LocalNavigationClearance.current).testTag("dashboard"),
-        verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        Column(Modifier.testTag("home-control")) {
-            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-                Text("PingClash",Modifier.weight(1f),style=MaterialTheme.typography.titleLarge)
-                SessionTimer(state.vpn)
-                ThemeToggle(state.data.client,actions.themeMode)
-            }
-            if(!state.ready||state.data.loadFailed)InputIssue(tr(
-                if(!state.ready)R.string.message_0fef4c3028 else R.string.message_9e30b1eb6a))
-            LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),actions.connect)
-            if(state.vpn.phase=="error")InputIssue(state.vpn.message)
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .padding(bottom=LocalNavigationClearance.current).padding(horizontal=16.dp,vertical=6.dp)
+        .testTag("dashboard")) {
+        val shown=if(maxHeight<560.dp||LocalDensity.current.fontScale>=1.4f)2 else 4
+        if(maxWidth>maxHeight)Row(Modifier.fillMaxSize(),
+            horizontalArrangement=Arrangement.spacedBy(12.dp),verticalAlignment=Alignment.CenterVertically) {
+            HomeConnection(state,actions,Modifier.weight(1.2f).fillMaxHeight())
+            Box(Modifier.weight(1f)) {HomeConfiguration(state,actions)}
+            Box(Modifier.weight(1.3f)) {HomeServiceChecks(state,actions.serviceTest,shown)}
+        } else Column(Modifier.fillMaxSize(),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            HomeConnection(state,actions,Modifier.weight(1f).fillMaxWidth())
+            HomeConfiguration(state,actions)
+            HomeServiceChecks(state,actions.serviceTest,shown)
         }
-        HomeConfiguration(state,actions)
-        HomeServiceChecks(state,actions.serviceTest)
+    }
+}
+
+@Composable private fun HomeConnection(state: DashboardState,actions: DashboardActions,modifier: Modifier) {
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier.testTag("home-control")) {
+        LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),
+            (maxHeight-44.dp).coerceAtLeast(112.dp),actions.connect)
+        Text("PingClash",Modifier.align(Alignment.TopStart),style=MaterialTheme.typography.titleMedium)
+        SessionTimer(state.vpn,Modifier.align(Alignment.BottomCenter))
     }
 }
 

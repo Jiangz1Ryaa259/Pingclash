@@ -139,31 +139,26 @@ internal val LocalThemeReveal=staticCompositionLocalOf<ThemeRevealController?> {
         MaterialTheme.colorScheme.background.let {it.red+it.green+it.blue<1.5f}
     val reveal=LocalThemeReveal.current
     var center by remember {mutableStateOf(Offset.Zero)}
-    IconButton({val change={onChange(if(dark)"light" else "dark")};reveal?.request(center,change)?:change()},
-        Modifier.size(48.dp).testTag("theme-toggle").onGloballyPositioned {
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,
+        verticalAlignment=androidx.compose.ui.Alignment.CenterVertically) {
+        Text(tr(R.string.ui_dark_mode),style=MaterialTheme.typography.bodyLarge)
+        androidx.compose.material3.Switch(checked=dark,onCheckedChange={value ->
+            val change={onChange(if(value)"dark" else "light")}
+            reveal?.request(center,change)?:change()
+        },modifier=Modifier.testTag("theme-toggle").onGloballyPositioned {
             center=it.positionInWindow()+Offset(it.size.width/2f,it.size.height/2f)
-        }) {
-        androidx.compose.foundation.layout.Box(Modifier.semanticsLabel(tr(R.string.ui_change_theme))) {
-            AnimatedContent(dark,label="theme-symbol") {AppGlyph(if(it)GLYPH_SUN else GLYPH_MOON)}
-        }
+        },thumbContent={AppGlyph(if(dark)GLYPH_MOON else GLYPH_SUN,Modifier.size(16.dp))})
     }
 }
 
-private fun Modifier.semanticsLabel(label: String)=this.then(Modifier.semantics {contentDescription=label})
-
 @Composable internal fun ThemePicker(value: String,onChange: (String)->Unit) {
     val reveal=LocalThemeReveal.current
+    var center by remember {mutableStateOf(Offset.Zero)}
     Text(tr(R.string.message_788db1cfec),style=MaterialTheme.typography.labelLarge,color=Muted)
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-        listOf("system" to R.string.message_217cfe7db1,"light" to R.string.message_aa0819dfc4,
-            "dark" to R.string.message_a6b75d0680).forEach {(key,label) ->
-            var center by remember {mutableStateOf(Offset.Zero)}
-            FilterChip(value==key,{
-                val change={onChange(key)};reveal?.request(center,change)?:change()
-            },label={Text(tr(label))},modifier=Modifier.weight(1f)
-                .testTag("choice-${tr(R.string.message_788db1cfec)}-$key").onGloballyPositioned {
-                center=it.positionInWindow()+Offset(it.size.width/2f,it.size.height/2f)
-            })
-        }
-    }
+    ThemeToggle(ClientSettings(theme=value),onChange)
+    FilterChip(value=="system",{
+        val change={onChange("system")};reveal?.request(center,change)?:change()
+    },label={Text(tr(R.string.ui_follow_system))},modifier=Modifier.onGloballyPositioned {
+        center=it.positionInWindow()+Offset(it.size.width/2f,it.size.height/2f)
+    })
 }

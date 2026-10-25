@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.0-beta.7, build 25. Home has three sections: the hanging VPN card and uptime; configuration and rule/global/direct routing mode; and explicit website reachability checks. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.0-beta.8, build 26. Home has three sections on one fixed screen: the hanging VPN card and independent timer; configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a compact native face on small screens. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -10,9 +10,9 @@ Content and navigation are sibling layers. Haze samples the content behind the b
 
 ## Interactions
 
-- The session timer uses VPN state, with an animated numeric label and minute bar; it does not fabricate a start time or preserve a misleading connected duration after a failed reconnect.
+- The independent timer strip uses this VPN session’s monotonic start, not the core lifetime. It continues across network handoffs and reconnect waits, resets after disconnect, and stops ticking outside the foreground. Tap it to open details in a separate sheet; it is never a promise of continuous Internet access.
 - Tap operates the existing VPN action. A stationary long press begins an unrestricted drag; releasing returns the card through its physical solver. App pause/resume restarts the renderer without relying on a stale animation-frame handle.
-- The theme button expands a circular reveal from its center. One transient app-window PixelCopy frame exists only in memory and is cleared on completion, protection or backgrounding; it is never saved or uploaded. Protected windows do not capture a frame. System/reduced-motion preferences suppress the transition.
+- Appearance settings contain a dark-mode switch and a Follow system chip; no theme control sits beside the home timer. The switch expands a circular reveal from its own center. One transient app-window PixelCopy frame exists only in memory and is cleared on completion, protection or backgrounding; it is never saved or uploaded. Protected windows do not capture a frame. System/reduced-motion preferences suppress the transition.
 - The selected navigation label expands while switching. All tabs retain accessible labels and large-font navigation clearance.
 - Profiles use stable-ID cards, quota/expiry details and a three-dot menu. The add button collapses while scrolling and remains accessible. Imports remain disabled during active VPN under the existing repository guard.
 - Copying a subscription is an explicit menu action: copy changes to a check, without putting the URL into feedback. The clip is marked sensitive and cleared on a best-effort basis after 60 seconds only if its ownership marker still matches; another application's clipboard is never cleared. Process death or OS clipboard restrictions can prevent expiry.
@@ -20,8 +20,12 @@ Content and navigation are sibling layers. Haze samples the content behind the b
 
 Decorative animation stops outside the foreground and respects system motion settings, touch exploration and Reduce effects. The same settings suppress shake, card motion and circular reveal. No new permissions or remote artwork are required.
 
-## Website checks
+## Website latency
 
-Google uses its lightweight generate_204 URL; ChatGPT and Gemini use their public HTTPS home pages. Tests run only on demand through the selected Mihomo definition, with bounded timeouts and cancellation. An HTTP 403/429 is displayed as an HTTP response, not misclassified as an unreachable server. Reachability does not prove account access, regional availability or usable AI service. No login, body, cookies or raw response text is collected.
+The FlClash v0.9.2 service card/provider is the reference for a short home list and an expanded sheet, attributed in [NOTICE](../NOTICE.md). On a tall normal-font screen the four defaults are Google, ChatGPT, Gemini and YouTube. Small screens or large fonts show Google and ChatGPT. More opens the complete list: those four, GitHub, Claude, Cloudflare, Netflix, Spotify, Discord, Telegram and Bilibili. Opening the sheet is local only. Tap one tile/row to test it, the home lightning icon to test shown targets, or Test all in the sheet to explicitly test the full list.
+
+All requests use the existing Mihomo URLTest bridge and the selected unified-delay setting, with at most four concurrent runs and bounded timeout/cancellation. Google/YouTube use lightweight generate_204 targets; other targets use fixed public HTTPS endpoints and HEAD, without response bodies, cookies, accounts or IP/region lookup. The Cloudflare trace body is not read. Unknown target IDs cannot become arbitrary URLs. Changing nodes/configurations cancels and clears old results.
+
+A measured HTTP response is not an account, regional, unlock or HTTP-success check: an error-page response may still yield a latency value. Full diagnostics remain separate. Results are memory-only and no website is automatically tested by opening Home or More.
 
 See [validation](security-testing.md) for measured evidence and [the card renderer](lanyard-ui.md) for source/license boundaries. No preview video is generated for this iteration.

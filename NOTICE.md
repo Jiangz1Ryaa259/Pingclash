@@ -43,3 +43,10 @@ https://github.com/chen08209/FlClash/blob/v0.9.2/lib/ui/liquid_glass.dart
 https://github.com/chen08209/FlClash/blob/v0.9.2/shaders/liquid_glass.frag
 PingClash implements a Compose/Haze backdrop with AGSL capsule refraction;
 no Flutter runtime or upstream visual assets are copied.
+
+The beta.8 compact website list and expanded panel direction reference FlClash
+v0.9.2 (GPL-3.0), lib/common/service_probe.dart, lib/providers/service_status.dart,
+and lib/views/dashboard/widgets/service_status.dart:
+https://github.com/chen08209/FlClash/tree/v0.9.2/lib/views/dashboard/widgets
+PingClash uses its existing Mihomo URLTest bridge for latency only; it does not
+copy the service-unlock checkers or collect response bodies/IP/region data.

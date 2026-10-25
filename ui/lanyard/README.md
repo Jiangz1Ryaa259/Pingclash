@@ -26,6 +26,7 @@ CI reproduces the build, checks the diff and tests source fidelity/integrity.
 
 The WebView loads three fixed app assets, blocks network and file/content access,
 and exposes no JavaScript-to-native interface. It receives fixed UI text, phase
-and viewport/drag geometry only. Native Compose owns VPN actions, input and accessibility.
+and viewport/drag geometry only. Native centerX keeps horizontal/column layouts aligned
+with their clickable control, including system side insets. Native Compose owns VPN actions, input and accessibility.
 Rendering pauses off-home, in background and on protected pages. WebGL-unavailable
 devices use the native card fallback; emulator evidence is not OEM validation.

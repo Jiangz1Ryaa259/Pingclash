@@ -28,4 +28,14 @@
     <string name="ui_show_details">Show details</string>
     <string name="ui_hide_details">Hide details</string>
     <string name="ui_import_too_large">Configuration exceeds 2 MiB.</string>
+    <string name="ui_session_duration">VPN session</string>
+    <string name="ui_session_duration_note">Time since this VPN session first connected, including network handoffs and reconnect waits. Disconnecting resets it; it does not prove continuous Internet access.</string>
+    <string name="ui_dark_mode">Dark mode</string>
+    <string name="ui_follow_system">Follow system appearance</string>
+    <string name="ui_mode_global_short">Global</string>
+    <string name="ui_site_latency">Website latency</string>
+    <string name="ui_more">More</string>
+    <string name="ui_measure">Test</string>
+    <string name="ui_measure_all">Test all</string>
+    <string name="ui_site_latency_note">Uses Mihomo URLTest (HEAD) through the selected proxy, with at most four simultaneous tests. A response measures HTTP latency, not account, region, service unlock or HTTP success. Google/YouTube use lightweight 204 targets. Only explicitly selected tests run; opening this panel sends no requests.</string>
 </resources>

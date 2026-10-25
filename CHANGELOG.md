@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Beta.8/build 26 makes Home one non-scrolling page with responsive card sizing,
+  an independent expandable timer strip and compact configuration/mode controls.
+- Move the light/dark control to Appearance as a switch with a circular reveal from
+  the switch center; retain Follow system and protected/reduced-motion fallbacks.
+- Show 2–4 website latency tiles with an expanded 12-target panel. Use native Mihomo
+  URLTest, explicit target selection, at most four concurrent probes and cancellation.
+- Keep the VPN session timer across core/network restarts using a monotonic start;
+  reset after disconnect. Add no-scroll/large-font, selected-target and reconnect tests.
+
 - Beta.7/build 25 reduces Home to its hanging VPN control/uptime, profile/routing mode
   and explicit Google/ChatGPT/Gemini checks. Detailed diagnostics and telemetry remain in Settings.
 - Remove small drag clamps; preserve tap versus stationary long-press semantics and

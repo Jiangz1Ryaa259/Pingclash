@@ -1,3 +1,21 @@
+# Single-page home validation (0.1.0-beta.8 / build 26)
+
+- Final signed APK: **131143133 bytes**, SHA256 `967acfa30f4ae1ffa515d4211079145237bee87e015d70ee1c42ddb08370f5fe`. Existing signing identity, v2/v3, non-debuggable, run-as denial and 16 KiB checks pass; 6 native libraries / 20 LOAD segments. Private signing/user/test marker matches: zero.
+- API 35/AOSP x86_64: the exact signed APK passes **58/58 tests, zero skipped, 259.642 seconds**, with controlled DNS 1 and separate-UID HTTP 1. The real network-handoff fixture verifies that the TUN and session monotonic start are both retained, and elapsed time does not reset after the core restarts.
+- API 31/AOSP x86_64: the same signed APK passes **23/23 focused UI/WebGL/isolation checks, 63.879 seconds**; this is not the full VPN suite on API 31.
+- API 29/AOSP x86_64: the same signed APK passes **21/21 native/fallback UI checks, 38.923 seconds**. The two real Three.js checks are not included on its old WebView; no full 3D support is asserted.
+- New checks cover a bounded/deduplicated HTTPS target allowlist; timer reconnect/disconnect/clock-edge behavior; and a large-font, constrained-height home with no ScrollBy semantics and primary controls above navigation. Opening More makes no test call; only explicit target selection reaches the callback. No public website was contacted by UI fixtures.
+- Original renderer source fidelity and bundle integrity: **20/20**. The native centerX input follows the actual card/control position in landscape; geometry/material/physics construction stays unchanged. Bundle SHA256: `62c2d2bb062c4a3bcc0144605b1fcd432299991535291aed081ee957c6a4b30f`.
+- Strict build/detekt pass without baseline regeneration. Lint: **0 errors, 72 warnings, 2 information**; warnings are 27 dependency updates, 6 AGP updates, 29 unused resources, 7 KTX suggestions, 2 typography suggestions and 1 older-API attribute. **626** English/Chinese resource/format pairs pass. Security/localization error gates remain active.
+- Actual empty-profile screenshots, without a video, exposed a landscape system-navigation overlap and a large-font timer-label collision. Insets and native/3D horizontal framing were corrected; the timer drops its decorative label at large font sizes while retaining the accessible description. Final portrait, landscape and large-font layouts were inspected. Some screenshots use an explicitly synthetic connected state and are not evidence of public access.
+- Public CI for the previous revision `475b19c` built successfully and passed the full API 31/33 suites, while API 34/35 emulator hosts exited before completing their suites. Workflow resources are now explicitly two cores / 2048 MiB, with the pinned emulator retained. This is a harness change, not proof the host issue is fixed; assess the new PR head independently. No new Release or tag is published.
+- A preceding candidate passed 58/58 before the final horizontal-inset/framing fixes; those fixes were rebuilt, re-signed and subjected to the final complete suite above. An old gallery test attempted to scroll Home; it now asserts visibility directly, with a new regression requiring that Home has no scroll action. Failed assertions were not skipped.
+- Website latency uses native Mihomo URLTest/HEAD, at most four concurrent probes, and explicit selection only. Results do not assert HTTP success, account/region access or unlock. All 12 fixed target URLs and the routing/data boundaries are documented in ui-design.md and PRIVACY.md. No physical OEM/GPU or public-subscription validation is claimed.
+
+Older records follow.
+
+---
+
 # UI interaction validation (0.1.0-beta.7 / build 25)
 
 - Final signed candidate: 131085789 bytes, SHA256 `e748333771872dd543e734eda036cdbbe79a7021685c1589c80152473694a972`. Existing signing identity, v2/v3, non-debuggable and release `run-as` denial verified. Six native libraries / 20 LOAD segments satisfy 16 KiB alignment; private signing/user/test marker matches: zero.
