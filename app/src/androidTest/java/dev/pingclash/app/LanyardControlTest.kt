@@ -150,6 +150,7 @@ class LanyardControlTest {
                 PingClashTheme("dark") {
                     val density=LocalDensity.current
                     CompositionLocalProvider(LocalMotionAllowed provides motion,
+                        LocalAllowLanyardThree provides false,
                         LocalDensity provides Density(density.density,if(large)1.8f else 1f),
                         LocalLayoutDirection provides if(large)LayoutDirection.Rtl else LayoutDirection.Ltr) {
                         ScenicFrame(0,"none",true,{}) {

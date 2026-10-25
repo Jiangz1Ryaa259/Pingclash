@@ -4,6 +4,11 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.6/build 24 replaces the material approximation with the supplied Lanyard
+  component's Three.js geometry, physical materials, weave normals, metal clasp
+  and environment. It runs offline with no JavaScript-to-native interface;
+  native Compose retains VPN actions, accessibility and long-press input.
+
 - Beta.5/build 23 fixes the strap at the screen's top edge and requires a stationary long press before dragging. Starting VPN flips to the reverse face; stopping/failure returns to the front without treating animation as proof of connectivity. Add shader-lit satin/bevels on Android 13+ and native material fallback on older APIs.
 
 - Beta.4/build 22 removes the dashboard button container and adds a native hanging-card control with bounded perspective dragging, spring return and a connected-face transition. Tap actions remain separate from drag/cancel; reduced motion, disabled states and large-text/RTL access are retained. No new permissions or runtime dependencies.
@@ -20,6 +25,11 @@ This is a draft, not a published release or new version tag. The existing beta.1
 - Add offline provider compatibility fixtures and canary regression coverage for errors, diagnostic exports, encrypted storage, app logs and terminal startup.
 
 ## Known limitations — retain in the published release notes
+
+- The Three.js card requires a WebGL-capable Android System WebView. Unsupported
+  devices use a native material fallback. GPU performance and OEM WebView variants
+  still require physical-device testing. React Bits retains its MIT + Commons
+  Clause license; see `NOTICE.md` and `ui/lanyard/LICENSE-ReactBits.md`.
 
 - One local API 31 instrumentation run crashed during group layout; a full rerun of the unchanged signed app passed all 45 tests. This is retained for investigation rather than claimed fixed. See `security-testing.md` for the run-specific record.
 - Providers support the bounded HTTP/HTTPS YAML/text subset in `subscriptions.md`. MRS, file/inline, arbitrary overrides, group-routed downloads and cross-source duplicate names remain unsupported. The corpus distinguishes accepted and rejected cases.

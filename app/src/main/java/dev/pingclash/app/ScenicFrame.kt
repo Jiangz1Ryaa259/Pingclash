@@ -50,6 +50,7 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
     val clearance=navigationHeight()+24.dp+WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val depth=remember {mutableFloatStateOf(0f)}
     val cable=remember {mutableStateOf<androidx.compose.ui.geometry.Offset?>(null)}
+    val three=rememberLanyardThreeState()
     val immersive=selected==0&&scene!="none"
     val parentColors=MaterialTheme.colorScheme
     SideEffect {
@@ -63,13 +64,13 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
     val frame: @Composable ()->Unit = {
     CompositionLocalProvider(LocalNavigationClearance provides clearance,LocalSceneDepth provides depth,
         LocalImmersiveScene provides immersive,LocalNavHaze provides if(blur)haze else null,
-        LocalLanyardCable provides cable) {
+        LocalLanyardCable provides cable,LocalLanyardThree provides three) {
         Box(Modifier.fillMaxSize().background(Ink)) {
             Box(Modifier.fillMaxSize().then(if(blur)Modifier.hazeSource(haze) else Modifier)) {
                 OceanBackdrop(TrailTone.PENDING,false,Modifier.fillMaxSize(),scene)
                 if(!immersive&&scene!="none")Box(Modifier.fillMaxSize().background(
                     Brush.verticalGradient(listOf(Ink.copy(alpha=.97f),Ink.copy(alpha=.84f)))))
-                if(selected==0)WindowLanyardCable(cable)
+                LanyardSceneLayers(three,cable,selected,secure)
                 content()
             }
             GlassNavigation(selected,Modifier.align(Alignment.BottomCenter),onSelect)

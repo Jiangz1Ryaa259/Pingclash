@@ -30,3 +30,11 @@ The normal debug build runs detekt 1.23.8 with `config/detekt.yml` and a reviewe
 Android verification uses only the explicitly named project AVD. It resets that emulator, installs the signed release plus instrumentation APK and runs controlled local proxy fixtures. Never substitute a personal device identifier. `tools/package-source.ps1` creates a corresponding source archive including vendored Go dependencies and excludes the private tool/signing directories.
 
 See [validation](security-testing.md), [privacy](../PRIVACY.md), [security](../SECURITY.md) and [terminal](terminal.md).
+
+## Offline 3D card renderer
+
+The APK includes committed local assets. To change the Lanyard renderer, use
+Node 24.14.0 and run `npm ci --ignore-scripts --no-fund --no-audit`, `npm run build`
+and `npm test` in `ui/lanyard/`. Commit the source, emitted assets and integrity
+manifest together. CI rebuilds and checks that they match. See the renderer
+[build instructions and upstream license](../ui/lanyard/README.md).

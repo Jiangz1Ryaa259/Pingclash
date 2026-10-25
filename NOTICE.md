@@ -1,6 +1,12 @@
 # PingClash source and dependency notices
 
 PingClash application and diagnostic code is provided under GPL-3.0-only; see `LICENSE`.
+The separately bundled Lanyard renderer contains React Bits source under its
+MIT + Commons Clause license (not GPL); see `ui/lanyard/LICENSE-ReactBits.md`.
+Its original geometry, PBR materials and physics are preserved in
+`ui/lanyard/reference/Lanyard.jsx`; Android host adaptations are in `adapt.mjs`.
+React, React DOM and Three.js retain their MIT licenses. All four notice texts
+are also packaged in `assets/licenses/lanyard/`. No remote renderer assets load.
 The embedded core uses MetaCubeX/mihomo v1.19.32, together with the exact module graph
 recorded in `core/go.mod` and `core/go.sum`. Upstream source and notices are preserved
 in the source archive's `core/vendor` tree. Dependency files retain their own licenses.

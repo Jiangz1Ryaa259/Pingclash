@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Beta.6/build 24 integrates the supplied React Bits Lanyard geometry, PBR materials,
+  woven normal map, metal hardware, environment and physics in an isolated offline
+  Three.js renderer. Native Compose retains actions, long-press input and accessibility.
+- Preserve the upstream license and source; add fidelity, bundle integrity and actual
+  WebView rendering/isolation tests. No renderer network access or profile data bridge.
+
 - Beta.5/build 23 anchors the lanyard at the screen's top edge, separates stationary long-press dragging from taps/swipes, and flips as VPN starts or stops.
 - Add light/dark satin faces, shader-lit bevels and reflections on Android 13+, native material fallback on older APIs, and regression coverage for anchor tracking and on/off transitions.
 

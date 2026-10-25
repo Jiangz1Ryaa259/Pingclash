@@ -27,6 +27,7 @@ $lines.Add('Standard terminal: Termux terminal-emulator and terminal-view v0.118
 Copy-Item -LiteralPath (Join-Path $projectRoot 'terminal-emulator\LICENSE.md') -Destination (Join-Path $assets 'Termux-GPL-3.0.txt') -Force
 $lines.Add('Proxy page layout and interactions: FlClash (chen08209), GPL-3.0, commit 8d4f9744948751f1273fe871e1d05276fac09b0e; Kotlin/Compose adaptation. No upstream fonts or image assets bundled.')
 $lines.Add('Application source: GPL-3.0-only. Engine: MetaCubeX/mihomo v1.19.32. Each dependency retains its own license.')
+$lines.Add('Offline Lanyard renderer: user-supplied React Bits component, MIT + Commons Clause; see lanyard/ReactBits.md. React, React DOM and Three.js: MIT; see lanyard/*.txt. Original renderer source, pinned lockfile and Android adaptations accompany the source tree.')
 $lines.Add('AndroidX, Kotlin, kotlinx.coroutines and Gradle: Apache-2.0 notices. Go and its mobile binding runtime: BSD notices.')
 $lines.Add('VPN state morphing: AndroidX graphics-shapes 1.0.1, Apache-2.0.')
 $lines.Add('Navigation blur: Haze and haze-materials 1.6.8, copyright Christopher Banes and the Haze project contributors, Apache-2.0; https://github.com/chrisbanes/haze/tree/1.6.8.')

@@ -10,7 +10,7 @@
 - [Background, network handoff and always-on VPN](background-vpn.md)
 - [Diagnostic evidence and limits](diagnostics.md)
 - [UI and interaction](ui-design.md)
-- [Native hanging-card connection control](lanyard-ui.md)
+- [Offline Three.js hanging-card control](lanyard-ui.md)
 - [Local photographic assets and generation prompts](scene-assets.md)
 - [Validation history](security-testing.md)
 - [Privacy](../PRIVACY.md)

@@ -24,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -41,6 +43,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -71,37 +75,56 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
     val turn by animateFloatAsState(if(lanyardBackFace(phase))180f else 0f,
         if(moving)spring(.83f,180f) else snap(),label="lanyard-face")
     val large=density.fontScale>=1.6f
-    val cardHeight=if(large)320.dp else 262.dp
+    val cardHeight=if(large)350.dp else 292.dp
+    val three=LocalLanyardThree.current
+    DisposableEffect(three) {onDispose {three?.slot(0f,0f)}}
     val description=vpnControlDescription(phase)
     val anchor=Modifier.lanyardAnchor()
     val performTap={haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove);action()}
+    val cardText=ThreeControlText(phase,label,lanyardPhaseText(phase))
+    SideEffect {three?.pose(pose,Offset(x,y),density,moving,cardText)}
     LaunchedEffect(available,moving) {pose.drag=Offset.Zero;pose.holding=false}
-    Box(Modifier.fillMaxWidth().height(cardHeight+84.dp).testTag("lanyard-stage")
+    Box(Modifier.fillMaxWidth().height(cardHeight+84.dp).onGloballyPositioned {
+        three?.slot(it.positionInRoot().y+92*density.density,(cardHeight.value-26)*density.density)
+    }.testTag("lanyard-stage")
         .semantics {this[LanyardDisplacement]=kotlin.math.abs(x)+kotlin.math.abs(y)
             this[LanyardFaceAngle]=turn
             this[LanyardAnimating]=lanyardInMotion(moving,pose.holding,kotlin.math.abs(x)+kotlin.math.abs(y))}) {
         LocalLanyardStrap(x,y,Modifier.fillMaxSize())
-        Box(Modifier.align(Alignment.TopCenter).padding(top=66.dp).width(222.dp).height(cardHeight)
+        Box(Modifier.align(Alignment.TopCenter).padding(top=66.dp)
+            .width((cardHeight-26.dp)*(1.6f/2.25f)).height(cardHeight)
             .graphicsLayer {
                 translationX=x*density.density;translationY=y*density.density
                 rotationZ=x*.19f;rotationX=-y*.38f;rotationY=turn+x*.30f
                 transformOrigin=TransformOrigin(.5f,.04f);cameraDistance=1100f*density.density
-                alpha=if(available)1f else .62f
+                alpha=cardOpacity(available)
             }
             .then(anchor).testTag("vpn-power")
             .lanyardAction(available,label,description,performTap)
             .lanyardGestures(available,moving,density.density,pose,performTap)) {
-            val reverse=turn>90f&&turn<270f
+            Box(Modifier.fillMaxSize().graphicsLayer {alpha=if(three?.ready==true)0f else 1f}) {
+            val reverse=cardReverse(turn)
             LanyardFace(phase,label,reverse,x,Modifier.fillMaxSize().padding(top=26.dp)
                 .graphicsLayer {rotationY=if(reverse)180f else 0f})
             LanyardClasp(x,Modifier.align(Alignment.TopCenter).width(50.dp).height(50.dp))
+            }
         }
     }
 }
 
 private fun lanyardInMotion(moving: Boolean,holding: Boolean,distance: Float)=moving&&(holding||distance>.1f)
+private fun cardOpacity(available: Boolean)=if(available)1f else .62f
+private fun cardReverse(turn: Float)=turn>90f&&turn<270f
 
 internal fun lanyardBackFace(phase: String)=phase in listOf("connecting","established")
+
+internal fun lanyardPhaseText(phase: String)=tr(when(phase) {
+    "established"->R.string.message_35f7d981fb
+    "connecting"->R.string.message_694186911a
+    "stopping"->R.string.message_b8d23e6673
+    "error"->R.string.ui_connection_failed
+    else->R.string.message_93ae902da0
+})
 
 @Composable private fun LanyardFace(phase: String,label: String,reverse: Boolean,tilt: Float,modifier: Modifier) {
     val ink=if(reverse)Color(0xFFEAF0F0) else Color(0xFF172329)
@@ -123,13 +146,7 @@ internal fun lanyardBackFace(phase: String)=phase in listOf("connecting","establ
                     CardPowerMark(phase,accent)
                 }
                 Spacer(Modifier.height(18.dp))
-                Text(tr(when(phase) {
-                    "established"->R.string.message_35f7d981fb
-                    "connecting"->R.string.message_694186911a
-                    "stopping"->R.string.message_b8d23e6673
-                    "error"->R.string.ui_connection_failed
-                    else->R.string.message_93ae902da0
-                }),color=ink.copy(alpha=.76f),style=MaterialTheme.typography.labelMedium,
+                Text(lanyardPhaseText(phase),color=ink.copy(alpha=.76f),style=MaterialTheme.typography.labelMedium,
                     textAlign=TextAlign.Center)
                 Spacer(Modifier.weight(1f))
                 Canvas(Modifier.fillMaxWidth().height(1.dp)) {

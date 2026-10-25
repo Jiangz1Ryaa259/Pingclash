@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -29,9 +30,10 @@ internal val LocalLanyardCable=staticCompositionLocalOf<MutableState<Offset?>?> 
 internal val CableEndY=SemanticsPropertyKey<Float>("CableEndY")
 
 /** Root drawing starts at window y=0, independently of headers, insets and scroll. */
-@Composable internal fun WindowLanyardCable(endpoint: MutableState<Offset?>) {
+@Composable internal fun WindowLanyardCable(endpoint: MutableState<Offset?>,hidden: Boolean=false) {
     val end=endpoint.value?:return
-    Canvas(Modifier.fillMaxSize().testTag("window-lanyard-cable").semantics {this[CableEndY]=end.y}) {
+    Canvas(Modifier.fillMaxSize().graphicsLayer {alpha=if(hidden)0f else 1f}
+        .testTag("window-lanyard-cable").semantics {this[CableEndY]=end.y}) {
         drawLanyardCable(end)
     }
 }
