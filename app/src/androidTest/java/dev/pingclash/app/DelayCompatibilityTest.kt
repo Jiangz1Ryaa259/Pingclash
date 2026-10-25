@@ -22,6 +22,27 @@ class DelayCompatibilityTest {
     @get:org.junit.Rule(order=0) val resourceLocale=ResourceLocaleRule()
     @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
 
+    @Test fun urlDelayIsRealWithoutVpnAndFailedNodeNeverFallsBackToDirect() {
+        assertFalse(VpnRuntime.state.value.active)
+        ControlledServers().use {fixture ->
+            val config=JSONObject().put("type","socks5").put("server","127.0.0.1")
+                .put("port",fixture.socks.localPort).put("username","fixture-user")
+                .put("password","fixture-private-password")
+            val target="http://127.0.0.1:${fixture.http.localPort}/"
+            val actual=JSONObject(dev.pingclash.mobile.Mobile.probeDelay(config.toString(),target,
+                "real-node-url-delay",2000,false))
+            assertEquals("passed",actual.getString("state"))
+            assertEquals("proxy_delay_measured",actual.getString("code"))
+            // HTTP target remains reachable, but the selected proxy is gone.
+            val closed=ServerSocket(0);val port=closed.localPort;closed.close()
+            config.put("port",port)
+            val failed=JSONObject(dev.pingclash.mobile.Mobile.probeDelay(config.toString(),target,
+                "failed-node-no-direct-fallback",1000,false))
+            assertNotEquals("passed",failed.getString("state"))
+            assertFalse(VpnRuntime.state.value.active)
+        }
+    }
+
     @Test fun nullBandwidthHttpGroupsImportAndRefreshButtonRemainsEnabled() {
         val app=compose.activity.application as PingClashApplication
         val nodes=JSONArray();val names=(0 until 112).map {"节点$it"}

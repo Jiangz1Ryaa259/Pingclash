@@ -1,3 +1,17 @@
+# Top timer and authoritative card face validation (0.1.0-beta.9 / build 27)
+
+- Exact signed APK: **131159517 bytes**, SHA256 `3f61de3a5ae4578eca361a0fb5fecdf1340f773835df0e380747684f6e095e16`. Existing v2/v3 signing identity, non-debuggable, run-as denial and 16 KiB alignment pass. Six native libraries / 20 LOAD segments; private signing/user/test markers: zero.
+- API 35/AOSP x86_64: **60/60 full tests, zero skipped, 291.629 seconds**. Controlled DNS 1 and separate-UID HTTP 1. No public subscription/account was used.
+- Focused timer/layout/real-WebGL/URL-delay run: **9/9**, 85.489 seconds. Checks the actual mesh normal after motion resumes, dragging and activity stop/resume, not only the native text or target flip angle. Idle/error/stop return to the front. Native drag-versus-tap and renderer network isolation remain covered.
+- A real Mihomo URLTest succeeds through the controlled SOCKS proxy with VPN off; the same reachable HTTP target fails when only the proxy port is closed. There is no direct fallback. Such a measurement is selected-node reachability, not proof of another app UID's VPN route or public service/account access.
+- Timer tests verify cross-tab width expansion, click-to-card actions and automatic collapse after 4.5 seconds, with elapsed time retained. Large-font no-scroll Home and explicit selected-target callbacks remain covered.
+- The first full run was 59/60: the new renderer test changed Compose state then polled WebView without allowing the Compose test clock to synchronize. Adding the missing wait-for-idle barrier fixes the harness; the same APK bytes pass the focused and final full runs. No assertion was removed or relaxed.
+- Renderer fidelity/bundle checks: **20/20**. The preserved upstream geometry, materials and physics are unchanged; host reset integration restores native face and twist. Bundle SHA256 `601948591b7d041cf908558edf32b7b9db65d38384362cb5d3985c14dbd9c274`.
+- Detekt passes with its existing baseline; release Lint: **0 errors, 72 warnings, 2 information**. **629** English/Chinese resource and placeholder pairs pass. Curated source and APK secret/marker audits have no findings.
+- A real empty-profile Home screenshot was inspected; no preview video was generated. API 31/29 results below apply to beta.8, not this APK. Physical OEM/GPU, long-running Doze, real subscriptions and public website behavior remain unverified. Assess public CI for this exact source revision independently; no Release/tag/APK asset is published.
+
+---
+
 # Single-page home validation (0.1.0-beta.8 / build 26)
 
 - Final signed APK: **131143133 bytes**, SHA256 `967acfa30f4ae1ffa515d4211079145237bee87e015d70ee1c42ddb08370f5fe`. Existing signing identity, v2/v3, non-debuggable, run-as denial and 16 KiB checks pass; 6 native libraries / 20 LOAD segments. Private signing/user/test marker matches: zero.

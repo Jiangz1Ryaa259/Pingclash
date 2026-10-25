@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -72,12 +74,15 @@ class LanyardThreeTest {
         compose.runOnIdle {motion.value=false}
         compose.waitForIdle()
         await {evaluate(view,"window.__pingclashFrame.motion")=="false"}
+        await {status(view).optJSONObject("pose")?.optDouble("normalZ",1.0)?.let {it<-.85}==true}
         Thread.sleep(1200)
         captureSyntheticFixture(compose,UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),
             "lanyard-three-back.png")
+        assertDragAndResumeKeepBackFace(view) {motion.value=true}
         compose.onNodeWithTag("vpn-power").performClick()
         compose.waitForIdle()
         await {evaluate(view,"window.__pingclashFrame.back")=="false"}
+        await {status(view).getJSONObject("pose").getDouble("normalZ")>.6}
         compose.runOnIdle {motion.value=true;phase.value="idle"}
         compose.waitForIdle()
         val beforePause=status(view).getInt("frames")
@@ -86,6 +91,26 @@ class LanyardThreeTest {
         compose.runOnUiThread {control.visible(true)}
         await {status(view).optBoolean("active")&&status(view).getInt("frames")>beforePause}
         assertFalse(VpnRuntime.state.value.active)
+    }
+
+    private fun assertDragAndResumeKeepBackFace(view: WebView,resumeMotion: ()->Unit) {
+        compose.runOnIdle {resumeMotion()}
+        compose.waitForIdle()
+        await {evaluate(view,"window.__pingclashFrame.motion")=="true"}
+        Thread.sleep(1800)
+        assertTrue("Resuming motion flipped an established VPN back to the front",
+            status(view).getJSONObject("pose").getDouble("normalZ")<-.6)
+        compose.onNodeWithTag("vpn-power").performTouchInput {
+            down(center);advanceEventTime(800);moveBy(Offset(200f,150f),180);up()
+        }
+        Thread.sleep(3500)
+        await {status(view).getJSONObject("pose").getDouble("normalZ")<-.6}
+        assertEquals("Drag must not change VPN phase","\"established\"",
+            evaluate(view,"window.__pingclashFrame.phase"))
+        compose.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+        compose.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+        compose.waitForIdle()
+        await {status(view).optBoolean("active")&&status(view).getJSONObject("pose").getDouble("normalZ")<-.6}
     }
 
     @Test fun rendererCannotReadLocalFilesNavigateOrConnectToRemoteHosts() {

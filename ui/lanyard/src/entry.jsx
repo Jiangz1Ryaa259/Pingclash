@@ -83,7 +83,8 @@ window.PingClashScene = Object.freeze({
   status() {
     return { ready: window.__lanyardReady === true, frames: window.__lanyardFrames || 0,
       active: state.active, engine: 'three', roughness: .42, clearcoat: 1,
-      metalness: 1, metalRoughness: .16, weaveNormal: .7 };
+      metalness: 1, metalRoughness: .16, weaveNormal: .7,
+      pose: window.__lanyardPose || null };
   }
 });
 createRoot(document.getElementById('root')).render(<App />);

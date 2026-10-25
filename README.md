@@ -4,7 +4,7 @@
 
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
-**Current source: 0.1.0-beta.8 (build 26) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
+**Current source: 0.1.0-beta.9 (build 27) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
 
 ## Features
 
@@ -16,12 +16,12 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
 - English / Simplified Chinese resources, Android 13+ system app-language settings, and automatic network reconnection with TUN retained during outages.
 - Full-screen procedural animated ocean/clouds on Android 13+, animated photographic fallback on Android 10–12, circular light/dark reveal and refractive glass navigation. Reduced motion/transparency and protected-window fallbacks remain available.
-- A non-scrolling, responsive home: draggable VPN card, independent session timer, configuration/routing mode and 2–4 website latency tiles. Expand the panel for 12 targets; tests run only on demand through native Mihomo URLTest. Theme switching lives in Appearance settings. Compact quota cards, scroll-collapsing import button and sensitive subscription-copy feedback.
+- A non-scrolling, responsive home: draggable VPN card, top session capsule with auto-collapsing actions, configuration/routing mode and 2–4 website latency tiles. Expand the panel for 12 targets; tests run only on demand through native Mihomo URLTest. Theme switching lives in Appearance settings. Compact quota cards, scroll-collapsing import button and sensitive subscription-copy feedback.
 - Top-anchored hanging card using the supplied React Bits geometry, PBR materials, woven normals and physics in an isolated offline Three.js renderer. Native Compose retains long-press input, VPN actions and accessibility; unsupported WebGL devices use a native fallback.
 
 ## 状态与边界
 
-已发布的首个公开版本仍为 beta.1；当前 beta.8 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+已发布的首个公开版本仍为 beta.1；当前 beta.9 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -53,7 +53,7 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.8/build 26 正式签名候选 58 项通过、0 跳过；含真实 WebGL、VPN 转发、切网保留计时和一屏大字体回归 |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.9/build 27 正式签名候选 60 项通过、0 跳过；含真实 WebGL 朝向恢复、顶部计时交互、VPN 转发及节点延迟无直连回退 |
 | 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.8 同一签名候选 23 项通过，含实际 Three.js 渲染、暂停恢复、资源隔离及一屏交互 |
 | 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.8 同一签名候选 21 项原生回退、一屏布局与新交互回归通过；旧 WebView 的三维能力不作保证 |
 | GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |

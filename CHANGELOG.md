@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Beta.9/build 27 moves elapsed VPN time into an activity-owned top capsule. Leaving
+  Home widens it; tapping expands Home/Disconnect actions; 4.5 seconds idle collapses it.
+- Restore native-controlled lanyard orientation and twist after renderer resets and
+  motion/lifecycle changes; dragging never changes the VPN phase.
+- Label website latency as a selected-node probe, not proof of the system VPN path.
+  Clear old probes on VPN phase/session changes and expire results after 60 seconds.
+  Add a local real-core regression for VPN-off success and failed-proxy no-direct-fallback.
+
 - Beta.8/build 26 makes Home one non-scrolling page with responsive card sizing,
   an independent expandable timer strip and compact configuration/mode controls.
 - Move the light/dark control to Appearance as a switch with a circular reveal from

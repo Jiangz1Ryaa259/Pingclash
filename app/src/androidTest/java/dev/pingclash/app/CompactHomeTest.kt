@@ -54,7 +54,8 @@ class CompactHomeTest {
         compose.runOnUiThread {compose.activity.setContent {
             val density=LocalDensity.current
             PingClashTheme("light") {CompositionLocalProvider(LocalAllowLanyardThree provides false,
-                LocalMotionAllowed provides false,LocalDensity provides Density(density.density,1.8f)) {
+                LocalMotionAllowed provides false,LocalDensity provides Density(density.density,1.8f),
+                LocalSessionOverlay provides {SessionTimer(VpnUiState())}) {
                 ScenicFrame(0,"none",true,{}) {
                     Box(Modifier.height(600.dp).fillMaxSize()) {
                         DashboardScreen(DashboardState(AppData(listOf(profile),selectedId="node"),

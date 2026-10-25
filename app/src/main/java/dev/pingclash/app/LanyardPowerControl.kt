@@ -87,7 +87,7 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
     val performTap={haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove);action()}
     val cardText=ThreeControlText(phase,label,lanyardPhaseText(phase))
     SideEffect {three?.pose(pose,Offset(x,y),density,moving,cardText)}
-    LaunchedEffect(available,moving) {pose.drag=Offset.Zero;pose.holding=false}
+    LaunchedEffect(available,moving,phase) {pose.drag=Offset.Zero;pose.holding=false}
     Box(Modifier.fillMaxWidth().height(height).onGloballyPositioned {
         three?.slot(it.positionInRoot().y+(top.value+26)*density.density,(cardHeight.value-26)*density.density,
             it.positionInRoot().x+it.size.width/2f)

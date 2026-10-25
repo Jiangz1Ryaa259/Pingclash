@@ -55,6 +55,9 @@ import androidx.compose.ui.unit.dp
                         contentDescription=tr(if(state.services.running)R.string.cancel else R.string.ui_measure)
                     }) {AppGlyph(if(state.services.running)0 else 16)}
             }
+            Text(tr(if(state.data.client.mode=="direct")R.string.ui_site_route_direct
+                else R.string.ui_site_route_proxy),
+                color=Muted,style=MaterialTheme.typography.labelSmall,maxLines=1,overflow=TextOverflow.Ellipsis)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                 shown.forEach {target->ServiceTile(target,state,Modifier.weight(1f)) {onTest(listOf(target.id))}}
             }

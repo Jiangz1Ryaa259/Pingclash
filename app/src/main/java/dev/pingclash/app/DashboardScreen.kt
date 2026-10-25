@@ -82,9 +82,8 @@ internal data class DashboardActions(
 @Composable private fun HomeConnection(state: DashboardState,actions: DashboardActions,modifier: Modifier) {
     androidx.compose.foundation.layout.BoxWithConstraints(modifier.testTag("home-control")) {
         LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),
-            (maxHeight-44.dp).coerceAtLeast(112.dp),actions.connect)
+            maxHeight.coerceAtLeast(112.dp),actions.connect)
         Text("PingClash",Modifier.align(Alignment.TopStart),style=MaterialTheme.typography.titleMedium)
-        SessionTimer(state.vpn,Modifier.align(Alignment.BottomCenter))
     }
 }
 

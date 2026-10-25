@@ -57,6 +57,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         Triple(data.selectedId, data.selectedRuntimeConfig, data.probeUrl) to data.client.mode
     init {
         viewModelScope.launch {
+            vpn.map {it.phase to it.sessionStartedElapsed}.distinctUntilChanged().drop(1).collect {
+                // A probe from a previous VPN session must not look like a live
+                // indication of the current system tunnel.
+                serviceChecks.cancel()
+            }
+        }
+        viewModelScope.launch {
             data.map(::requestKey).distinctUntilChanged().drop(1).collect {
                 cancelProxyTests();mutableProxyTests.value=ProxyTestState()
                 serviceChecks.cancel()

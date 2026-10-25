@@ -595,6 +595,13 @@ const placeHanging = (sim, layout, intro) => {
   sim.turn = 0;
   sim.twist = 0;
   sim.twistRaw = 0;
+  const host = window.__pingclashFrame;
+  if (host) {
+    const desired = host.back ? Math.PI : 0;
+    body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), desired);
+    body.previousQuaternion.copy(body.quaternion);
+    sim.turn = desired; sim.twist = desired; sim.twistRaw = desired;
+  }
   sim.calm = 0;
 };
 
@@ -1103,6 +1110,8 @@ const Lanyard = ({
       cardGroup.quaternion.copy(sim.body.quaternion);
       updateBand();
       renderer.render(scene, camera);
+      const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(sim.body.quaternion);
+      window.__lanyardPose = { normalZ: normal.z, turn: sim.turn, twist: sim.twist, held: !!sim.grab };
       window.__lanyardReady = canvas.clientHeight > 100 && !!images.front && !!images.back && renderer.info.render.calls > 0 && !renderer.getContext().isContextLost();
       window.__lanyardFrames = (window.__lanyardFrames || 0) + 1;
     };
@@ -1149,10 +1158,13 @@ const Lanyard = ({
         sim.turn = desired;
         hostedTurn = desired;
       }
+      sim.turn = desired;
       if (!host.motion) {
         placeHanging(sim, layout, false);
         sim.turn = desired;
         sim.body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), desired);
+        sim.body.previousQuaternion.copy(sim.body.quaternion);
+        sim.twist = desired; sim.twistRaw = desired;
         const height = 2 * camera.position.z * Math.tan(FOV * Math.PI / 360);
         sim.body.position.y = height / 2 - height * (host.top + host.height / 2) / host.viewportHeight;
         const hang = sim.body.hang.clone().applyQuaternion(sim.body.quaternion).add(sim.body.position);

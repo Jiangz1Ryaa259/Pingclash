@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -71,14 +72,25 @@ internal class ServiceChecks(private val scope: CoroutineScope) {
             if(ticket!=generation) {Mobile.cancel(id);return}
             val result=runCatching {JSONObject(Mobile.probeDelay(config,target.url,id,timeout.toLong(),unified))}
                 .getOrNull()
-            val state=if(result?.optString("code")?.contains("timeout")==true)"timeout"
-                else result?.optString("state")?:"failed"
+            val state=when {
+                result?.optString("code")?.contains("timeout")==true->"timeout"
+                result?.optString("state")=="passed"->"passed"
+                result?.optString("state")=="cancelled"->"cancelled"
+                else->"failed"
+            }
             publish(target.id,ServiceResult(state,
                 elapsed=(result?.optLong("elapsedMs")?:0).coerceAtLeast(0)),ticket)
         } finally {runs.remove(id);Mobile.discardProbe(id)}
     }
     private fun publish(id: String,value: ServiceResult,ticket: Int) {
-        if(ticket==generation)mutable.update {it.copy(values=it.values+(id to value))}
+        if(ticket!=generation)return
+        mutable.update {it.copy(values=it.values+(id to value))}
+        scope.launch {
+            delay(60000)
+            if(ticket==generation)mutable.update {
+                if(it.values[id]===value)it.copy(values=it.values-id) else it
+            }
+        }
     }
     fun cancel() {
         generation++

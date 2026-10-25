@@ -90,7 +90,12 @@ import org.json.JSONObject
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { requestVpn() }
     val locked = ui.busy || vpn.active || diagnosis.running || tests.running || serviceTests.running
     val motion=rememberMotionAllowed(data.client.reduceEffects)
-    CompositionLocalProvider(LocalMotionAllowed provides motion) {
+    val session: (@Composable ()->Unit)?=if(tab==0||vpn.active) {{
+        SessionTimer(vpn,away=tab!=0,onHome={tab=0},onDisconnect={
+            model.serviceChecks.cancel();model.cancelDiagnosis();VpnRuntime.disconnect(context)
+        })
+    }} else null
+    CompositionLocalProvider(LocalMotionAllowed provides motion,LocalSessionOverlay provides session) {
     ScenicFrame(tab,data.client.scene,data.client.reduceTransparency,onSelect={tab=it}) {
     Scaffold(containerColor = Color.Transparent,contentWindowInsets=WindowInsets(0,0,0,0),snackbarHost = {
         Box(Modifier.padding(bottom=LocalNavigationClearance.current)) {SnackbarHost(snackbar)}

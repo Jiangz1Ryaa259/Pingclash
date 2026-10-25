@@ -33,9 +33,12 @@
     <string name="ui_dark_mode">Dark mode</string>
     <string name="ui_follow_system">Follow system appearance</string>
     <string name="ui_mode_global_short">Global</string>
-    <string name="ui_site_latency">Website latency</string>
+    <string name="ui_site_latency">Node website latency</string>
     <string name="ui_more">More</string>
     <string name="ui_measure">Test</string>
     <string name="ui_measure_all">Test all</string>
-    <string name="ui_site_latency_note">Uses Mihomo URLTest (HEAD) through the selected proxy, with at most four simultaneous tests. A response measures HTTP latency, not account, region, service unlock or HTTP success. Google/YouTube use lightweight 204 targets. Only explicitly selected tests run; opening this panel sends no requests.</string>
+    <string name="ui_site_latency_note">Uses Mihomo URLTest (HEAD) through the selected proxy, with at most four simultaneous tests. A response measures HTTP latency, not account, region, service unlock or HTTP success. Google/YouTube use lightweight 204 targets. This probe can run with VPN off and does not verify the TUN route of other apps. VPN state or profile changes clear old results; measurements expire after 60 seconds. Only explicitly selected tests run; opening this panel sends no requests.</string>
+    <string name="ui_session_open_home">Open home</string>
+    <string name="ui_site_route_proxy">Selected-node probe · not VPN verification</string>
+    <string name="ui_site_route_direct">Direct probe · not proxy verification</string>
 </resources>

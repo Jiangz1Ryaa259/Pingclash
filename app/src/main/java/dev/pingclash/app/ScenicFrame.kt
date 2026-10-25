@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ internal val LocalNavigationClearance=staticCompositionLocalOf {0.dp}
 internal val LocalNavHaze=staticCompositionLocalOf<HazeState?> {null}
 internal val LocalSceneDepth=staticCompositionLocalOf {mutableFloatStateOf(0f)}
 internal val LocalImmersiveScene=staticCompositionLocalOf {false}
+internal val LocalSessionOverlay=staticCompositionLocalOf<(@Composable ()->Unit)?> {null}
 
 @Composable internal fun navigationHeight() =
     if(LocalDensity.current.fontScale>=1.6f)(43+36*LocalDensity.current.fontScale).dp else 72.dp
@@ -42,6 +45,7 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
 /** Source and glass are siblings. Scrollable content owns its bottom clearance. */
 @Composable internal fun ScenicFrame(selected: Int,scene: String,reduceTransparency: Boolean,
     onSelect: (Int)->Unit,content: @Composable ()->Unit) {
+    val session=LocalSessionOverlay.current
     val haze=remember {HazeState()}
     val window=LocalActivity.current?.window
     val revision=SecurePage.revision
@@ -69,9 +73,11 @@ internal val LocalImmersiveScene=staticCompositionLocalOf {false}
             Box(Modifier.fillMaxSize().then(if(blur)Modifier.hazeSource(haze) else Modifier)) {
                 OceanBackdrop(TrailTone.PENDING,false,Modifier.fillMaxSize(),scene)
                 LanyardSceneLayers(three,cable,selected,secure)
-                content()
+                Box(Modifier.fillMaxSize().padding(top=if(session!=null)52.dp else 0.dp)) {content()}
             }
             GlassNavigation(selected,Modifier.align(Alignment.BottomCenter),onSelect)
+            if(session!=null)Box(Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top=6.dp)
+                .fillMaxSize(),contentAlignment=Alignment.TopCenter) {session()}
         }
     }
     }

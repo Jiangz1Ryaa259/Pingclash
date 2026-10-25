@@ -4,6 +4,11 @@ This is a draft, not a published release or new version tag. The existing beta.1
 
 ## Changes
 
+- Beta.9/build 27 adds the top elapsed-time capsule: it widens when leaving Home,
+  expands to Home/Disconnect actions on tap and collapses after 4.5 seconds idle.
+  Restore lanyard face/twist after resets and lifecycle changes. Label selected-node
+  URL latency separately from VPN route verification; clear it on session changes
+  and expire it after 60 seconds. No timer countdown or automatic disconnect is added.
 - Beta.8/build 26 keeps Home on one page, separates the session timer from Appearance,
   and moves the circular theme transition to a settings switch. Session time survives
   network/core restarts and resets on disconnect.
