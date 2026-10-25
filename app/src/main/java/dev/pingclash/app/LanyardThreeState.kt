@@ -18,10 +18,15 @@ import org.json.JSONObject
 
 internal val LocalLanyardThree=staticCompositionLocalOf<LanyardThreeState?> {null}
 internal val LocalAllowLanyardThree=staticCompositionLocalOf {true}
-internal data class ThreeControlText(val phase: String,val label: String,val status: String)
+internal data class ThreeControlText(val phase: String,val label: String,val status: String,val motion: Boolean=false)
 
 @Stable internal class LanyardThreeState {
     var ready by mutableStateOf(false);private set
+    var unavailable by mutableStateOf(false);private set
+    var started by mutableStateOf(false);private set
+    private var owner: Any?=null
+    private var epoch=0L
+        set(value) {field=value;ready=false;lastFrame=""}
     var scrollOffset by mutableFloatStateOf(0f);private set
     var hasControl by mutableStateOf(false);private set
     var active=false;private set
@@ -57,15 +62,19 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
                     if(view!==current)return@evaluateJavascript
                     polling=false
                     val json=runCatching {JSONObject(org.json.JSONTokener(result).nextValue().toString())}.getOrNull()
-                    ready=json?.optBoolean("ready")==true
+                    ready=json?.optBoolean("ready")==true&&json.optLong("epoch",-1)==epoch&&
+                        json.optString("paintedPhase")==phase
+                    if(ready)unavailable=false
                 }
             }
-            if(active)handler.postDelayed(this,500)
+            if(active)handler.postDelayed(this,if(ready)400 else 80)
         }
     }
-    fun attach(value: WebView) {view=value}
+    var renderer: WebView?
+        get()=view
+        set(value) {view=value;ready=false;loaded=false;polling=false;lastFrame=""}
     fun pageLoaded() {loaded=true;lastFrame="";flush();handler.post(poll)}
-    fun failed() {ready=false;loaded=false;polling=false;handler.removeCallbacks(poll)}
+    fun failed() {ready=false;unavailable=true;loaded=false;polling=false;handler.removeCallbacks(poll)}
     fun viewport(width: Int,height: Int) {
         if(viewportWidth!=width||viewportHeight!=height)initialTop=null
         viewportWidth=width.coerceAtLeast(1);viewportHeight=height.coerceAtLeast(1);schedule()
@@ -74,10 +83,18 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
         if(active==value)return
         active=value;handler.removeCallbacks(poll)
         if(value) {
-            view?.onResume();lastFrame="";polling=false;flush();handler.post(poll)
+            view?.onResume();epoch++;polling=false;flush();handler.post(poll)
         } else {flush();view?.onPause()}
     }
-    fun slot(top: Float,height: Float,centerX: Float?=null) {
+    fun control(token: Any,attached: Boolean) {
+        if(!attached&&owner!==token)return
+        owner=if(attached)token else null
+        held=false;dragging=false;dx=0f;dy=0f;initialTop=null
+        if(attached){started=true;epoch++} else {hasControl=false;slotHeight=0f}
+        schedule()
+    }
+    fun slot(token: Any,top: Float,height: Float,centerX: Float?=null) {
+        if(owner!==token)return
         if(!top.isFinite()||!height.isFinite())return
         val newControl=!hasControl||slotHeight!=height
         val lowerAnchor=top>(initialTop?:top)
@@ -86,8 +103,10 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
         slotTop=top;slotHeight=height;slotCenterX=centerX?.takeIf {it.isFinite()}
         scrollOffset=top-(initialTop?:top);schedule()
     }
-    fun pose(value: LanyardPose,offset: Offset,density: Density,allowMotion: Boolean,text: ThreeControlText) {
-        dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;dragging=held;motion=allowMotion
+    fun pose(token: Any,value: LanyardPose,offset: Offset,density: Density,text: ThreeControlText) {
+        if(owner!==token)return
+        if(phase!=text.phase)epoch++
+        dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;dragging=held;motion=text.motion
         phase=text.phase.takeIf {it in listOf("idle","connecting","established","stopping","error")}?:"idle"
         label=text.label.take(120);status=text.status.take(120);fontScale=density.fontScale.coerceIn(1f,2f)
         schedule()
@@ -100,7 +119,8 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
         val current=view?:return
         if(!loaded)return
         val frame=JSONObject().put("active",active&&slotHeight>0).put("motion",motion).put("held",held)
-            .put("back",lanyardBackFace(phase)).put("phase",phase).put("label",label).put("status",status)
+            .put("epoch",epoch).put("back",lanyardBackFace(phase)).put("phase",phase)
+            .put("label",label).put("status",status)
             .put("viewportWidth",viewportWidth).put("viewportHeight",viewportHeight)
             .put("top",initialTop?:slotTop).put("height",slotHeight).put("fontScale",fontScale)
             .put("centerX",slotCenterX?:viewportWidth/2f)
@@ -112,7 +132,7 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     }
     fun dispose() {
         handler.removeCallbacksAndMessages(null)
-        val current=view;view=null;ready=false;loaded=false;polling=false;active=false
-        current?.stopLoading();current?.destroy()
+        view=null;ready=false;loaded=false;polling=false;active=false;scheduled=false
+        owner=null;hasControl=false;started=false;held=false;dragging=false;lastFrame="";initialTop=null
     }
 }

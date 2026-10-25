@@ -38,7 +38,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(android.os.Build.VERSION.SDK_INT>=33)setRecentsScreenshotEnabled(false)
+        if(android.os.Build.VERSION.SDK_INT>=33)setRecentsScreenshotEnabled(true)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(0xFFF7F8FA.toInt(), 0xFF0C0E12.toInt()),

@@ -908,6 +908,7 @@ const Lanyard = ({
       paintFace(backCanvas, images.back || images.front, color, s.imageFit);
       frontTexture.needsUpdate = true;
       backTexture.needsUpdate = true;
+      window.__lanyardPaintedPhase = window.__lanyardTexturePhases?.get(images.front?.src) || "";
       if (window.__pingclashFrame?.active) render();
       start();
     };
@@ -1113,6 +1114,7 @@ const Lanyard = ({
       const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(sim.body.quaternion);
       window.__lanyardPose = { normalZ: normal.z, turn: sim.turn, twist: sim.twist, held: !!sim.grab };
       window.__lanyardReady = canvas.clientHeight > 100 && !!images.front && !!images.back && renderer.info.render.calls > 0 && !renderer.getContext().isContextLost();
+      window.__lanyardRenderedEpoch = window.__pingclashFrame?.epoch ?? -1;
       window.__lanyardFrames = (window.__lanyardFrames || 0) + 1;
     };
 

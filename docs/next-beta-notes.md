@@ -74,3 +74,12 @@ This is a draft, not a published release or new version tag. The existing beta.1
 - Existing baseline findings and dependency/lint warnings remain. A clean gate means no new findings, not a warning-free codebase or security certification.
 
 Before publishing, record the exact tested commit, current results, APK hash/signature and truthful tested-device list. Do not carry an earlier commit's CI result forward as validation of a new APK.
+
+## Beta.11 local candidate
+
+Old native imitation card/clasp removal, persistent offline renderer lifetime,
+frame/painted-phase acknowledgment, ordinary task-preview restoration, legacy
+capsule clipping and pressed-layer removal are implemented. Local signed APK:
+API 35 64/64; API 31 and 29 focused 16/16 each. Physical OEM/GPU behavior remains
+unverified. No newer Release/tag has been published; source CI must be assessed
+at its own exact revision.

@@ -40,3 +40,12 @@ manifest together. CI rebuilds and checks that they match. See the renderer
 [build instructions and upstream license](../ui/lanyard/README.md).
 
 The pinned Backdrop source module is built with the existing Kotlin/Compose toolchain. Run `python tools/verify-backdrop.py` to check upstream source fidelity and the four documented compatibility shims.
+
+## Current UI regression map
+
+Beta.11/build 29 adds renderer navigation lifetime, real physical-tab residual-pixel,
+and actual launcher task-preview regressions (64 integration tests total). See
+[UI design](ui-design.md#bottom-navigation-code-map-beta11) for the complete bottom
+navigation source map, and [validation](security-testing.md) for APK identity and
+API-specific results. Main-page screenshots are permitted; sensitive pages retain
+FLAG_SECURE and temporary task-snapshot protection.

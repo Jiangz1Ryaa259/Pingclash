@@ -87,14 +87,16 @@ class ClientIntegrationTest {
 
             device.executeShellCommand("pm grant dev.pingclash.app android.permission.POST_NOTIFICATIONS")
             compose.onNodeWithTag("nav-0").performClick()
-            compose.onNodeWithText("建立 VPN 连接").performClick()
+            compose.onNodeWithTag("vpn-power").performClick()
             approveSyntheticVpn(device,compose)
             compose.waitUntil(20_000) { VpnRuntime.state.value.phase in listOf("established", "error") }
             assertEquals(VpnRuntime.state.value.message, "established", VpnRuntime.state.value.phase)
             assertEquals("Starting VPN introduced a TCP listener",baselineAcceptors,tcpAcceptors())
             assertTrue("VPN foreground notification missing",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1&&it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT!=0})
             compose.waitForIdle()
-            compose.onNodeWithText("VPN 隧道已建立").assertIsDisplayed()
+            compose.onNodeWithTag("vpn-power").assert(SemanticsMatcher.expectValue(
+                androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                compose.activity.getString(R.string.message_5be0323e8a)))
             assertEquals(180f,compose.onNodeWithTag("lanyard-stage").fetchSemanticsNode().config[LanyardFaceAngle],.1f)
             compose.onNodeWithTag("vpn-power").performTouchInput {
                 down(center);advanceEventTime(800);moveBy(androidx.compose.ui.geometry.Offset(60f,0f),160);cancel()

@@ -236,6 +236,7 @@ class SubscriptionImportTest {
             compose.onNodeWithTag("nav-2").performClick()
             compose.onNodeWithTag("profile-add").performClick()
             compose.onNodeWithTag("subscription-content").performTextInput(fixture.html)
+            hideFixtureKeyboard();compose.waitForIdle()
             compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("下载并导入").performScrollTo().performClick()
             compose.waitUntil(15_000) { model.ui.value.importIssue?.contains("网页") == true }
@@ -244,6 +245,7 @@ class SubscriptionImportTest {
             assertEquals(before, app.repository.data.value.profiles.size)
             captureSyntheticFixture(compose, device, "import-error-light.png")
             compose.onNodeWithTag("subscription-content").performTextReplacement(fixture.source)
+            hideFixtureKeyboard();compose.waitForIdle()
             compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("下载并导入").performScrollTo().performClick()
             compose.waitUntil(15_000) { app.repository.data.value.profiles.size == before + 1 }

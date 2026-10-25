@@ -93,6 +93,49 @@ class LanyardThreeTest {
         assertFalse(VpnRuntime.state.value.active)
     }
 
+    @Test fun tabSwitchKeepsRendererAndAcknowledgesTheCurrentFace() {
+        val page=mutableStateOf(0)
+        val phase=mutableStateOf("idle")
+        compose.runOnUiThread {compose.activity.setContent {
+            PingClashTheme("light") {ScenicFrame(page.value,"none",true,{page.value=it}) {
+                val renderer=LocalLanyardThree.current
+                SideEffect {control=requireNotNull(renderer)}
+                androidx.compose.animation.AnimatedContent(page.value,label="fixture-page") { selected ->
+                    if(selected==0)Column(Modifier.fillMaxSize().padding(horizontal=24.dp,vertical=100.dp)) {
+                        LanyardPowerControl(phase.value,true,"Fixture action") {phase.value="idle"}
+                    } else androidx.compose.material3.Text("Synthetic second page")
+                }
+            }}
+        }}
+        compose.waitForIdle()
+        val view=renderer()
+        await {control.ready}
+        repeat(3) {
+            compose.onNodeWithTag("nav-1").performClick()
+            compose.waitForIdle()
+            assertTrue("Tab switch destroyed the offline renderer",view===renderer())
+            compose.runOnIdle {phase.value="established"}
+            compose.onNodeWithTag("nav-0").performClick()
+            compose.waitForIdle()
+            await {control.ready&&status(view).optString("paintedPhase")=="established"}
+            await {status(view).getJSONObject("pose").getDouble("normalZ")<-.6}
+            compose.onNodeWithTag("vpn-power").performClick()
+            compose.waitForIdle()
+            await {control.ready&&status(view).optString("paintedPhase")=="idle"}
+            await {status(view).getJSONObject("pose").getDouble("normalZ")>.6}
+        }
+        compose.onNodeWithTag("vpn-power").performTouchInput {
+            down(center);advanceEventTime(800);moveBy(Offset(120f,90f),180);up()
+        }
+        compose.onNodeWithTag("nav-2").performClick()
+        compose.onNodeWithTag("nav-0").performClick()
+        compose.waitForIdle()
+        await {control.ready&&status(view).optBoolean("active")}
+        assertTrue(view===renderer())
+        assertFalse(control.dragging)
+        assertFalse(VpnRuntime.state.value.active)
+    }
+
     private fun assertDragAndResumeKeepBackFace(view: WebView,resumeMotion: ()->Unit) {
         compose.runOnIdle {resumeMotion()}
         compose.waitForIdle()

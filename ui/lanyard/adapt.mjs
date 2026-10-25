@@ -19,7 +19,7 @@ export async function adaptReference() {
   replace('      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}`;',
     '      const framingKey = `${layoutKey}|${s.size}|${s.anchor}|${s.strapLength}|${view.width}|${view.height}|${window.__pingclashFrame?.height}|${window.__pingclashFrame?.top}|${window.__pingclashFrame?.centerX}`;');
   replace('      backTexture.needsUpdate = true;\n      start();',
-    '      backTexture.needsUpdate = true;\n      if (window.__pingclashFrame?.active) render();\n      start();');
+    '      backTexture.needsUpdate = true;\n      window.__lanyardPaintedPhase = window.__lanyardTexturePhases?.get(images.front?.src) || \"\";\n      if (window.__pingclashFrame?.active) render();\n      start();');
   // A reset must restore the authoritative native face, including the twist
   // accumulator. Otherwise a resize or numerical recovery leaves the front
   // visible while the host still believes it already flipped to the back.
@@ -36,6 +36,7 @@ export async function adaptReference() {
       const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(sim.body.quaternion);
       window.__lanyardPose = { normalZ: normal.z, turn: sim.turn, twist: sim.twist, held: !!sim.grab };
       window.__lanyardReady = canvas.clientHeight > 100 && !!images.front && !!images.back && renderer.info.render.calls > 0 && !renderer.getContext().isContextLost();
+      window.__lanyardRenderedEpoch = window.__pingclashFrame?.epoch ?? -1;
       window.__lanyardFrames = (window.__lanyardFrames || 0) + 1;`);
   replace('    const tick = now => {', `    let hostedGrab = false;
     let hostedTurn = 0;

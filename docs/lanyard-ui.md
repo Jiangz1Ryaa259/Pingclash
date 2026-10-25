@@ -11,3 +11,12 @@ React、React DOM 和 Three.js 打包到 APK 内的离线 WebView，不下载脚
 - 渲染层只接收视口、姿态、固定操作文本和阶段，不接收订阅、节点、地址、凭据或终端内容。没有 JavaScript 到原生桥接；固定资源白名单、CSP 和网络阻断共同限制渲染页。
 
 开发步骤见 [renderer README](../ui/lanyard/README.md)。新增测试检查实际 WebGL 绘制、正反状态同步、文件/content 访问设置、资源白名单、外部请求阻断及停止渲染；原有原生手势测试独立验证回退控件。模拟器结果不代表国产 OEM 物理机验证，具体记录见 [验证说明](security-testing.md)。
+
+## Beta.11 renderer lifetime
+
+The renderer is owned by ScenicFrame, not a transient Home composition. Tab changes
+pause it; activity disposal destroys it. Per-slot ownership prevents late disposal
+of an outgoing page from releasing the new page's control. Re-entry and phase
+changes require the renderer to acknowledge both frame generation and the actual
+painted phase. No old native card or metal clasp is overlaid during loading. The
+small native fallback retains accessible connect/disconnect actions.

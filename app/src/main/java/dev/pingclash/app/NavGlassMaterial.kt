@@ -6,6 +6,7 @@ package dev.pingclash.app
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -30,32 +31,32 @@ internal val NavOpticalBackend=SemanticsPropertyKey<String>("NavOpticalBackend")
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable internal fun Modifier.navGlassMaterial(style: NavigationGlassStyle,
-    selector: Boolean=false): Modifier {
+    selector: Boolean=false,press: Float=0f): Modifier {
     val backdrop=LocalNavigationBackdrop.current
     val haze=LocalNavHaze.current
     val surface=MaterialTheme.colorScheme.surface
     val dark=MaterialTheme.colorScheme.background.luminance()<.5f
     return when {
-        backdrop!=null->backdropGlass(backdrop,style,selector,dark)
-        haze==null->if(selector)background(surface.copy(alpha=.12f))
-            else background(surface.copy(alpha=NAV_FALLBACK_ALPHA))
-        selector->background(Color.White.copy(alpha=if(dark).10f else .18f))
+        backdrop!=null->backdropGlass(backdrop,style,selector,dark,press)
+        haze==null->clip(UiCorners.Pill).background(surface.copy(alpha=if(selector).12f else NAV_FALLBACK_ALPHA))
+        selector->clip(UiCorners.Pill).background(Color.White.copy(alpha=if(dark).10f else .18f))
         else->{
     val material=HazeMaterials.thin(surface).copy(blurRadius=style.blur,noiseFactor=.005f,
         tints=listOf(HazeTint(style.tint)),
         fallbackTint=HazeTint(surface.copy(alpha=NAV_FALLBACK_ALPHA)))
-    hazeEffect(haze,style=material)
+    clip(UiCorners.Pill).hazeEffect(haze,style=material)
         }
     }
 }
 
 @Composable private fun Modifier.backdropGlass(backdrop: LayerBackdrop,style: NavigationGlassStyle,
-    selector: Boolean,dark: Boolean)= drawBackdrop(backdrop=backdrop,shape={UiCorners.Pill},effects={
+    selector: Boolean,dark: Boolean,press: Float)= drawBackdrop(backdrop=backdrop,shape={UiCorners.Pill},effects={
         colorControls(saturation=style.saturation)
-        blur((if(selector)3.dp else style.blur).toPx())
+        blur((if(selector)0.dp else style.blur).toPx())
         lens(style.refractionHeight.toPx(),style.refractionAmount.toPx(),
             chromaticAberration=selector)
-    },highlight={Highlight(width=.65f.dp,alpha=style.highlightAlpha)},
+    },layerBlock=if(selector) {{scaleX=1f+press*.06f;scaleY=1f-press*.035f}} else null,
+        highlight={Highlight(width=.65f.dp,alpha=style.highlightAlpha)},
         shadow={Shadow(radius=if(selector)8.dp else 18.dp,alpha=style.shadowAlpha)},
         innerShadow={InnerShadow(radius=if(selector)3.dp else 5.dp,alpha=style.innerShadowAlpha)},
         onDrawSurface={drawRect(if(selector)Color.White.copy(alpha=if(dark).08f else .10f) else style.tint)})

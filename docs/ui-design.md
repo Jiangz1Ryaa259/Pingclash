@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.0-beta.10, build 28. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a compact native face on small screens. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.0-beta.11, build 29. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -15,10 +15,10 @@ and background lifecycle detach captures and draw a solid fallback. The terminal
 is a separate protected activity. No production screenshot file or CPU bitmap is
 created by this navigation renderer.
 
-| Material | Previous implementation | Beta.10 |
+| Material | Previous implementation | Beta.11 |
 | --- | --- | --- |
 | Source and optics | Haze in two material layers plus a custom shader | One source; upstream Backdrop capture/lens/highlight pipeline |
-| Light/dark tint | 60% / 66% | 18% white / 28% dark |
+| Light/dark tint | 60% / 66% | 12% white / 22% dark |
 | Selector | Flat fill and heavy outline | Independent refracted capsule; spring following and press stretch |
 | Foreground | Relied on a thick material | Crisp original vectors and thin two-tone text/icon contours |
 | Controls | Distributed constants | `NavigationGlassStyle` and shared contour tokens |
@@ -63,3 +63,23 @@ small time capsule. A tab change or backgrounding closes expanded actions; retur
 recomputes elapsed time from the unchanged monotonic session start. Page content
 reserves space for the top capsule, while its temporary action card overlays content.
 Only actual user actions control the VPN; card animation is not connection evidence.
+
+## Bottom navigation code map (beta.11)
+
+- `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt`: complete navigation layout, tab semantics, sliding selector, label expansion and press animation. Extracted from `GlassUi.kt`; default Material indication is disabled to avoid a second pressed-state layer.
+- `app/src/main/java/dev/pingclash/app/NavGlassMaterial.kt`: Backdrop lens, blur, highlight and shadows. Selector deformation now uses Backdrop's own layer transform; Haze and solid fallbacks explicitly clip to the capsule.
+- `app/src/main/java/dev/pingclash/app/NavigationGlassStyle.kt`: lighter tint, sharper source detail and stronger edge refraction; reduced inner shadow.
+- `app/src/main/java/dev/pingclash/app/NavigationDrag.kt`: pointer press/release/cancel state, drag selection, and background reset.
+- `app/src/main/java/dev/pingclash/app/ScenicFrame.kt`: sibling content-source and navigation composition, protected-window and API fallbacks.
+- `third-party/backdrop`: pinned upstream optical implementation; optical shaders are unchanged.
+
+The lanyard WebView remains mounted after the first Home visit. Leaving Home pauses
+its animation without destroying its renderer. Owner tokens prevent an outgoing
+AnimatedContent slot from detaching the incoming control. A frame generation and
+painted-phase acknowledgment keep obsolete face textures hidden until the current
+VPN state is drawn. The former native imitation card/clasp has been removed; a
+small native action remains usable during loading or renderer failure.
+
+Ordinary pages now allow system task previews. SecurePage temporarily disables task
+screenshots while protected content owns the window, restoring the ordinary policy
+after replacement frames. This does not change service lifetime or OEM task policy.

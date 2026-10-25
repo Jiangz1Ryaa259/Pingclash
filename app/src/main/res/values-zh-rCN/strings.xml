@@ -41,4 +41,5 @@
     <string name="ui_session_open_home">返回首页</string>
     <string name="ui_site_route_proxy">经所选节点探测 · 不代表 VPN 已接管</string>
     <string name="ui_site_route_direct">直连探测 · 不代表代理可用</string>
+    <string name="ui_lanyard_loading">正在加载 3D 开关</string>
 </resources>

@@ -108,9 +108,7 @@ class LanyardControlTest {
         val cable=compose.onNodeWithTag("window-lanyard-cable").fetchSemanticsNode()
         assertEquals(0f,cable.boundsInRoot.top,.1f)
         assertTrue(cable.config[CableEndY]>0f)
-        val material=if(android.os.Build.VERSION.SDK_INT>=33)"agsl" else "satin"
-        compose.onNodeWithTag("lanyard-material",useUnmergedTree=true).assert(
-            SemanticsMatcher.expectValue(LanyardMaterialMode,material))
+        compose.onNodeWithTag("lanyard-minimal-fallback",useUnmergedTree=true).assertIsDisplayed()
         compose.onNodeWithText("断开 VPN 连接").assertIsDisplayed()
         card.assertHeightIsAtLeast(300.dp).performTouchInput {click()}
         assertEquals(1,calls)

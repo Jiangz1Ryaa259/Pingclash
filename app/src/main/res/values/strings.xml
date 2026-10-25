@@ -41,4 +41,5 @@
     <string name="ui_session_open_home">Open home</string>
     <string name="ui_site_route_proxy">Selected-node probe · not VPN verification</string>
     <string name="ui_site_route_direct">Direct probe · not proxy verification</string>
+    <string name="ui_lanyard_loading">Loading 3D control</string>
 </resources>

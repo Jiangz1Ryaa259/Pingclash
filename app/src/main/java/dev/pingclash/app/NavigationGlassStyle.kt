@@ -11,17 +11,17 @@ import androidx.compose.ui.unit.dp
 /** Shared material tokens: optics are confined to backdrops, foreground stays sharp. */
 @Immutable internal data class NavigationGlassStyle(
     val tint: Color,
-    val blur: Dp=16.dp,
-    val refractionHeight: Dp=22.dp,
-    val refractionAmount: Dp=20.dp,
-    val saturation: Float=1.25f,
+    val blur: Dp=10.dp,
+    val refractionHeight: Dp=24.dp,
+    val refractionAmount: Dp=24.dp,
+    val saturation: Float=1.35f,
     val highlightAlpha: Float=.78f,
     val shadowAlpha: Float=.12f,
-    val innerShadowAlpha: Float=.10f,
+    val innerShadowAlpha: Float=.05f,
 )
 internal fun navigationGlassStyle(dark: Boolean)=NavigationGlassStyle(
-    tint=if(dark)Color(0xFF10151B).copy(alpha=.28f) else Color.White.copy(alpha=.18f),
-    highlightAlpha=if(dark).52f else .80f,
+    tint=if(dark)Color(0xFF10151B).copy(alpha=.22f) else Color.White.copy(alpha=.12f),
+    highlightAlpha=if(dark).65f else .90f,
     shadowAlpha=if(dark).20f else .12f,
 )
 internal fun navLabelColor(dark: Boolean)=if(dark)Color.White else Color.Black

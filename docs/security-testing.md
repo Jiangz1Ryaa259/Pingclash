@@ -1,3 +1,16 @@
+# Beta.11 / build 29 lifecycle and navigation candidate
+
+- Exact signed APK SHA-256: `408e180b55795ba3ccc16ae51d614b055a8d48e704010563bf663b11a6e773e0`; 131,278,386 bytes. Existing signing identity, v2/v3, non-debuggable; shell run-as denied. Six native libraries / 20 LOAD segments retain 16 KiB alignment. Private/test marker scan: zero matches.
+- API 35/AOSP x86_64: **64/64, zero skipped, 327.379 seconds**. Controlled relay counters: DNS 1 and separate-UID HTTP 1. New real-WebGL navigation regression retains the same WebView across repeated tab changes, verifies both actual card-face normals and the current painted phase, and checks drag/re-entry.
+- API 31: **16/16, 50.030 seconds**; API 29: **16/16, 30.803 seconds**. Focused fallback/contrast/gesture/task-preview checks, not full VPN/WebGL verification on these APIs.
+- Normal task-preview testing requires visible synthetic cyan pixels in the actual launcher task view. Protected testing requires either absence of synthetic private red pixels, or Android's refusal to capture a FLAG_SECURE window. Ordinary preview capture may not take the refusal path.
+- A static-source pixel comparison checks physical tab presses leave no persistent dark state. The two-dimensional optical fixture measures rim RGB difference **16.3650** versus **0.4453** in the flat center when the lens is switched on/off (thresholds remain >2 and <2). This is displacement evidence, not a subjective quality or GPU-performance score.
+- Detekt passes; Android lint: 0 errors, 71 warnings, 2 informational entries. Warnings concern dependency/tool versions, unused attributes/resources, state boxing, typography and KTX usage; no security/localization lint findings. Localization guard: 630 translated resources. Renderer fidelity/integrity: 20/20; all 27 pinned upstream optical source hashes pass.
+- A first host-emulator attempt disconnected. Subsequent complete runs exposed a native fallback transform/test-tree lookup issue and fixture synchronization; these were corrected without reducing optical/privacy assertions. The final APK above passed the complete suite, and the later secure-capture test adjustment was exercised on API 31/29.
+- An actual empty-profile Home screenshot was inspected; no video, real subscription, personal device or public website probe was used. Physical OEM/GPU, long-running Doze and real-network verification remain unperformed. The initial public beta.1 release stays unchanged; this is a local candidate and draft source update.
+
+---
+
 # Backdrop glass validation (0.1.0-beta.10 / build 28)
 
 - Exact signed APK: **131294770 bytes**, SHA256 `1b840c344b6e0c97cec797e7d210b9d66ef7791acbe8ad89d60b4f5c0e02977a`. Existing v2/v3 signing identity, non-debuggable/run-as denial, six native libraries and 20 LOAD segments aligned for 16 KiB. APK signing/user/test marker matches: zero. No runtime permission was added.

@@ -81,38 +81,37 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
     val metrics=lanyardMetrics(large,stageHeight)
     val height=metrics.height;val cardHeight=metrics.card;val top=metrics.top
     val three=LocalLanyardThree.current
-    DisposableEffect(three) {onDispose {three?.slot(0f,0f)}}
+    val token=remember {Any()}
+    DisposableEffect(three) {three?.control(token,true);onDispose {three?.control(token,false)}}
     val description=vpnControlDescription(phase)
     val anchor=Modifier.lanyardAnchor()
     val performTap={haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove);action()}
-    val cardText=ThreeControlText(phase,label,lanyardPhaseText(phase))
-    SideEffect {three?.pose(pose,Offset(x,y),density,moving,cardText)}
+    val cardText=ThreeControlText(phase,label,lanyardPhaseText(phase),moving)
+    SideEffect {three?.pose(token,pose,Offset(x,y),density,cardText)}
     LaunchedEffect(available,moving,phase) {pose.drag=Offset.Zero;pose.holding=false}
     Box(Modifier.fillMaxWidth().height(height).onGloballyPositioned {
-        three?.slot(it.positionInRoot().y+(top.value+26)*density.density,(cardHeight.value-26)*density.density,
+        three?.slot(token,it.positionInRoot().y+(top.value+26)*density.density,(cardHeight.value-26)*density.density,
             it.positionInRoot().x+it.size.width/2f)
     }.testTag("lanyard-stage")
         .semantics {this[LanyardDisplacement]=kotlin.math.abs(x)+kotlin.math.abs(y)
             this[LanyardFaceAngle]=turn
             this[LanyardAnimating]=lanyardInMotion(moving,pose.holding,kotlin.math.abs(x)+kotlin.math.abs(y))}) {
-        LocalLanyardStrap(x,y,Modifier.fillMaxSize())
+        if(three==null)LocalLanyardStrap(x,y,Modifier.fillMaxSize())
         Box(Modifier.align(Alignment.TopCenter).padding(top=top)
             .width((cardHeight-26.dp)*(1.6f/2.25f)).height(cardHeight)
             .graphicsLayer {
                 translationX=x*density.density;translationY=y*density.density
                 rotationZ=(x*.19f).coerceIn(-25f,25f);rotationX=(-y*.38f).coerceIn(-20f,20f)
-                rotationY=turn+(x*.30f).coerceIn(-20f,20f)
+                rotationY=if(three?.ready==true)turn+(x*.30f).coerceIn(-20f,20f) else 0f
                 transformOrigin=TransformOrigin(.5f,.04f);cameraDistance=1100f*density.density
                 alpha=cardOpacity(available)
             }
             .then(anchor).testTag("vpn-power")
             .lanyardAction(available,label,description,performTap)
             .lanyardGestures(available,moving,density.density,pose,performTap)) {
-            Box(Modifier.fillMaxSize().graphicsLayer {alpha=if(three?.ready==true)0f else 1f}) {
-            val reverse=cardReverse(turn)
-            LanyardFace(phase,label,reverse,x,Modifier.fillMaxSize().padding(top=26.dp)
-                .graphicsLayer {rotationY=if(reverse)180f else 0f})
-            LanyardClasp(x,Modifier.align(Alignment.TopCenter).width(50.dp).height(50.dp))
+            if(three?.ready!=true) {
+            MinimalLanyardFallback(phase,label,three?.unavailable==false,
+                Modifier.fillMaxSize())
             }
         }
     }
@@ -120,8 +119,6 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
 
 private fun lanyardInMotion(moving: Boolean,holding: Boolean,distance: Float)=moving&&(holding||distance>.1f)
 private fun cardOpacity(available: Boolean)=if(available)1f else .62f
-private fun cardReverse(turn: Float)=turn>90f&&turn<270f
-
 internal fun lanyardBackFace(phase: String)=phase in listOf("connecting","established")
 
 internal fun lanyardPhaseText(phase: String)=tr(when(phase) {
@@ -132,69 +129,18 @@ internal fun lanyardPhaseText(phase: String)=tr(when(phase) {
     else->R.string.message_93ae902da0
 })
 
-@Composable private fun LanyardFace(phase: String,label: String,reverse: Boolean,tilt: Float,modifier: Modifier) {
-    BoxWithConstraints(modifier) {
-        if(maxHeight<200.dp)CompactLanyardFace(phase,label,reverse)
-        else LanyardDetailedFace(phase,label,reverse,tilt,Modifier.fillMaxSize())
-    }
-}
-
-@Composable private fun CompactLanyardFace(phase: String,label: String,reverse: Boolean) {
-    val ink=if(reverse)Color(0xFFEAF0F0) else Color(0xFF172329)
-    BoxWithConstraints(Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp))) {
-        val showGlyph=maxHeight>=116.dp||LocalDensity.current.fontScale<1.6f
-        LanyardSurface(reverse,0f,Modifier.matchParentSize())
-        Column(Modifier.fillMaxSize().padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally,
-            verticalArrangement=Arrangement.Center) {
-            if(showGlyph) {
-                CardPowerMark(phase,ink)
-                Spacer(Modifier.height(6.dp))
-            }
-            Text(label,color=ink,style=MaterialTheme.typography.labelMedium,textAlign=TextAlign.Center,
-                maxLines=2,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-        }
-    }
-}
-
-@Composable private fun LanyardDetailedFace(phase: String,label: String,reverse: Boolean,tilt: Float,
-    modifier: Modifier) {
-    val ink=if(reverse)Color(0xFFEAF0F0) else Color(0xFF172329)
-    val accent=if(reverse)Color(0xFF9DDDD0) else Color(0xFF263A43)
-    val shape=RoundedCornerShape(15.dp)
-    Column(modifier.graphicsLayer {shadowElevation=18.dp.toPx();this.shape=shape;clip=false}
-        .clip(shape),horizontalAlignment=Alignment.CenterHorizontally) {
-        Box(Modifier.fillMaxSize()) {
-            LanyardSurface(reverse,tilt,Modifier.matchParentSize())
-            Column(Modifier.fillMaxSize().padding(horizontal=22.dp,vertical=24.dp),
-                horizontalAlignment=Alignment.CenterHorizontally) {
-                Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
-                    horizontalArrangement=Arrangement.SpaceBetween) {
-                    Text("PingClash",color=ink,style=MaterialTheme.typography.labelLarge,fontWeight=FontWeight.Medium)
-                    Canvas(Modifier.size(6.dp)) {drawCircle(if(phase=="established")accent else ink.copy(alpha=.45f))}
-                }
-                Spacer(Modifier.weight(1f))
-                Box(Modifier.size(66.dp),contentAlignment=Alignment.Center) {
-                    CardPowerMark(phase,accent)
-                }
-                Spacer(Modifier.height(18.dp))
-                Text(lanyardPhaseText(phase),color=ink.copy(alpha=.76f),style=MaterialTheme.typography.labelMedium,
-                    textAlign=TextAlign.Center)
-                Spacer(Modifier.weight(1f))
-                Canvas(Modifier.fillMaxWidth().height(1.dp)) {
-                    drawLine(ink.copy(alpha=.16f),Offset.Zero,Offset(size.width,0f))
-                }
-                Spacer(Modifier.height(14.dp))
-                Text(label,color=ink,style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Medium,
-                    textAlign=TextAlign.Center)
+/** A real native action during loading/failure, never a second imitation 3D card. */
+@Composable private fun MinimalLanyardFallback(phase: String,label: String,loading: Boolean,modifier: Modifier) {
+    Box(modifier.testTag("lanyard-minimal-fallback"),contentAlignment=Alignment.Center) {
+        androidx.compose.material3.Surface(shape=UiCorners.Card,color=Panel.copy(alpha=.96f)) {
+            Column(Modifier.padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                AppGlyph(if(phase=="established")15 else 0,Modifier.size(30.dp),Mint)
+                Text(lanyardPhaseText(phase),style=MaterialTheme.typography.labelMedium,textAlign=TextAlign.Center)
+                Text(label,style=MaterialTheme.typography.titleSmall,textAlign=TextAlign.Center)
+                if(loading)Text(tr(R.string.ui_lanyard_loading),color=Muted,
+                    style=MaterialTheme.typography.labelSmall,textAlign=TextAlign.Center)
             }
         }
     }
-}
-
-@Composable private fun CardPowerMark(phase: String,color: Color) {
-    if(phase in listOf("connecting","stopping")) {
-        if(LocalMotionAllowed.current&&rememberForeground()) {
-            CircularProgressIndicator(Modifier.size(36.dp),color=color,strokeWidth=1.5.dp)
-        } else AppGlyph(16,Modifier.size(36.dp),color)
-    } else AppGlyph(if(phase=="established")15 else 0,Modifier.size(40.dp),color)
 }

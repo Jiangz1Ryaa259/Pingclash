@@ -5,8 +5,9 @@ import Lanyard from './Lanyard.jsx';
 
 const state = { active: false, motion: true, held: false, back: false, dx: 0, dy: 0,
   viewportHeight: 800, viewportWidth: 360, centerX: 180, top: 180, height: 266, fontScale: 1,
-  phase: 'idle', label: '', status: '' };
+  phase: 'idle', label: '', status: '', epoch: 0 };
 window.__pingclashFrame = state;
+window.__lanyardTexturePhases = new Map();
 let configure;
 let previousKey = '';
 
@@ -40,7 +41,10 @@ function paintCard(back) {
   text(state.status, 850, 62);
   ctx.globalAlpha = .2; ctx.fillRect(112, 1110, 800, 2); ctx.globalAlpha = 1;
   text(state.label, 1190, 58, 2);
-  return canvas.toDataURL('image/png');
+  const image = canvas.toDataURL('image/png');
+  if (window.__lanyardTexturePhases.size >= 8) window.__lanyardTexturePhases.delete(window.__lanyardTexturePhases.keys().next().value);
+  window.__lanyardTexturePhases.set(image, state.phase);
+  return image;
 }
 
 function options() {
@@ -62,6 +66,7 @@ function App() {
 window.PingClashScene = Object.freeze({
   frame(data) {
     if (!data || typeof data !== 'object') return;
+    if (Number.isSafeInteger(data.epoch) && data.epoch >= 0) state.epoch = data.epoch;
     for (const key of ['viewportHeight', 'viewportWidth', 'centerX', 'top', 'height', 'fontScale', 'dx', 'dy']) {
       if (Number.isFinite(data[key])) state[key] = Math.max(-10000, Math.min(10000, data[key]));
     }
@@ -84,7 +89,8 @@ window.PingClashScene = Object.freeze({
     return { ready: window.__lanyardReady === true, frames: window.__lanyardFrames || 0,
       active: state.active, engine: 'three', roughness: .42, clearcoat: 1,
       metalness: 1, metalRoughness: .16, weaveNormal: .7,
-      pose: window.__lanyardPose || null };
+      pose: window.__lanyardPose || null, epoch: window.__lanyardRenderedEpoch ?? -1,
+      paintedPhase: window.__lanyardPaintedPhase || "" };
   }
 });
 createRoot(document.getElementById('root')).render(<App />);

@@ -41,7 +41,7 @@ internal fun createLanyardView(context: Context,state: LanyardThreeState): Lanya
             javaScriptCanOpenWindowsAutomatically=false;setSupportMultipleWindows(false)
             mediaPlaybackRequiresUserGesture=true
         }
-        state.attach(this)
+        state.renderer=this
         webViewClient=OfflineLanyardClient(context.assets,state::pageLoaded,state::failed)
         loadUrl(LANYARD_PAGE)
     }
@@ -55,15 +55,19 @@ internal fun createLanyardView(context: Context,state: LanyardThreeState): Lanya
 @Composable internal fun LanyardSceneLayers(state: LanyardThreeState?,cable: MutableState<Offset?>,
     selected: Int,secure: Boolean) {
     val foreground=rememberForeground()
-    if(state!=null&&state.hasControl)LanyardThreeLayer(state,selected==0&&!secure&&foreground)
-    if(selected==0)WindowLanyardCable(cable,state?.ready==true)
+    if(state!=null&&state.started)LanyardThreeLayer(state,selected==0&&state.hasControl&&!secure&&foreground,
+        selected==0&&state.hasControl&&!secure)
+    if(selected==0&&state==null)WindowLanyardCable(cable)
 }
 
-@Composable internal fun LanyardThreeLayer(state: LanyardThreeState,active: Boolean) {
+@Composable internal fun LanyardThreeLayer(state: LanyardThreeState,active: Boolean,show: Boolean=active) {
     SideEffect {state.visible(active)}
     DisposableEffect(state) {onDispose {state.dispose()}}
-    AndroidView(factory={createLanyardView(it,state)},
+    AndroidView(factory={createLanyardView(it,state)},onRelease={
+        if(state.renderer===it)state.renderer=null
+        it.stopLoading();it.destroy()
+    },
         modifier=Modifier.fillMaxSize().zIndex(if(state.dragging)1f else 0f)
         .onSizeChanged {state.viewport(it.width,it.height)}
-        .graphicsLayer {alpha=if(state.ready&&active)1f else 0f;translationY=state.scrollOffset})
+        .graphicsLayer {alpha=if(state.ready&&show)1f else 0f;translationY=state.scrollOffset})
 }

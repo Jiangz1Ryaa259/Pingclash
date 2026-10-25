@@ -3,6 +3,10 @@
 package dev.pingclash.app
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -16,12 +20,22 @@ import kotlin.math.roundToInt
 internal data class NavigationDragGeometry(val cellWidth: Float,val rtl: Boolean,val selected: Int)
 @Stable internal class NavigationDragState {
     var position by mutableStateOf<Float?>(null)
+    var pressed by mutableStateOf(false)
 }
 @Composable internal fun Modifier.navigationDrag(geometry: NavigationDragGeometry,drag: NavigationDragState,
     onSelect: (Int)->Unit): Modifier {
     val selected by rememberUpdatedState(geometry.selected)
     val select by rememberUpdatedState(onSelect)
-    return pointerInput(geometry.cellWidth,geometry.rtl) {
+    val foreground=rememberForeground()
+    LaunchedEffect(foreground) {if(!foreground){drag.position=null;drag.pressed=false}}
+    return pointerInput(foreground) {
+        if(foreground)awaitEachGesture {
+            awaitFirstDown(requireUnconsumed=false,pass=PointerEventPass.Initial)
+            drag.pressed=true
+            try {do {val event=awaitPointerEvent(PointerEventPass.Initial)}while(event.changes.any {it.pressed})}
+            finally {drag.pressed=false}
+        }
+    }.pointerInput(geometry.cellWidth,geometry.rtl,foreground) {
         detectHorizontalDragGestures(
             onDragStart={drag.position=selected.toFloat()},
             onHorizontalDrag={change,amount -> change.consume()

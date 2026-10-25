@@ -4,7 +4,7 @@
 
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
-**Current source: 0.1.0-beta.10 (build 28) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
+**Current source: 0.1.0-beta.11 (build 29) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
 
 ## Features
 
@@ -21,7 +21,7 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 
 ## 状态与边界
 
-已发布的首个公开版本仍为 beta.1；当前 beta.10 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+已发布的首个公开版本仍为 beta.1；当前 beta.11 是源码与本地签名候选，尚未发布新的 Release。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -53,9 +53,9 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.10/build 28 同一签名候选 61 项通过、0 跳过；含真实背景折射像素对照、保护页、WebGL、VPN 转发及计时交互 |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.10 同一签名候选 14 项玻璃回退、保护页、对比度和交互专项通过；此项不是完整 VPN/WebGL 测试 |
-| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.10 同一签名候选 14 项不透明回退及交互专项通过；旧 WebView 的三维能力不作保证 |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.11/build 29 同一签名候选 64 项通过、0 跳过；含切页翻面、真实背景折射、点击残影对照、任务预览保护和 VPN 转发 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.11 同一签名候选 16 项玻璃回退、任务预览保护、对比度和交互专项通过；此项不是完整 VPN/WebGL 测试 |
+| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.11 同一签名候选 16 项不透明回退、任务预览及交互专项通过；旧 WebView 的三维能力不作保证 |
 | GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |
 
 具体构建、范围和 APK 校验值见[验证记录](docs/security-testing.md)，公共源码审查见 [PR #16](https://github.com/Jiangz1Ryaa259/Pingclash/pull/16)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。

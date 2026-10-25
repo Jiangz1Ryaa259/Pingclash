@@ -20,7 +20,13 @@ internal object SecurePage {
         val entry=entries.getOrPut(window) {Entry(window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE!=0)}
         entry.owners.add(owner)
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        recentPreview(window,false)
         revision++
+    }
+    private fun recentPreview(window: Window,enabled: Boolean) {
+        if(android.os.Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.TIRAMISU) {
+            (window.context as? android.app.Activity)?.setRecentsScreenshotEnabled(enabled)
+        }
     }
     fun release(window: Window,owner: Any) {
         val entry=entries[window]?:return
@@ -29,7 +35,9 @@ internal object SecurePage {
         window.decorView.postOnAnimation {
             window.decorView.postOnAnimation {
                 if(entries[window]===entry&&entry.owners.isEmpty()) {
-                    if(!entry.previous)window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                    if(!entry.previous) {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);recentPreview(window,true)
+                    }
                     entries.remove(window)
                     revision++
                 }

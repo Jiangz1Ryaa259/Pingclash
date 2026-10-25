@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-beta.11 (local candidate)
+
+- Remove the old native imitation card/clasp while the offline 3D control loads.
+- Keep the renderer across tab navigation; guard page ownership and acknowledge the current painted VPN phase before showing it.
+- Restore ordinary recent-task previews while retaining protection for sensitive windows.
+- Remove duplicate Material pressed feedback, clip legacy navigation fallbacks, and refine lens/tint/press rendering.
+- Separate the complete bottom-navigation component into BottomNavigationBar.kt and document its source map.
+
+
 ## Unreleased
 
 - Beta.10/build 28 replaces repeated Haze tinting and the custom navigation lens

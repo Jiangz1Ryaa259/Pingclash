@@ -18,6 +18,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -76,6 +78,31 @@ class LiquidOpticsTest {
             assertTrue("Lens moved the flat center instead of only the rim: $middle",middle<2.0)
             recordMeasurement(rim,middle)
         } finally {refracted.recycle();plain.recycle()}
+    }
+
+    @Test fun physicalTabPressLeavesNoDarkStateLayerAfterRelease() {
+        val selected=mutableStateOf(1)
+        compose.runOnUiThread {compose.activity.setContent {
+            PingClashTheme("light") {ScenicFrame(selected.value,"none",false,{selected.value=it}) {
+                Canvas(Modifier.fillMaxSize()) {
+                    drawRect(Color(0xFF79D6CE))
+                    drawRect(Color(0xFFEBC975),Offset(size.width/2,0f),Size(size.width/2,size.height))
+                }
+            }}
+        }}
+        compose.waitForIdle()
+        val baseline=capture("navigation-before-press.png")
+        compose.onNodeWithTag("nav-2").performTouchInput {click()}
+        compose.onNodeWithTag("nav-1").performTouchInput {click()}
+        compose.waitForIdle()
+        Thread.sleep(1200)
+        val released=capture("navigation-after-release.png")
+        val bounds=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot
+        try {
+            val difference=pixelDifference(baseline,released,bounds,false)
+            assertTrue("A pressed state layer remained after release: $difference",difference<2.0)
+            assertEquals(1,selected.value)
+        } finally {baseline.recycle();released.recycle()}
     }
 
     private fun recordMeasurement(rim: Double,middle: Double) {

@@ -84,3 +84,10 @@ current beta 的主代理组和组成员选择同样只保存在本机加密资�
 beta.8 首页按空间显示 2–4 个网站延迟目标，展开面板共 12 项：Google、ChatGPT、Gemini、YouTube、GitHub、Claude、Cloudflare、Netflix、Spotify、Discord、Telegram、Bilibili。打开页面或展开面板不联网；只有点选某项、测试当前显示项目或“测试全部”才发请求。经所选代理使用 Mihomo URLTest 的 HEAD 测试，最多并发 4 项；跟随统一延迟设置时可能发送两次请求。对应网站和节点会看到连接来源及 HTTP 元数据。所有目标均为固定公开 HTTPS 地址，不读取响应正文（包括 Cloudflare trace 正文）、不登录、不保存 Cookie、账号、IP/地区信息或原始错误。仅在内存保留本次状态与耗时，切换节点/配置即清除。HTTP 延迟不判断账号、地区、服务解锁或 HTTP 成功状态。
 
 VPN 计时只使用本次会话的系统单调时钟起点，在内存中计算，切网重连不归零，断开后重置；不新增持久化连接时间线或遥测。计时包含等待重连的时间，不证明网络一直可用。
+
+### Recent-task preview
+
+Ordinary main pages may appear in Android's recent-task preview. Subscription
+plaintext, terminal and other protected windows retain screenshot protection.
+Protected main-page owners also disable task snapshots until safe replacement
+frames are drawn. The preview is managed locally by Android and is not uploaded.
