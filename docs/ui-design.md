@@ -1,6 +1,6 @@
 # Full-screen photographic scenery and native UI
 
-The current source is 0.1.0-beta.3, build 21. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer.
+The current source is 0.1.0-beta.4, build 22. Version labels on Home and About come from the package. The earlier illustrated sky, sun and vector waves have been removed from the scene renderer. The home power control is now a native hanging card; see [its interaction and implementation boundaries](lanyard-ui.md).
 
 ## Scene and interaction
 
@@ -8,7 +8,7 @@ The local surface, underwater and cloud PNGs in `drawable-nodpi` were created fo
 
 Scenery occupies the complete root behind system insets, content and navigation. On Home, scrolling drives the ocean surface/underwater crossfade and a small camera offset. Retained 16-by-28 bitmap meshes produce subtle refraction and cloud drift; no bitmap is allocated or captured each frame. This is photographic 2.5D composition, not live ocean simulation or video scrubbing. Other pages tint the scene for readable controls and retain their chosen theme.
 
-Home uses light text and dark translucent control surfaces to keep the image visible. The connection state, selected node, primary action and compact URL measurement lead the hierarchy. The diagnostic path and telemetry remain available below; no success, traffic or latency is synthesized. Plain background mode retains the classic layout. Photos do not establish a network connection.
+Home uses light text, a freestanding hanging-card control and compact URL measurement. The diagnostic path and telemetry remain available below; no success, traffic or latency is synthesized. Plain background mode uses the same card and retains its themed diagnostic surface. Photos do not establish a network connection.
 
 Foreground lifecycle, Reduce effects, system motion settings and touch exploration control decorative motion. Reduced effects also stop scroll-linked camera movement. A plain background and Reduce transparency remain available. The scene settings retain existing encrypted storage and do not change subscriptions or routes.
 

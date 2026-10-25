@@ -156,7 +156,7 @@ internal val LocalMotionAllowed = staticCompositionLocalOf { true }
     }
 }
 
-private fun vpnControlDescription(phase: String): String = tr(when(phase) {
+internal fun vpnControlDescription(phase: String): String = tr(when(phase) {
     "established" -> R.string.message_5be0323e8a
     "connecting","stopping" -> R.string.message_694b71bc80
     else -> R.string.message_3d52574ce1

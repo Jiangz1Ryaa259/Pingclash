@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Beta.4/build 22 replaces the dashboard power-button container with a native hanging card: woven strap, metallic clasp, perspective drag, spring return and connected-face transition.
+- Keep tap actions separate from drag/cancel gestures; retain reduced motion, disabled states, accessibility and large-text support. No new runtime dependencies or permissions.
+
 - Beta.3/build 21 replaces illustrated scenery with local photographic ocean and cloud assets, native mesh motion and a scroll-linked underwater transition.
 - Simplify the photographic home layout, retain clear connection evidence, and add a dashboard immersion regression test.
 

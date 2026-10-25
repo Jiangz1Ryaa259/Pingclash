@@ -95,6 +95,8 @@ internal data class DashboardActions(
 @Composable private fun ConnectionPanel(state: DashboardState, actions: DashboardActions) {
     val vpn = state.vpn
     val canTest = measurementEnabled(state)
+    Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+    LanyardPowerControl(vpn.phase,connectionControlEnabled(state),connectLabel(state),actions.connect)
     Surface(shape = UiCorners.Sheet, color = Panel.copy(alpha = CONNECTION_TINT_ALPHA),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -118,8 +120,6 @@ internal data class DashboardActions(
                             onClickLabel = tr(R.string.ui_test_latency), onClick = actions.test)
                         .testTag("dashboard-url-test"))
             }
-            VpnPowerControl(vpn.phase, connectionControlEnabled(state),
-                connectLabel(state), actions.connect)
             if (vpn.phase == "error") {
                 Text(vpn.message, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
@@ -136,6 +136,7 @@ internal data class DashboardActions(
             }
             ConnectionTrail(diagnosticTrail(state.diagnosis, state.data.selectedId))
         }
+    }
     }
 }
 
