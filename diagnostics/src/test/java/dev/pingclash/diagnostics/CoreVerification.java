@@ -239,7 +239,10 @@ public final class CoreVerification {
             Report report = run(request("secret-host.invalid", 1, false, "secret-sni.invalid"), binding);
             String text = ReportFormatter.markdown(report);
             require(!text.contains("secret-host") && !text.contains("secret-sni") && !text.contains("private-network"), "identifier leaked");
-            require(text.contains("CORE_UNAVAILABLE") == false && text.contains("mihomo 尚未接入"), "missing honest limitation");
+            Step proxy = report.steps.stream().filter(step -> step.stage == Stage.PROXY).findFirst().orElseThrow();
+            require(proxy.code == Code.CORE_UNAVAILABLE && proxy.state == State.UNKNOWN, "missing core-unavailable evidence");
+            require(!text.contains("CORE_UNAVAILABLE") && !text.contains("diagnostic_")
+                && text.contains(proxy.code.message()), "missing localized limitation");
         });
 
         if (args.length != 2) throw new IllegalArgumentException("Pass the test-only PKCS12 and diagnostic resource paths");

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Promote preview.6 as 0.1.2 (versionCode 37), retaining its interface and connection behavior.
+- Include quiet lanyard re-entry, deduplicated native proxy tests, direct glass-navigation tracking, unified headings and hierarchical settings.
+- Move tutorials out of the APK into the usage guide; preserve functional errors, consent and accessible controls.
+- Update the diagnostic report regression to assert structured core-unavailable evidence and localized output instead of retired wording.
+
 ## 0.1.2-preview.6 (local candidate)
 
 - Remove remaining profile-empty slogans, legacy diagnostic branding/version copy and repeated privacy/accounting paragraphs. Keep task states, consent, errors and legal notices; remove 17 additional unused translated resources.

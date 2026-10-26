@@ -1,3 +1,19 @@
+# 0.1.2 release identity
+
+0.1.2 promotes preview.6 with versionCode 37 and the existing signing identity.
+APK SHA-256: `b85f8f93b29907707fd3495b3e33dfc5922b595b50dc114b024abfa3f34e0312`. All 129 asset/native entries and every DEX payload
+match the approved preview; only AndroidManifest version metadata and signing
+entries differ. The production permissions and UI/network behavior are unchanged.
+The complete signed-release verification and distribution hashes are recorded on
+the [0.1.2 Release](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.2).
+Preview measurements below remain evidence for their named APKs.
+
+Release preparation also fixes a stale Java regression which matched the retired
+“mihomo not integrated” wording. It now checks CORE_UNAVAILABLE/UNKNOWN evidence,
+localized output and absence of raw codes while retaining identifier-redaction
+assertions. All 29 loopback Java diagnostic checks pass. This test-only change does
+not alter the APK. Cloud CI results must be read at the exact source revision.
+
 # 0.1.2-preview.6 minimal-content candidate (build 36)
 
 - Exact signed APK SHA-256: `5f9bd928967b12027f88bbd23572a5f06808dc5200dc6262724dd0aa871b181e` (131241522 bytes). Existing signing identity, v2/v3, non-debuggable/run-as denied. Package private/test-marker matches 0; six native libraries / 20 aligned LOAD segments.

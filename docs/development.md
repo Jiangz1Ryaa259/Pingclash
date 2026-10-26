@@ -13,7 +13,7 @@ $env:Path = $env:JAVA_HOME + '\bin;' + $env:Path
 
 The native bridge pins Go 1.27.3, Mihomo v1.19.32 and the exact module graph in core/go.mod / core/go.sum. Terminal sources are included in terminal-emulator and terminal-view; the same NDK builds their JNI libraries. Gradle wrapper and dependency hashes are pinned in gradle/verification-metadata.xml.
 
-The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.6/build 36). Debug builds use tools/build-android.ps1.
+The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2/build 37). Debug builds use tools/build-android.ps1.
 
 ## Verification
 
