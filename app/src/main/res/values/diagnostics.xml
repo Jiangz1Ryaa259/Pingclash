@@ -29,7 +29,7 @@
     <string name="diagnostic_451d843199">"# PingClash diagnostic report\n\n"</string>
     <string name="diagnostic_45ff8362fe">"Other network"</string>
     <string name="diagnostic_479efd4122">"Only DNS and TCP were requested. TLS was not tested."</string>
-    <string name="diagnostic_497ea7c8df">"Another VPN owns the default network. Direct diagnostics are paused; disconnect that VPN to retry."</string>
+    <string name="diagnostic_497ea7c8df">Disconnect the other VPN before running direct checks.</string>
     <string name="diagnostic_4d8c1c5b42">"Unknown"</string>
     <string name="diagnostic_4f6e6aef34">"The entry hostname could not resolve. This does not establish server status."</string>
     <string name="diagnostic_58dd8e81ef">"The proxy request did not complete. Retest with auxiliary evidence; this does not establish an incorrect password or network interception."</string>
@@ -61,7 +61,7 @@
     <string name="diagnostic_91fe2b7809">"\nThis report omits credentials, subscription URLs, raw errors and connection contents. "</string>
     <string name="diagnostic_959ad8dc6c">"\n- Duration: "</string>
     <string name="diagnostic_966595c730">"The proxy\'s QUIC handshake timed out. UDP transport, server responses and parameters remain possible causes. Skipping TCP is expected."</string>
-    <string name="diagnostic_9a6458e7eb">"Mihomo was not invoked for this check. Proxy authentication and access remain unverified."</string>
+    <string name="diagnostic_9a6458e7eb">The core is unavailable; proxy verification was not run.</string>
     <string name="diagnostic_9c4ff8cd30">"TLS certificate verification failed. Check SNI, the certificate and device clock."</string>
     <string name="diagnostic_9ef0a6878b">"Auxiliary checks completed. The proxy path remains unverified."</string>
     <string name="diagnostic_a06e2f7464">"The proxy or diagnostic configuration changed. Run diagnostics again."</string>

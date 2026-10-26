@@ -46,6 +46,5 @@ import org.json.JSONObject
         StatLine(tr(R.string.message_ea2678384d),formatBytes(if(vpn.active)vpn.heapBytes else snapshot[3]))
         StatLine(tr(R.string.message_da5ea7565a),(if(vpn.active)vpn.goroutines.toLong() else snapshot[4]).toString())
         StatLine(tr(R.string.message_a51797a853),formatBytes(snapshot[2]))
-        Text(tr(R.string.message_2b379681df),color=Muted,style=MaterialTheme.typography.bodySmall)
     }
 }

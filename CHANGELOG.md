@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2-preview.6 (local candidate)
+
+- Remove remaining profile-empty slogans, legacy diagnostic branding/version copy and repeated privacy/accounting paragraphs. Keep task states, consent, errors and legal notices; remove 17 additional unused translated resources.
+- Hide quota progress when used or total amounts are unknown. Use a selection check and radio semantics on configuration cards, a shared destination catalog for settings links, and one keyboard/touch target per single-choice row. Show numeric limits only on invalid input.
+- Split auxiliary diagnostics into a common heading/back action, form and results; empty results no longer show a zero-count timeline. Existing probe paths, request validation, cancellation and report export remain.
+- Extend the external guide and README interaction notes; leave the glass navigation, lanyard renderer, permissions and network implementation unchanged.
+
 ## 0.1.2-preview.5 (local candidate)
 
 - Move tutorials and implementation commentary into the external usage guide, remove the retired custom diagnostic-command panel, and delete 102 unused translated resource entries. Keep concise errors, essential consent and legal notices.

@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.2-preview.5, build 35. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.2-preview.6, build 36. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -140,7 +140,7 @@ Selector coordinates use an absolute top-left anchor, absoluteOffset and one log
 
 `NavigationTrackingTest` advances the Compose clock one frame per gesture step, compares the actual selector center with the expected displacement and checks cancellation in both directions without committing a tab change. Its trace contains only synthetic coordinates. The same test is run against preview.3 as a negative control. This does not measure physical input latency, GPU throughput or public-network performance; a static synthetic backdrop isolates the gesture-following behavior.
 
-## Application copy and settings navigation (0.1.2-preview.5)
+## Application copy and settings navigation (0.1.2-preview.6)
 
 The full [usage guide](user-guide.md) is repository Markdown and is not bundled in the APK. Settings tutorials, implementation paragraphs, long terminal/latency explanations and the retired custom diagnostic-command console are removed from the application. Essential error messages, export/certificate/deep-link/terminal consent, accessible labels and dependency licenses remain, with concise copy where appropriate. Service names and untrusted subscription names remain application data.
 
@@ -151,3 +151,13 @@ Settings is a grouped list with chevrons; diagnostics and the standard terminal 
 The complete bottom navigation remains `BottomNavigationBar.kt:56` and is unchanged. This iteration changes page headings, AppScreens/SettingsHub navigation and copy; it does not alter the glass material, selected capsule, direct-finger tracking or renderer assets.
 
 `tools/verify-ui-copy.py` rejects retired tutorial resource IDs and custom-command markers in source resources and APK entries, and checks that the external guide is present but not bundled. The title/route regression verifies actual text layout styles, and the sensitive-route test checks protection during the outgoing animation rather than only at its endpoints.
+
+## Minimal task content (0.1.2-preview.6)
+
+The profile empty state is a single factual label beside the existing import paths. Quota bars appear only with known used and positive total amounts; unknown quota has no decorative progress line. Selected profile cards use a check and selected radio semantics instead of a duplicated “View proxies” label. Auxiliary checks have the same heading/back pattern as settings; the legacy brand masthead, version stamp and slogan are gone. Results appear only after steps exist. Privacy/accounting explanations live in the external guide, and valid numeric fields no longer repeat their ranges.
+
+UX: the existing actions and result evidence remain, with fewer repeated labels. DX: `SettingsLinks.kt` owns the grouped destinations, titles, chevrons and between-row dividers; `AuxiliaryDiagnostics.kt` separates input state, form and results and reuses the common report preview. Automation/accessibility: settings rows expose button roles, profile cards expose selected radio state and choice rows have a single focusable radio target. Stable test tags remain; no agent-facing labels are shown to users.
+
+`MinimalCopyTest` exercises large-font/dark empty and selected profiles, import/menu actions, keyboard selection, validation-only ranges, empty auxiliary results, invalid input and back navigation. Existing suites continue to cover loading/success/errors, protected windows, large fonts, RTL and optical contrast. This is emulator evidence, not physical-device certification.
+
+Full bottom navigation remains `BottomNavigationBar.kt:56`, unchanged. Its optical, gesture and shader code and the renderer assets are untouched.

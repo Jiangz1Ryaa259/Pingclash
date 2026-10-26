@@ -336,10 +336,7 @@ private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, bus
         if (uri != null) ReportExporter.save(context, uri, pending)
     }
     if (auxiliary) {
-        Column {
-            TextButton(onClick = { auxiliary = false }) { Text((tr(R.string.message_2ecd1f47f6))) }
-            Box(Modifier.weight(1f)) { AuxiliaryDiagnosticScreen(auxiliaryModel) }
-        }
+        AuxiliaryDiagnosticScreen(auxiliaryModel) {auxiliary=false}
         return
     }
     androidx.activity.compose.BackHandler(!auxiliary) {onBack()}
@@ -362,7 +359,9 @@ private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, bus
             OutlinedButton(onClick = { preview = true }) { Text((tr(R.string.message_e89513334b))) }
         } }
         diagnosis.steps.filter { it.stage != Models.Stage.POLICY }.forEach { StepCard(it) }
-        TextButton(onClick = { auxiliary = true }) { Text((tr(R.string.message_87533a0a61))) }
+        TextButton(onClick={auxiliary=true},modifier=Modifier.testTag("diagnostic-auxiliary")) {
+            Text(tr(R.string.message_87533a0a61))
+        }
 
     }
     if (preview && diagnosis.report != null) ReportPreview(requireNotNull(diagnosis.report), onSave = { report ->
@@ -371,7 +370,7 @@ private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, bus
 }
 
 @Composable
-private fun ReportPreview(report: Models.Report, onSave: (Models.Report) -> Unit, onDismiss: () -> Unit) {
+internal fun ReportPreview(report: Models.Report, onSave: (Models.Report) -> Unit, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val markdown = remember(report,UiStrings.resources().configuration.locales.toLanguageTags()) { ReportFormatter.markdown(report) }
     AlertDialog(onDismissRequest = onDismiss, title = { Text((tr(R.string.message_423dd8c4db))) },

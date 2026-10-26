@@ -29,7 +29,7 @@
     <string name="diagnostic_451d843199">"# PingClash 诊断报告\n\n"</string>
     <string name="diagnostic_45ff8362fe">"其他网络"</string>
     <string name="diagnostic_479efd4122">"本次仅检查 DNS 与 TCP，未请求 TLS 探测。"</string>
-    <string name="diagnostic_497ea7c8df">"默认网络由其他 VPN 接管；本原型暂停直连诊断，请断开该 VPN 后重试。"</string>
+    <string name="diagnostic_497ea7c8df">请先断开其他 VPN，再运行直连探测。</string>
     <string name="diagnostic_4d8c1c5b42">"未知"</string>
     <string name="diagnostic_4f6e6aef34">"入口域名未能解析；无法据此判断服务器状态。"</string>
     <string name="diagnostic_58dd8e81ef">"实际代理请求未完成；需结合辅助探测复测，不能据此确认密码错误或网络拦截。"</string>
@@ -61,7 +61,7 @@
     <string name="diagnostic_91fe2b7809">"\n本报告未包含凭据、订阅地址、原始异常或连接内容。"</string>
     <string name="diagnostic_959ad8dc6c">"\n- 总耗时："</string>
     <string name="diagnostic_966595c730">"节点 QUIC 握手超时。尚不能区分 UDP 链路、服务端响应和参数问题；TCP 跳过不是故障原因。"</string>
-    <string name="diagnostic_9a6458e7eb">"mihomo 尚未接入，未进行 AnyTLS 认证或代理访问验证。"</string>
+    <string name="diagnostic_9a6458e7eb">内核不可用，未执行代理验证。</string>
     <string name="diagnostic_9c4ff8cd30">"TLS 证书校验失败；请核对 SNI、证书与设备时间。"</string>
     <string name="diagnostic_9ef0a6878b">"辅助探测已完成；代理通路仍未验证。"</string>
     <string name="diagnostic_a06e2f7464">"节点选择或诊断配置已变化，本次结果已失效，请重新诊断。"</string>

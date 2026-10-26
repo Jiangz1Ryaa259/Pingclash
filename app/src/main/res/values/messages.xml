@@ -9,7 +9,6 @@
     <string name="message_0351397e06">"Subscriptions require an HTTPS link without a username or password"</string>
     <string name="message_0357e0e899">"Unsupported fields or invalid value format"</string>
     <string name="message_03d39aa1b9">"VPN service"</string>
-    <string name="message_03fae6b449">"Network &amp; connection"</string>
     <string name="message_051009442f">"Total sessions"</string>
     <string name="message_058ff47156">"DNS queries"</string>
     <string name="message_06351ff759">"Search apps"</string>
@@ -25,7 +24,6 @@
     <string name="message_0fead32545">"Unsupported subscription redirect address"</string>
     <string name="message_0ff53da1e7">"Enter a valid port"</string>
     <string name="message_100a19b574">"Understood, do not remind again"</string>
-    <string name="message_100d9e4baf">"Probe target"</string>
     <string name="message_108c6cdd56">"Add profile"</string>
     <string name="message_1123245d1b">"Rules"</string>
     <string name="message_113a2e4325">"Collecting connection evidence…"</string>
@@ -53,14 +51,11 @@
     <string name="message_2774441c8b">"Show import details"</string>
     <string name="message_28384d7afd">"Failed"</string>
     <string name="message_2ac8fb70c7">"Connectivity: testing…"</string>
-    <string name="message_2b379681df">"Local memory snapshots; no other-app usage history is collected."</string>
     <string name="message_2bb1c4d7fe">"Android did not allow the VPN foreground service to start"</string>
     <string name="message_2bd95a750b">"SNI / certificate hostname (optional)"</string>
     <string name="message_2cd0f3be87">"Cancel"</string>
     <string name="message_2d05ff08f5">"Cellular"</string>
-    <string name="message_2d69df5d6b">Save cumulative traffic and duration on this device.</string>
     <string name="message_2eb0e44e97">"Group nesting exceeds local limits"</string>
-    <string name="message_2ecd1f47f6">"← Back to proxy diagnostics"</string>
     <string name="message_2f9daa8289">"Delete"</string>
     <string name="message_2ff888afea">"Enable IPv6"</string>
     <string name="message_3055a035f0">"Update"</string>
@@ -77,7 +72,6 @@
         <item quantity="other">"%1$s proxies · %2$s"</item>
     </plurals>
     <string name="message_3726bcb690">"Active connections"</string>
-    <string name="message_3731779ddd">"Private by default"</string>
     <string name="message_37c135f051">"This profile has no original definition to reparse"</string>
     <string name="message_37e5395b04">"Could not save the report. Try again."</string>
     <string name="message_38854bf43e">"VPN connection"</string>
@@ -112,19 +106,14 @@
     <string name="message_47a270081a">"Mode"</string>
     <string name="message_47d56387f5">"Proxy groups"</string>
     <string name="message_4835196960">"Operation incomplete. Check the configuration, network and local storage."</string>
-    <string name="message_495dc9e725">"About &amp; licenses"</string>
     <string name="message_498958cf3d">"Manage profiles"</string>
     <string name="message_4af8010a74">"Could not save the notice preference. Try again."</string>
     <string name="message_4b7b90cbbe">"Subscription TLS handshake failed. Check the certificate, device clock and network."</string>
     <string name="message_4c3d16016b">"Rule %1$s has an unsupported type. Check the original rules or disable merging."</string>
     <string name="message_4d8c1c5b42">"Unknown"</string>
-    <string name="message_4dd958cc24">"Local usage totals"</string>
     <string name="message_4e1449e7d5">"Show"</string>
     <string name="message_4e452fc776">"VPN permission is incomplete. Connect and grant permission again."</string>
-    <string name="message_4f51d0285e">"Controls"</string>
     <string name="message_4f8389a45d">"Local network"</string>
-    <string name="message_4fadf7a9a5">Show IP addresses and domains for active connections.</string>
-    <string name="message_518eae8255">"Forwarded payload only, excluding protocol overhead; not carrier billing."</string>
     <string name="message_51c22886b5">"Custom rules"</string>
     <plurals name="message_54907f03b6">
         <item quantity="one">"Text containing newlines may execute commands immediately. Paste %1$s character unchanged after confirmation."</item>
@@ -139,10 +128,8 @@
     <string name="message_57ef467828">"Unified delay"</string>
     <string name="message_57f2275452">"Paste a configuration or proxy share link"</string>
     <string name="message_588e7c7ede">"Other unrecognized fields"</string>
-    <string name="message_58acd3db15">"Start your connection here"</string>
     <string name="message_58bf04c85f">"Test current group"</string>
     <string name="message_58c11726a2">"Block LAN"</string>
-    <string name="message_58e6ce61a6">"Privacy &amp; security"</string>
     <string name="message_593ea482b0">"No usable non-VPN network, or network binding failed"</string>
     <string name="message_5ad0c892f4">"Unsupported filter expression in this group"</string>
     <string name="message_5be0323e8a">"Connected"</string>
@@ -165,7 +152,6 @@
     <string name="message_694b71bc80">"Working"</string>
     <string name="message_6a113a5edf">"Subscription link"</string>
     <string name="message_6b566e6b22">"Total connections"</string>
-    <string name="message_6c8b8a3572">"Enter the server to check"</string>
     <string name="message_6cb7de92ea">"Unsupported group type or fields"</string>
     <string name="message_6e7c33d963">"Invalid network options or encrypted DNS address"</string>
     <string name="message_6fb64222da">"Enter a DNS IP address with an optional port"</string>
@@ -181,11 +167,6 @@
     <string name="message_788db1cfec">"Theme"</string>
     <string name="message_7896373370">"Original policy groups are unavailable or hidden"</string>
     <string name="message_79aad303b1">"My subscription"</string>
-    <string name="message_79c06d301b">"Auxiliary checks"</string>
-    <plurals name="message_7ae041d629">
-        <item quantity="one">"%1$s check passed"</item>
-        <item quantity="other">"%1$s checks passed"</item>
-    </plurals>
     <string name="message_7b0fe85cc2">"Try again shortly"</string>
     <string name="message_7c2b616daa">"Android did not allow the VPN to start"</string>
     <string name="message_7e564575eb">"Share"</string>
@@ -196,12 +177,11 @@
     <string name="message_84279947f8">"The core is busy. Try again shortly."</string>
     <string name="message_84b0b71bc5">"Connect timeout (seconds)"</string>
     <string name="message_87533a0a61">"Check a domain or IP manually →"</string>
-    <string name="message_8967970252">Profiles and preferences are encrypted on this device.</string>
     <string name="message_89d6350ff0">"No proxies could be imported. "</string>
     <string name="message_89d9fceeb2">"Show session traffic"</string>
     <string name="message_8a62417c01">"Connectivity: request succeeded · %1$s ms"</string>
     <string name="message_8cb2ffe5a1">"The selected proxy failed configuration validation. Choose another available member."</string>
-    <string name="message_8cdc5372a8">"Last 60 seconds, memory only"</string>
+    <string name="message_8cdc5372a8">Traffic over the last 60 seconds</string>
     <string name="message_8d27645263">"Memory"</string>
     <string name="message_8d668116e3">"Network changed. VPN disconnected; reconnect to continue."</string>
     <string name="message_8f7e175c9a">"Concurrent tests"</string>
@@ -233,9 +213,7 @@
     <string name="message_9e5175a63b">"Server domain / IP"</string>
     <string name="message_9f6fee1aba">"Language"</string>
     <string name="message_a01b7b224b">"Open dashboard"</string>
-    <string name="message_a03eefe8ff">"Add a subscription link or import a proxy configuration.\nLinks and credentials are encrypted on this device."</string>
     <string name="message_a1372a7755">"Subscription server returned HTTP %1$s. Check the link and service status."</string>
-    <string name="message_a1ebf712be">"Make connection problems\nunderstandable."</string>
     <string name="message_a21f280989">No usable nodes found. Check the subscription format.</string>
     <string name="message_a2b5d9b0b1">sing-box JSON is not supported. Use Clash or Mihomo format.</string>
     <string name="message_a3030bf8f1">"Save"</string>
@@ -265,7 +243,6 @@
     <string name="message_b06325c566">"Direct"</string>
     <string name="message_b089c998f6">"Direct auxiliary checks"</string>
     <string name="message_b138010267">"Proxy being tested"</string>
-    <string name="message_b34cdfde80">"Custom rules precede provider rules"</string>
     <string name="message_b41b084688">"Incomplete proxy configuration"</string>
     <string name="message_b4c7dabb18">"Structure or data type"</string>
     <string name="message_b4de26e01a">"All apps"</string>
@@ -276,7 +253,6 @@
     <string name="message_b8d23e6673">"Disconnecting"</string>
     <string name="message_bd03c0aad7">"Settings saved"</string>
     <string name="message_bdb39a7662">"Share diagnostic report"</string>
-    <string name="message_beae79496b">"Outbound rules"</string>
     <string name="message_bec328ac8e">"Enable UDP"</string>
     <string name="message_beecafaf89">"Connect VPN"</string>
     <string name="message_bf817b54c8">"Session traffic"</string>
@@ -294,7 +270,6 @@
     <string name="message_c81c76a181">"Connectivity: request did not succeed"</string>
     <string name="message_c8550237ba">"Save settings"</string>
     <string name="message_ca6e1092af">"Report saved"</string>
-    <string name="message_caaf859d56">"Live status"</string>
     <string name="message_cbd4ad8d7c">"Destination not recorded"</string>
     <string name="message_cbf0717721">The exported file contains node credentials. Save it in a trusted location.</string>
     <string name="message_cddb6c9475">"Only selected apps"</string>
@@ -310,7 +285,6 @@
     <string name="message_d4d74926c2">"Test timeout (milliseconds)"</string>
     <string name="message_d60617d759">"provider rules"</string>
     <string name="message_d6639c530f">"Configuration exported. The file contains proxy credentials; keep it private."</string>
-    <string name="message_d8618b5e19">"Per-app VPN"</string>
     <string name="message_da5ea7565a">"Go routines"</string>
     <string name="message_daae3125b8">"Routing mode"</string>
     <string name="message_dc8618a067">Configuration is invalid, unsupported or exceeds the import limits.</string>
@@ -321,9 +295,7 @@
     <string name="message_df3d58c7d8">"Settings"</string>
     <string name="message_df4e60a8c8">"Close connection"</string>
     <string name="message_dfc1aad746">"Paste into terminal"</string>
-    <string name="message_e0693379bd">"Connection diagnostics"</string>
     <string name="message_e29d5fc45c">"The link returned a web page rather than a subscription. Use the provider\'s original subscription URL and check for login or web verification requirements."</string>
-    <string name="message_e2a76ef1f1">"Terminal"</string>
     <string name="message_e2f12da7fa">"Downloaded"</string>
     <string name="message_e38ff950f7">"Policy blocks"</string>
     <string name="message_e406825e0a">"Local profile"</string>
@@ -340,7 +312,6 @@
     <string name="message_e71ac32b54">"Port"</string>
     <string name="message_e72275ffce">"Java heap"</string>
     <string name="message_e72cf6020d">"Unsupported protocol"</string>
-    <string name="message_e7370f8097">"Usage"</string>
     <string name="message_e7a44965ac">"Save .md"</string>
     <string name="message_e831d49866">"Cancel diagnostics"</string>
     <string name="message_e89513334b">"Preview redacted report"</string>
@@ -357,7 +328,6 @@
     <string name="message_f1880deaae">"Global proxy"</string>
     <string name="message_f2f0204946">"Uploaded"</string>
     <string name="message_f33ac04eec">"Disconnect"</string>
-    <string name="message_f3d6b6c03b">"Language &amp; appearance"</string>
     <string name="message_f5457450b4">"The configuration contains remote providers only, with no actual proxies. Use a Clash / Mihomo subscription containing proxies."</string>
     <string name="message_f5a0352ad8">"Missing, duplicate or cyclic group dependencies"</string>
     <string name="message_f6dc1b1641">"Importing…"</string>
@@ -365,9 +335,19 @@
     <string name="message_f96a5b2b19">"Content exceeds the size limit"</string>
     <string name="message_fa3ecfb797">"Import file"</string>
     <string name="message_fa9d1a2012">"Add subscription"</string>
-    <string name="message_fc16aec85d">"Connections"</string>
     <string name="message_fd1e76eafb">"Duration"</string>
     <string name="message_fd94d45469">"Reconnect did not complete. Connect again from the dashboard."</string>
     <string name="message_fef3d1894e">"Display or latency options are invalid or exceed limits"</string>
     <string name="message_ffa09539e0">"Mobile terminal"</string>
+    <string name="message_03fae6b449">"Network &amp; connection"</string>
+    <string name="message_495dc9e725">"About &amp; licenses"</string>
+    <string name="message_4f51d0285e">"Controls"</string>
+    <string name="message_58e6ce61a6">"Privacy &amp; security"</string>
+    <string name="message_beae79496b">"Outbound rules"</string>
+    <string name="message_caaf859d56">"Live status"</string>
+    <string name="message_d8618b5e19">"Per-app VPN"</string>
+    <string name="message_e2a76ef1f1">"Terminal"</string>
+    <string name="message_e7370f8097">"Usage"</string>
+    <string name="message_f3d6b6c03b">"Language &amp; appearance"</string>
+    <string name="message_fc16aec85d">"Connections"</string>
 </resources>

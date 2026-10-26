@@ -126,3 +126,13 @@ main title styles, move tools into settings chevron rows, and animate details fr
 the right while retaining sensitive-window protection through exit. Retire the
 custom command console; the standard terminal and concise safety consent remain.
 Glass navigation is unchanged. Stable 0.1.1 remains unchanged.
+
+## 0.1.2-preview.6 local candidate
+
+Remaining profile and auxiliary-diagnostic slogans, old version labels and
+repeated telemetry/privacy paragraphs are removed from the app. Settings and
+profile selection have clearer accessible roles and keyboard targets. Numeric
+limits appear only on errors; probe steps appear when they exist. Full usage
+and interaction rationale stay in repository Markdown. Physical OEM/background
+behavior, public-network performance and unsupported provider formats remain
+known limitations; this local candidate does not replace stable 0.1.1.

@@ -9,6 +9,9 @@ import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,7 +49,6 @@ import org.json.JSONArray
     var reset by remember {mutableStateOf(false)}
     val context=LocalContext.current
     BackHandler(page.isNotEmpty()) {page=""}
-    val titles=mapOf("live" to tr(R.string.message_caaf859d56),"connections" to tr(R.string.message_fc16aec85d),"dns" to "DNS","network" to tr(R.string.message_03fae6b449),"apps" to tr(R.string.message_d8618b5e19),"rules" to tr(R.string.message_beae79496b),"lan" to tr(R.string.message_4f8389a45d),"appearance" to tr(R.string.message_f3d6b6c03b),"usage" to tr(R.string.message_e7370f8097),"control" to tr(R.string.message_4f51d0285e),"privacy" to tr(R.string.message_58e6ce61a6),"about" to tr(R.string.message_495dc9e725))
     val dirty=draft!=data.client||dns!=data.dnsAddress||target!=data.probeUrl
     val pages=rememberSaveableStateHolder()
     SettingsSlide(page) {shown->pages.SaveableStateProvider(shown) {
@@ -59,43 +61,20 @@ import org.json.JSONArray
                 if(shown.isNotEmpty()) IconButton({page=""},Modifier.testTag("settings-back").semantics {
                     contentDescription=tr(R.string.message_572cf45ba4)
                 }) {AppGlyph(BACK_GLYPH)}
-                PageHeading(titles[shown]?:tr(R.string.message_df3d58c7d8),Modifier.weight(1f),
+                PageHeading(settingsTitle(shown),Modifier.weight(1f),
                     if(shown.isEmpty())"page-title-settings" else "settings-detail-title")
             }
             if(locked&&shown in listOf("dns","network","apps","rules","lan","usage")) {
                 Text(tr(R.string.message_0845a173b1),color=Warning,style=MaterialTheme.typography.bodySmall)
             }
             when(shown) {
-                "" -> {
-                    SettingsCard {
-                        SettingLink("appearance",tr(R.string.message_f3d6b6c03b)) {page="appearance"}
-                        SettingLink("profiles",tr(R.string.message_148d195e21)) {onProfiles()}
-                        SettingLink("groups",tr(R.string.message_47d56387f5)) {onProxies()}
-                    }
-                    SettingsCard {
-                        SettingLink("dns","DNS") {page="dns"}
-                        SettingLink("network",tr(R.string.message_03fae6b449)) {page="network"}
-                        SettingLink("apps",tr(R.string.message_d8618b5e19)) {page="apps"}
-                        SettingLink("rules",tr(R.string.message_beae79496b)) {page="rules"}
-                        SettingLink("lan",tr(R.string.message_4f8389a45d)) {page="lan"}
-                    }
-                    SettingsCard {
-                        SettingLink("live",tr(R.string.message_caaf859d56)) {page="live"}
-                        SettingLink("connections",tr(R.string.message_fc16aec85d)) {page="connections"}
-                        SettingLink("usage",tr(R.string.message_e7370f8097)) {page="usage"}
-                    }
-                    SettingsCard {
-                        SettingLink("diagnosis",tr(R.string.message_75793291b7)) {onDiagnose()}
-                        SettingLink("terminal",tr(R.string.message_e2a76ef1f1)) {
-                            context.startActivity(Intent(context,TerminalActivity::class.java))
-                        }
-                        SettingLink("control",tr(R.string.message_4f51d0285e)) {page="control"}
-                    }
-                    SettingsCard {
-                        SettingLink("privacy",tr(R.string.message_58e6ce61a6)) {page="privacy"}
-                        SettingLink("about",tr(R.string.message_495dc9e725)) {page="about"}
-                    }
-                }
+                "" -> SettingsMenu {id ->when(id) {
+                    "profiles" -> onProfiles()
+                    "groups" -> onProxies()
+                    "diagnosis" -> onDiagnose()
+                    "terminal" -> context.startActivity(Intent(context,TerminalActivity::class.java))
+                    else -> page=id
+                }}
                 "live" -> RuntimeCards(data,vpn,all=true)
                 "connections" -> ConnectionsPanel(vpn,model)
                 "dns" -> SettingsCard {
@@ -139,7 +118,6 @@ import org.json.JSONArray
                         TextButton({showProviderRules=true},enabled=!data.activeProfile?.rules.isNullOrEmpty()) {Text((tr(R.string.message_a89096ffdb)))}
                     }
                     SettingsCard {
-                        Text((tr(R.string.message_b34cdfde80)),style=MaterialTheme.typography.titleMedium)
                         OutlinedTextField(draft.customRules,
                             {if(it.toByteArray().size<=64*1024)draft=draft.copy(customRules=it)},
                             Modifier.fillMaxWidth().heightIn(min=200.dp,max=400.dp).testTag("custom-rules"),
@@ -184,9 +162,7 @@ import org.json.JSONArray
                     }
                 }
                 "usage" -> SettingsCard {
-                    Text((tr(R.string.message_4dd958cc24)),style=MaterialTheme.typography.titleMedium)
                     SettingSwitch(tr(R.string.message_3356dda6d6),draft.keepUsage,!locked) {draft=draft.copy(keepUsage=it)}
-                    Text((tr(R.string.message_2d69df5d6b)),color=Muted,style=MaterialTheme.typography.bodySmall)
                     StatLine(tr(R.string.message_4211d1e5e4),formatBytes(data.usage.uploaded));StatLine(tr(R.string.message_996c971317),formatBytes(data.usage.downloaded))
                     StatLine(tr(R.string.message_60b4864be8),durationText(data.usage.seconds));StatLine(tr(R.string.message_051009442f),data.usage.sessions.toString())
                     OutlinedButton(model::resetUsage,enabled=!locked) {Text((tr(R.string.message_1f48dd6240)))}
@@ -209,10 +185,7 @@ import org.json.JSONArray
                 }
                 "privacy" -> {
                     SettingsCard {
-                        Text((tr(R.string.message_3731779ddd)),style=MaterialTheme.typography.titleMedium)
-                        Text((tr(R.string.message_8967970252)))
                         SettingSwitch(tr(R.string.message_1de996dcd1),draft.inspectConnections,!locked) {draft=draft.copy(inspectConnections=it)}
-                        Text((tr(R.string.message_4fadf7a9a5)),color=Muted,style=MaterialTheme.typography.bodySmall)
 
                     }
                 }
@@ -234,23 +207,16 @@ private fun Context.hostActivity(): Activity? {
     return null
 }
 
-@Composable private fun SettingLink(id: String,title: String,onClick:()->Unit) {
-    Column {
-        Row(Modifier.fillMaxWidth().heightIn(min=52.dp).testTag(if(id in listOf("diagnosis","terminal"))"tool-$id" else "settings-$id").clickable(onClick=onClick)
-            .padding(vertical=7.dp),verticalAlignment=Alignment.CenterVertically,
-            horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-            AppGlyph(settingsGlyph(id),Modifier.size(21.dp),Muted)
-            Text(title,Modifier.weight(1f),style=MaterialTheme.typography.bodyLarge)
-            AppGlyph(5,Modifier.size(18.dp),Muted)
-        }
-        if(id !in listOf("appearance","lan","usage","about")) {
-            HorizontalDivider(Modifier.padding(start=33.dp),color=MaterialTheme.colorScheme.outlineVariant)
-        }
-    }
-}
 @Composable private fun Choices(title: String,value: String,choices: List<Pair<String,String>>,enabled: Boolean,onChange:(String)->Unit) {
     Text((title),color=Muted,style=MaterialTheme.typography.labelLarge)
-    choices.forEach {(id,name) -> Row(Modifier.fillMaxWidth().clickable(enabled=enabled){onChange(id)}.testTag("choice-$title-$id"),verticalAlignment=Alignment.CenterVertically) {RadioButton(value==id,{onChange(id)},enabled=enabled);Text((name),Modifier.weight(1f))}}
+    Column(Modifier.selectableGroup()) {choices.forEach {(id,name) ->
+        Row(Modifier.fillMaxWidth().heightIn(min=48.dp).testTag("choice-$title-$id")
+            .selectable(value==id,enabled=enabled,role=Role.RadioButton,onClick={onChange(id)}),
+            verticalAlignment=Alignment.CenterVertically) {
+            RadioButton(value==id,null,enabled=enabled)
+            Text(name,Modifier.weight(1f))
+        }
+    }}
 }
 @Composable private fun SettingField(title: String,value: String,enabled: Boolean,onChange:(String)->Unit) {
     OutlinedTextField(value,onChange,Modifier.fillMaxWidth().testTag("field-$title"),enabled=enabled,
@@ -261,7 +227,7 @@ private fun Context.hostActivity(): Activity? {
     val valid=raw.toIntOrNull() in range
     OutlinedTextField(raw,{if(it.length<=6&&it.all(Char::isDigit)){raw=it;onChange(it.toIntOrNull()?:0)}},
         Modifier.fillMaxWidth().testTag("number-$title"),enabled=enabled,singleLine=true,label={Text((title))},
-        isError=!valid,supportingText={Text("${range.first}–${range.last}")},
+        isError=!valid,supportingText=if(valid)null else {{Text("${range.first}–${range.last}")}},
         keyboardOptions=androidx.compose.foundation.text.KeyboardOptions(
             keyboardType=androidx.compose.ui.text.input.KeyboardType.Number),
         shape=UiCorners.Compact)

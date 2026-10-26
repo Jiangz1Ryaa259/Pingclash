@@ -63,7 +63,6 @@ internal fun durationText(seconds: Long)="%02d:%02d:%02d".format(Locale.ROOT,sec
             if(settings.showSpeed)HorizontalDivider(color=MaterialTheme.colorScheme.outlineVariant)
             StatLine(tr(R.string.message_f2f0204946),formatBytes(vpn.uploaded))
             StatLine(tr(R.string.message_e2f12da7fa),formatBytes(vpn.downloaded))
-            if(!compact)Text(tr(R.string.message_518eae8255),color=Muted,style=MaterialTheme.typography.bodySmall)
         }
         if(settings.showService) {
             TelemetryDivider(settings.showSpeed||settings.showTraffic)

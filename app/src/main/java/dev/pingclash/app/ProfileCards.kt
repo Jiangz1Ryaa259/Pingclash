@@ -11,7 +11,8 @@ import android.os.PersistableBundle
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,11 +89,9 @@ internal data class ProfileActions(val select: (LocalProfile)->Unit,
             }
             ui.importIssue?.let {issue ->item(key="issue") {InputIssue(issue)}}
             if(data.profiles.isEmpty())item(key="empty") {
-                Surface(shape=UiCorners.Sheet,color=Panel.copy(alpha=.88f)) {
-                    Column(Modifier.fillMaxWidth().padding(28.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                        Text(tr(R.string.message_58acd3db15),style=MaterialTheme.typography.titleLarge)
-                        Text(tr(R.string.message_a03eefe8ff),color=Muted)
-                    }
+                Box(Modifier.fillMaxWidth().heightIn(min=148.dp).testTag("profiles-empty"),
+                    contentAlignment=Alignment.Center) {
+                    Text(tr(R.string.message_7799f870a9),color=Muted)
                 }
             }
             items(data.profiles,key={it.id}) {profile ->
@@ -115,17 +114,18 @@ internal data class ProfileActions(val select: (LocalProfile)->Unit,
     Surface(shape=UiCorners.Sheet,color=if(selected)MaterialTheme.colorScheme.primaryContainer.copy(alpha=.86f)
         else Panel.copy(alpha=.86f),border=BorderStroke(if(selected)1.2.dp else .7.dp,
             if(selected)Mint else MaterialTheme.colorScheme.outlineVariant),
-        modifier=Modifier.fillMaxWidth().testTag("profile-${profile.id}")) {
-        Column(Modifier.clickable(enabled=!locked) {actions.select(profile)}.padding(20.dp),
+        modifier=Modifier.fillMaxWidth().testTag("profile-${profile.id}")
+            .selectable(selected,enabled=!locked,role=Role.RadioButton) {actions.select(profile)}) {
+        Column(Modifier.padding(20.dp),
             verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically) {
                 Text(profile.name,Modifier.weight(1f),style=MaterialTheme.typography.titleLarge,maxLines=2)
+                if(selected)AppGlyph(15,Modifier.size(20.dp),Mint)
                 ProfileMenu(profile,locked,actions)
             }
             ProfileQuota(profile)
             if(profile.activationRequired)Text(tr(R.string.deep_link_inactive),color=Muted,
                 style=MaterialTheme.typography.bodySmall)
-            if(selected)Text(tr(R.string.message_1f4f69f770),color=Mint,style=MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -171,8 +171,11 @@ internal data class ProfileActions(val select: (LocalProfile)->Unit,
             .withZone(java.time.ZoneId.systemDefault())
                 .format(java.time.Instant.ofEpochSecond(it)),style=MaterialTheme.typography.bodySmall)}
     }
-    val amount=quota?.let {q ->q.total?.takeIf {it>0}?.let {(q.used?:0).toFloat()/it}}?:0f
-    LinearProgressIndicator(progress={amount.coerceIn(0f,1f)},modifier=Modifier.fillMaxWidth().height(4.dp),
+    val amount=quota?.let {q ->q.used?.let {used ->
+        q.total?.takeIf {it>0}?.let {used.toFloat()/it}
+    }}
+    if(amount!=null)LinearProgressIndicator(progress={amount.coerceIn(0f,1f)},
+        modifier=Modifier.fillMaxWidth().height(4.dp).testTag("profile-quota-${profile.id}"),
         color=Mint,trackColor=MaterialTheme.colorScheme.outlineVariant)
 }
 
