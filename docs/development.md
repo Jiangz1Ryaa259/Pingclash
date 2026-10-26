@@ -49,3 +49,12 @@ and actual launcher task-preview regressions (64 integration tests total). See
 navigation source map, and [validation](security-testing.md) for APK identity and
 API-specific results. Main-page screenshots are permitted; sensitive pages retain
 FLAG_SECURE and temporary task-snapshot protection.
+
+## Quiet re-entry regressions
+
+The local 0.1.2-preview.1 candidate has 65 integration cases. Native recovery is
+bounded independently of JavaScript callbacks; a real WebGL fixture drops one
+resume message, then verifies recovery, view identity and unchanged flip count.
+Five additional pure lifecycle cases bring the offline renderer suite to 25.
+The main navigation page transition fades Home without shifting its 3D anchor;
+the bottom glass navigation component/material/gestures are unchanged.

@@ -5,7 +5,7 @@ import Lanyard from './Lanyard.jsx';
 
 const state = { active: false, motion: true, held: false, back: false, dx: 0, dy: 0,
   viewportHeight: 800, viewportWidth: 360, centerX: 180, top: 180, height: 266, fontScale: 1,
-  phase: 'idle', label: '', status: '', epoch: 0 };
+  phase: 'idle', label: '', status: '', epoch: 0, resume: 0 };
 window.__pingclashFrame = state;
 window.__lanyardTexturePhases = new Map();
 let configure;
@@ -67,6 +67,7 @@ window.PingClashScene = Object.freeze({
   frame(data) {
     if (!data || typeof data !== 'object') return;
     if (Number.isSafeInteger(data.epoch) && data.epoch >= 0) state.epoch = data.epoch;
+    if (Number.isSafeInteger(data.resume) && data.resume >= 0) state.resume = data.resume;
     for (const key of ['viewportHeight', 'viewportWidth', 'centerX', 'top', 'height', 'fontScale', 'dx', 'dy']) {
       if (Number.isFinite(data[key])) state[key] = Math.max(-10000, Math.min(10000, data[key]));
     }
@@ -90,6 +91,7 @@ window.PingClashScene = Object.freeze({
       active: state.active, engine: 'three', roughness: .42, clearcoat: 1,
       metalness: 1, metalRoughness: .16, weaveNormal: .7,
       pose: window.__lanyardPose || null, epoch: window.__lanyardRenderedEpoch ?? -1,
+      resume: window.__lanyardRenderedResume ?? -1, flips: window.__lanyardFlipCount || 0,
       paintedPhase: window.__lanyardPaintedPhase || "" };
   }
 });

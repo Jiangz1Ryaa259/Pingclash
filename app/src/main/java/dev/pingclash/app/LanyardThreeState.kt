@@ -22,11 +22,18 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
 
 @Stable internal class LanyardThreeState {
     var ready by mutableStateOf(false);private set
+    var displayReady by mutableStateOf(false);private set
     var unavailable by mutableStateOf(false);private set
     var started by mutableStateOf(false);private set
     private var owner: Any?=null
+    private var resume=0L
+    private var hadFrame=false
+    private val recovery=LanyardRecovery()
     private var epoch=0L
-        set(value) {field=value;ready=false;lastFrame=""}
+        set(value) {
+            field=value;ready=false;lastFrame=""
+            if(hadFrame)recovery.arm()
+        }
     var scrollOffset by mutableFloatStateOf(0f);private set
     var hasControl by mutableStateOf(false);private set
     var active=false;private set
@@ -59,42 +66,58 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
             if(!polling) {
                 polling=true
                 current.evaluateJavascript("JSON.stringify(window.PingClashScene?.status()||{})") {result ->
-                    if(view!==current)return@evaluateJavascript
+                    if(view!==current||!loaded)return@evaluateJavascript
                     polling=false
                     val json=runCatching {JSONObject(org.json.JSONTokener(result).nextValue().toString())}.getOrNull()
                     ready=json?.optBoolean("ready")==true&&json.optLong("epoch",-1)==epoch&&
-                        json.optString("paintedPhase")==phase
-                    if(ready)unavailable=false
+                        json.optString("paintedPhase")==phase&&json.optLong("resume",-1)==resume
+                    if(ready) {
+                        unavailable=false;displayReady=true;hadFrame=true;recovery.clear()
+                    }
                 }
             }
-            if(active)handler.postDelayed(this,if(ready)400 else 80)
+            when(recovery.next(active,ready)) {
+                LanyardRecovery.Action.RETRY->{lastFrame="";flush()}
+                LanyardRecovery.Action.FALLBACK->failed()
+                LanyardRecovery.Action.NONE->Unit
+            }
+            if(active&&loaded)handler.postDelayed(this,if(ready)400 else 80)
         }
     }
     var renderer: WebView?
         get()=view
-        set(value) {view=value;ready=false;loaded=false;polling=false;lastFrame=""}
+        set(value) {
+            view=value;ready=false;displayReady=false;hadFrame=false
+            loaded=false;polling=false;lastFrame="";recovery.clear()
+        }
     fun pageLoaded() {loaded=true;lastFrame="";flush();handler.post(poll)}
-    fun failed() {ready=false;unavailable=true;loaded=false;polling=false;handler.removeCallbacks(poll)}
+    fun failed() {
+        ready=false;displayReady=false;unavailable=true;loaded=false;polling=false;handler.removeCallbacks(poll)
+    }
     fun viewport(width: Int,height: Int) {
-        if(viewportWidth!=width||viewportHeight!=height)initialTop=null
+        if(viewportWidth!=width||viewportHeight!=height) {
+            initialTop=null;displayReady=false;epoch++
+        }
         viewportWidth=width.coerceAtLeast(1);viewportHeight=height.coerceAtLeast(1);schedule()
     }
     fun visible(value: Boolean) {
         if(active==value)return
         active=value;handler.removeCallbacks(poll)
         if(value) {
-            view?.onResume();epoch++;polling=false;flush();handler.post(poll)
+            view?.onResume();resume++;ready=false;polling=false
+            if(hadFrame)recovery.arm()
+            flush();handler.post(poll)
         } else {flush();view?.onPause()}
     }
     fun control(token: Any,attached: Boolean) {
         if(!attached&&owner!==token)return
         owner=if(attached)token else null
-        held=false;dragging=false;dx=0f;dy=0f;initialTop=null
-        if(attached){started=true;epoch++} else {hasControl=false;slotHeight=0f}
+        held=false;dragging=false;dx=0f;dy=0f
+        if(attached)started=true else hasControl=false
         schedule()
     }
     fun slot(token: Any,top: Float,height: Float,centerX: Float?=null) {
-        if(owner!==token)return
+        if(owner!==token||!active)return
         if(!top.isFinite()||!height.isFinite())return
         val newControl=!hasControl||slotHeight!=height
         val lowerAnchor=top>(initialTop?:top)
@@ -105,7 +128,10 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     }
     fun pose(token: Any,value: LanyardPose,offset: Offset,density: Density,text: ThreeControlText) {
         if(owner!==token)return
-        if(phase!=text.phase)epoch++
+        if(phase!=text.phase) {
+            epoch++
+            if(!active)displayReady=false
+        }
         dx=offset.x*density.density;dy=offset.y*density.density;held=value.holding;dragging=held;motion=text.motion
         phase=text.phase.takeIf {it in listOf("idle","connecting","established","stopping","error")}?:"idle"
         label=text.label.take(120);status=text.status.take(120);fontScale=density.fontScale.coerceIn(1f,2f)
@@ -118,8 +144,8 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     private fun flush() {
         val current=view?:return
         if(!loaded)return
-        val frame=JSONObject().put("active",active&&slotHeight>0).put("motion",motion).put("held",held)
-            .put("epoch",epoch).put("back",lanyardBackFace(phase)).put("phase",phase)
+        val frame=JSONObject().put("active",active&&hasControl&&slotHeight>0).put("motion",motion).put("held",held)
+            .put("epoch",epoch).put("resume",resume).put("back",lanyardBackFace(phase)).put("phase",phase)
             .put("label",label).put("status",status)
             .put("viewportWidth",viewportWidth).put("viewportHeight",viewportHeight)
             .put("top",initialTop?:slotTop).put("height",slotHeight).put("fontScale",fontScale)
@@ -132,7 +158,8 @@ internal data class ThreeControlText(val phase: String,val label: String,val sta
     }
     fun dispose() {
         handler.removeCallbacksAndMessages(null)
-        view=null;ready=false;loaded=false;polling=false;active=false;scheduled=false
+        view=null;ready=false;displayReady=false;hadFrame=false;recovery.clear()
+        loaded=false;polling=false;active=false;scheduled=false
         owner=null;hasControl=false;started=false;held=false;dragging=false;lastFrame="";initialTop=null
     }
 }

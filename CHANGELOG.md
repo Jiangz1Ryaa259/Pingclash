@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2-preview.1 (local candidate)
+
+- Keep the last painted lanyard scene, orientation and valid layout across ordinary tab navigation.
+- Reconcile first display and offscreen state changes without a visible flip; retain the flip impulse for actual visible connection-state changes.
+- Fade Home transitions without shifting its persistent 3D anchor. The bottom navigation material and actions are unchanged.
+- Retry missing resume/frame acknowledgments twice; fall back to the native action if the renderer remains unhealthy.
+- Add actual WebGL no-replay/resume-loss coverage and five pure lifecycle/impulse regressions.
+
+
 ## 0.1.1
 
 - Promote the beta.11 implementation to 0.1.1 (versionCode 30), retaining the existing signing identity and upgrade path.

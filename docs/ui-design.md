@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.1, build 30. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.2-preview.1, build 31. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -83,3 +83,26 @@ small native action remains usable during loading or renderer failure.
 Ordinary pages now allow system task previews. SecurePage temporarily disables task
 screenshots while protected content owns the window, restoring the ordinary policy
 after replacement frames. This does not change service lifetime or OEM task policy.
+
+## Quiet Home re-entry (0.1.2-preview.1)
+
+Normal tab return retains the WebView, physical pose, textures and last valid slot
+geometry. Receiving a fresh renderer acknowledgment is separate from showing an
+already-painted healthy scene. Detaching a native Home slot never substitutes a
+zero-height layout. Home uses a short fade instead of moving its persistent 3D
+anchor through the page slide transition.
+
+A resume generation is reconciled once before drawing. Initial connected state,
+offscreen phase changes and unfinished flips are aligned quietly; an actual visible
+front/back state change still adds one physical impulse. Duplicate host frames do
+not repeat it. Native recovery checks run independently of JavaScript callbacks:
+missing acknowledgments cause at most two frame retries, two seconds apart, then
+the usable native action replaces the unhealthy renderer. Ordinary re-entry never
+reloads the scene. This is recovery behavior, not a guarantee about every OEM/GPU.
+
+Bottom navigation remains in `BottomNavigationBar.kt`; its optical material,
+parameters and gesture code are unchanged in this iteration. Page-transition changes
+are in `AppScreens.kt`. Host ownership/visibility are in `LanyardThreeState.kt`,
+`LanyardThreeView.kt` and `LanyardPowerControl.kt`; the bounded recovery policy is
+`LanyardRecovery.kt`. Offline reconciliation is in `ui/lanyard/src/hostLifecycle.mjs`,
+with adapter wiring in `ui/lanyard/adapt.mjs`.

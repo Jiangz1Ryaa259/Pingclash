@@ -1,3 +1,15 @@
+# 0.1.2-preview.1 quiet re-entry candidate (build 31)
+
+- Exact signed APK: 131,327,538 bytes; SHA-256 `81a91bf353ef1c7a8374cb343e19306d18f8cf843f1ef801a973f74409ed78cc`. Existing signing identity, v2/v3, non-debuggable/run-as denial, six native libraries and 20 LOAD segments aligned at 16 KiB. Package private/test-marker matches: zero.
+- API 35/AOSP x86_64: **65/65, zero skipped, 340.034 seconds**. Controlled DNS 1 and separate-UID HTTP 1. The new real-WebGL check returns Home four times, retains the same WebView/visible frame, checks the back-facing normal through return samples and asserts zero extra flip impulses.
+- A deliberately dropped resume event is recovered by the native acknowledgment watchdog without rebuilding the renderer. An offscreen phase change is reconciled without an impulse; an actual visible connect still produces one flip. Existing activity pause/resume, drag, cancellation and privacy regressions also pass.
+- Five new pure lifecycle/impulse cases cover initial connected display, settled-pose preservation, duplicate visible messages, hidden phase changes and interrupted flips. Renderer suite **25/25**; all upstream geometry/material/physical-solver fidelity assertions remain. Backdrop source hashes: **27/27** unchanged. Translation guard: 630 pairs.
+- Detekt passes; release lint 0 errors, 71 warnings, 2 information. Curated source has 458 allowlisted files and no personal/token-marker or Gitleaks findings. No new permissions or telemetry; renderer host messages remain bounded local geometry and fixed UI state.
+- A cold-boot attempt lost the emulator before the first fixture completed. After restarting the dedicated AVD, the final signed APK completed all 65 tests without skipping. Physical OEM/GPU and prolonged background behavior are not claimed as verified. No preview video was created.
+- This is a local preview and draft source update. The published 0.1.1 tag, APK and Release are unchanged. Legacy API results below belong to their named earlier APKs, not this preview.
+
+---
+
 # 0.1.1 release identity
 
 0.1.1 promotes the beta.11 implementation with versionCode 30. APK SHA-256:

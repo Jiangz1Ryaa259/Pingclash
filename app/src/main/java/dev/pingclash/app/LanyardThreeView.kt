@@ -55,8 +55,8 @@ internal fun createLanyardView(context: Context,state: LanyardThreeState): Lanya
 @Composable internal fun LanyardSceneLayers(state: LanyardThreeState?,cable: MutableState<Offset?>,
     selected: Int,secure: Boolean) {
     val foreground=rememberForeground()
-    if(state!=null&&state.started)LanyardThreeLayer(state,selected==0&&state.hasControl&&!secure&&foreground,
-        selected==0&&state.hasControl&&!secure)
+    if(state!=null&&state.started)LanyardThreeLayer(state,selected==0&&!secure&&foreground,
+        selected==0&&!secure)
     if(selected==0&&state==null)WindowLanyardCable(cable)
 }
 
@@ -69,5 +69,5 @@ internal fun createLanyardView(context: Context,state: LanyardThreeState): Lanya
     },
         modifier=Modifier.fillMaxSize().zIndex(if(state.dragging)1f else 0f)
         .onSizeChanged {state.viewport(it.width,it.height)}
-        .graphicsLayer {alpha=if(state.ready&&show)1f else 0f;translationY=state.scrollOffset})
+        .graphicsLayer {alpha=if(state.displayReady&&show)1f else 0f;translationY=state.scrollOffset})
 }

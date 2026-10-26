@@ -102,11 +102,12 @@ import org.json.JSONObject
     }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding).statusBarsPadding()) {
             AnimatedContent(tab, transitionSpec = {
-                if(motion) {
+                if(motion&&initialState!=0&&targetState!=0) {
                     val direction=if(targetState>initialState) 1 else -1
                     (slideInHorizontally(spring(dampingRatio=1f,stiffness=650f)) {it/12*direction}+fadeIn(tween(190))) togetherWith
                         (slideOutHorizontally(tween(140)) {-it/16*direction}+fadeOut(tween(110)))
-                } else fadeIn(snap()) togetherWith fadeOut(snap())
+                } else if(motion)fadeIn(tween(190)) togetherWith fadeOut(tween(110))
+                else fadeIn(snap()) togetherWith fadeOut(snap())
             }, modifier=Modifier.fillMaxSize().clip(RoundedCornerShape(0.dp)),label = "main-navigation") { page ->
                 when (page) {
                     0 -> DashboardScreen(

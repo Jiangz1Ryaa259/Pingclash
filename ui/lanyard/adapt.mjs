@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 export async function adaptReference() {
   let source = (await readFile(new URL('./reference/Lanyard.jsx', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+  source = "import { syncHostedFace } from './hostLifecycle.mjs';\n" + source;
   const replace = (before, after) => {
     if (source.split(before).length !== 2) throw new Error('Reference integration point changed');
     source = source.replace(before, after);
@@ -37,24 +38,20 @@ export async function adaptReference() {
       window.__lanyardPose = { normalZ: normal.z, turn: sim.turn, twist: sim.twist, held: !!sim.grab };
       window.__lanyardReady = canvas.clientHeight > 100 && !!images.front && !!images.back && renderer.info.render.calls > 0 && !renderer.getContext().isContextLost();
       window.__lanyardRenderedEpoch = window.__pingclashFrame?.epoch ?? -1;
+      window.__lanyardRenderedResume = window.__pingclashFrame?.resume ?? -1;
+      window.__lanyardFlipCount = hostedFace.flips;
       window.__lanyardFrames = (window.__lanyardFrames || 0) + 1;`);
   replace('    const tick = now => {', `    let hostedGrab = false;
-    let hostedTurn = 0;
+    const hostedFace = { turn: null, resume: -1, flips: 0 };
     let hostedOrigin = null;
     let nativeRest = 0;
     let restoringBand = false;
     const syncNative = () => {
       const host = window.__pingclashFrame;
       if (!host) return;
-      const desired = host.back ? Math.PI : 0;
-      if (desired !== hostedTurn) {
-        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(sim.body.quaternion);
-        sim.body.angular.addScaledVector(up, FLIP_SPIN * (desired > hostedTurn ? 1 : -1));
-        sim.turn = desired;
-        hostedTurn = desired;
-      }
-      sim.turn = desired;
+      syncHostedFace(sim, host, hostedFace, THREE, FLIP_SPIN);
       if (!host.motion) {
+        const desired = host.back ? Math.PI : 0;
         placeHanging(sim, layout, false);
         sim.turn = desired;
         sim.body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), desired);
@@ -93,7 +90,11 @@ export async function adaptReference() {
     const onNativeFrame = () => {
       const host = window.__pingclashFrame;
       cancelAnimationFrame(raf); raf = 0;
-      if (!host?.active) { cancelAnimationFrame(raf); raf = 0; return; }
+      if (!host?.active) {
+        if (hostedGrab) { hostedGrab = false; sim.grab = null; restoringBand = true; }
+        return;
+      }
+      syncNative(); render();
       if (!host.motion) { syncNative(); render(); return; }
       start();
     };

@@ -136,6 +136,70 @@ class LanyardThreeTest {
         assertFalse(VpnRuntime.state.value.active)
     }
 
+    @Test fun returningHomeKeepsThePaintedFaceAndRecoversOneDroppedResumeWithoutReplaying() {
+        val page=mutableStateOf(0)
+        val phase=mutableStateOf("established")
+        val visibility=java.util.concurrent.ConcurrentLinkedQueue<Boolean>()
+        compose.runOnUiThread {compose.activity.setContent {
+            PingClashTheme("light") {CompositionLocalProvider(LocalMotionAllowed provides true) {
+                ScenicFrame(page.value,"none",true,{page.value=it}) {
+                    val renderer=LocalLanyardThree.current
+                    SideEffect {
+                        control=requireNotNull(renderer)
+                        if(page.value==0)visibility.add(control.displayReady)
+                    }
+                    androidx.compose.animation.AnimatedContent(page.value,label="quiet-page") { selected ->
+                        if(selected==0)Column(Modifier.fillMaxSize().padding(horizontal=24.dp,vertical=100.dp)) {
+                            LanyardPowerControl(phase.value,true,"Fixture action") {
+                                phase.value=if(phase.value=="idle")"established" else "idle"
+                            }
+                        } else androidx.compose.material3.Text("Synthetic second page")
+                    }
+                }
+            }}
+        }}
+        compose.waitForIdle()
+        val view=renderer()
+        await {control.ready&&status(view).getJSONObject("pose").getDouble("normalZ")<-.85}
+        visibility.clear()
+        repeat(4) {
+            compose.onNodeWithTag("nav-1").performClick();compose.waitForIdle()
+            assertTrue(evaluate(view,"window.__pingclashFrame.height").toDouble()>0)
+            compose.onNodeWithTag("nav-0").performClick();compose.waitForIdle()
+            repeat(8) {
+                assertTrue("Return replayed the front face",status(view).getJSONObject("pose").getDouble("normalZ")<-.6)
+                Thread.sleep(30)
+            }
+            await {control.ready}
+            assertTrue(view===renderer())
+        }
+        assertTrue("Normal navigation hid the already-painted scene",visibility.all {it})
+        assertEquals("Navigation added a flip impulse",0,status(view).getInt("flips"))
+        assertDroppedResumeRecovers(view)
+        compose.onNodeWithTag("nav-1").performClick();compose.waitForIdle()
+        compose.runOnIdle {phase.value="idle"}
+        compose.onNodeWithTag("nav-0").performClick();compose.waitForIdle()
+        await {control.ready&&status(view).getJSONObject("pose").getDouble("normalZ")>.85}
+        assertEquals(0,status(view).getInt("flips"))
+        compose.onNodeWithTag("vpn-power").performClick();compose.waitForIdle()
+        await {status(view).getInt("flips")==1&&status(view).getJSONObject("pose").getDouble("normalZ")<-.6}
+        assertFalse(VpnRuntime.state.value.active)
+    }
+
+    private fun assertDroppedResumeRecovers(view: WebView) {
+        compose.runOnUiThread {control.visible(false)}
+        Thread.sleep(120)
+        evaluate(view,"""window.__dispatchSaved=window.dispatchEvent;window.__dropResume=true;
+            window.dispatchEvent=function(e){if(e.type==='pingclash-frame'&&window.__dropResume){
+            window.__dropResume=false;return true;}return window.__dispatchSaved.call(this,e);};""")
+        compose.runOnUiThread {control.visible(true)}
+        await {control.ready&&status(view).optBoolean("active")}
+        assertTrue(view===renderer())
+        assertEquals(0,status(view).getInt("flips"))
+        assertTrue(status(view).getJSONObject("pose").getDouble("normalZ")<-.6)
+        evaluate(view,"window.dispatchEvent=window.__dispatchSaved;delete window.__dispatchSaved")
+    }
+
     private fun assertDragAndResumeKeepBackFace(view: WebView,resumeMotion: ()->Unit) {
         compose.runOnIdle {resumeMotion()}
         compose.waitForIdle()

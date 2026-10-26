@@ -20,3 +20,13 @@ of an outgoing page from releasing the new page's control. Re-entry and phase
 changes require the renderer to acknowledge both frame generation and the actual
 painted phase. No old native card or metal clasp is overlaid during loading. The
 small native fallback retains accessible connect/disconnect actions.
+
+## Quiet re-entry
+
+A persistent scene is shown across ordinary Home returns without invalidating its
+last healthy frame. Host messages retain valid geometry while inactive and include
+a separate resume generation. `hostLifecycle.mjs` distinguishes re-entry from a
+visible state change: initial/hidden changes align without impulses; user-driven
+connection changes still animate. The adapter retains the upstream meshes,
+materials and physical solver. A bounded native acknowledgment watchdog retries
+lost messages without rebuilding the scene and retains a usable native fallback.

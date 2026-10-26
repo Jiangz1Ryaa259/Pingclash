@@ -83,3 +83,12 @@ capsule clipping and pressed-layer removal are implemented. Local signed APK:
 API 35 64/64; API 31 and 29 focused 16/16 each. Physical OEM/GPU behavior remains
 unverified. No newer Release/tag has been published; source CI must be assessed
 at its own exact revision.
+
+## 0.1.2-preview.1 local candidate
+
+Keep the painted 3D card and valid layout on ordinary Home returns. Quietly align
+hidden state changes or unfinished flips; visible connect/disconnect changes
+retain the physical animation. Retry missing frame/resume acknowledgments twice,
+then retain a usable native action. Local signed API 35 regression: 65/65;
+offline renderer cases: 25/25. Physical OEM/GPU behavior remains unverified.
+The published 0.1.1 Release is not replaced and no new Release/tag is created.

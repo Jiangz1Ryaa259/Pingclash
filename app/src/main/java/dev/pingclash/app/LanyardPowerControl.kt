@@ -102,14 +102,14 @@ internal val LanyardFaceAngle=SemanticsPropertyKey<Float>("LanyardFaceAngle")
             .graphicsLayer {
                 translationX=x*density.density;translationY=y*density.density
                 rotationZ=(x*.19f).coerceIn(-25f,25f);rotationX=(-y*.38f).coerceIn(-20f,20f)
-                rotationY=if(three?.ready==true)turn+(x*.30f).coerceIn(-20f,20f) else 0f
+                rotationY=if(three?.displayReady==true)turn+(x*.30f).coerceIn(-20f,20f) else 0f
                 transformOrigin=TransformOrigin(.5f,.04f);cameraDistance=1100f*density.density
                 alpha=cardOpacity(available)
             }
             .then(anchor).testTag("vpn-power")
             .lanyardAction(available,label,description,performTap)
             .lanyardGestures(available,moving,density.density,pose,performTap)) {
-            if(three?.ready!=true) {
+            if(three?.displayReady!=true) {
             MinimalLanyardFallback(phase,label,three?.unavailable==false,
                 Modifier.fillMaxSize())
             }
