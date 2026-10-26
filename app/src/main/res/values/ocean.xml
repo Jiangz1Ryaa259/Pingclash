@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ui_dashboard_subtitle">Your connection, at a glance.</string>
-    <string name="ui_connection">Connection</string>
     <string name="ui_connection_failed">Connection failed</string>
     <string name="ui_connection_path">Connection path</string>
     <string name="ui_choose_configuration">Choose a configuration</string>
-    <string name="ui_current_route">Current configuration</string>
-    <string name="ui_switch_route">Switch</string>
-    <string name="ui_snapshot">Latest diagnosis</string>
     <string name="ui_checking">Checking…</string>
     <string name="ui_not_measured">Not tested</string>
     <string name="ui_not_separately_tested">Skipped</string>
@@ -21,16 +16,11 @@
     <string name="ui_target">Web</string>
     <string name="ui_cancel_connection">Cancel connection</string>
     <string name="ui_test_latency">Test latency</string>
-    <string name="ui_tap_latency">Tap to test</string>
-    <string name="ui_url_note">A URL test measures the proxy path.</string>
     <string name="ui_last_url_result">Last URL test · %1$s</string>
     <string name="ui_latency_fast">Fast response</string>
     <string name="ui_latency_moderate">Elevated latency</string>
     <string name="ui_latency_high">High latency</string>
-    <string name="ui_diagnostic_boundary">The path shows the last diagnosis. Establishing VPN alone does not verify web access.</string>
     <string name="ui_dynamic_color">Use system colors</string>
-    <string name="ui_dynamic_color_detail">Android 12 or later. Turn off to use the ocean palette.</string>
     <string name="ui_reduce_effects">Reduce effects</string>
-    <string name="ui_reduce_effects_detail">Keep waves and clouds still and disable decorative motion. System animation and accessibility preferences also apply.</string>
     <string name="ui_traffic_overview">Live traffic</string>
 </resources>

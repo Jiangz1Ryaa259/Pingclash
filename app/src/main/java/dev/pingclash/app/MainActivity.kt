@@ -103,7 +103,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(tr(R.string.message_a1ebf712be), fontSize = 34.sp, lineHeight = 43.sp, fontWeight = FontWeight.Bold)
-            Text(tr(R.string.message_8cc06bb4cd), color = Muted, lineHeight = 23.sp)
+
         }
 
         Card(colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(24.dp)) {
@@ -116,7 +116,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                     host, { host = it; error = null }, Modifier.fillMaxWidth(),
                     enabled = !state.running, singleLine = true, label = { Text(tr(R.string.message_9e5175a63b)) },
                     placeholder = { Text(tr(R.string.message_6c8b8a3572)) },
-                    supportingText = { Text(tr(R.string.message_baac1eb8e6)) },
+
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
@@ -126,7 +126,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                     )
                     Column(Modifier.weight(1f)) {
                         Text(tr(R.string.message_2159b45cbe), fontWeight = FontWeight.Medium)
-                        Text(tr(R.string.message_5ba569f731), color = Muted, style = MaterialTheme.typography.labelSmall)
+
                     }
                     Switch(useTls, { useTls = it }, enabled = !state.running)
                 }
@@ -170,11 +170,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
                 Text(tr(R.string.message_73cf02b62d), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text(trPlural(R.plurals.message_7ae041d629, (state.steps.count { it.state == Models.State.PASSED }).toInt(), state.steps.count { it.state == Models.State.PASSED }), color = Muted, style = MaterialTheme.typography.labelMedium)
             }
-            if (state.steps.isEmpty()) {
-                Text(tr(R.string.message_a9fd59d7ab), color = Muted, lineHeight = 23.sp)
-            } else {
-                state.steps.forEach { StepCard(it) }
-            }
+            state.steps.forEach { StepCard(it) }
         }
 
         state.report?.let { report ->
@@ -188,12 +184,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
             }
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(tr(R.string.message_4dea405f22), fontWeight = FontWeight.Medium)
-            Text(tr(R.string.message_1383e06670), color = Muted, style = MaterialTheme.typography.bodySmall, lineHeight = 21.sp)
-            Text(tr(R.string.message_c1129dfc0f), color = Mint, style = MaterialTheme.typography.labelSmall)
-        }
+
     }
 
     if (showReport && state.report != null) {
@@ -204,7 +195,7 @@ internal fun AuxiliaryDiagnosticScreen(model: DiagnosticViewModel = viewModel())
             title = { Text(tr(R.string.message_423dd8c4db)) },
             text = {
                 Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
-                    Text(tr(R.string.message_e4933fa179), color = Mint)
+
                     Spacer(Modifier.height(16.dp))
                     Text(markdown, style = MaterialTheme.typography.bodySmall)
                 }

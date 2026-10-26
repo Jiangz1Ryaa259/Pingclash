@@ -1,3 +1,15 @@
+# 0.1.2-preview.5 clean interface candidate (build 35)
+
+- Exact signed APK SHA-256: `f7047f1a84975fe4e45a5d8303a7f7ac04ca086ba2e856e95958de24fa0b2377` (131282482 bytes). Existing signing identity, non-debuggable, v2/v3; shell run-as denied.
+- API 35/AOSP x86_64, Emulator 37.2.12 host-GPU backend: **73/73, zero skipped, 368.031 seconds** on the final signed APK. Controlled VPN DNS and separate-UID HTTP relay are required by the runner.
+- Same signed APK, focused UI checks: API 31 **8/8, 21.770 seconds**; API 29 **8/8, 17.315 seconds**, zero skipped. These cover page-title parity, settings routes, saved settings and compact Home; they are not full legacy VPN suites.
+- New regression checks read the actual four heading text styles (22 sp/bold), enter diagnostics/network details through the settings list and assert that an outgoing sensitive rules page retains FLAG_SECURE until its exit animation is disposed. Existing terminal, import, deep-link consent, VPN/privacy and glass-drag checks remain in the full run.
+- An initial complete run passed 72 cases but found one stale deep-link dialog-prefix assertion after simplifying its wording. The assertion now verifies the displayed host; no-before-consent requests, hidden canary token, inactive import, recreation and explicit-activation assertions are retained. Focused deep-link cases passed 4/4 before the final complete rerun.
+- Detekt/build pass; lint 0 errors, 40 warnings and 2 information. Localization: 531 matched resources. UI-copy audit checks 1062 resource entries and the signed APK for retired command/tutorial text; the detailed Markdown guide is external, not bundled. Delete 102 unused translated resource IDs and remove the retired custom-command console; keep essential functional errors, security consent, accessible text and licenses.
+- Backdrop: 27 upstream hashes / four documented shims. Six native libraries / 20 LOAD segments retain 16 KiB alignment. Package private/test-marker matches: 0. Public source/history scans are performed separately before pushing.
+- Full navigation remains `BottomNavigationBar.kt:56`, unchanged. Page headings and right-entering settings details are in `PageHeading.kt`; grouped rows and route-scoped privacy guards are in `SettingsHub.kt`; diagnostics routing is in `AppScreens.kt`. Optical kernels, glass values, drag-following logic and renderer assets are unchanged. No new listener, permission, telemetry or production screenshot/bitmap capture.
+- Stable 0.1.1 Release unchanged; no new tag/Release/APK asset upload or video. Physical OEM/GPU frame pacing, prolonged Doze/background behavior and real subscription/public-network performance remain unverified. Prior emulator limitations below are not claimed resolved.
+
 # 0.1.2-preview.4 direct-drag candidate (build 34)
 
 - Exact signed APK SHA-256: `c3d8f46865d94f98642afdb272eed80c8469a3d1f5dd8927aea5eeea995cd90e` (131360306 bytes). Existing signing identity; release run-as denied.

@@ -87,7 +87,7 @@ import androidx.compose.ui.unit.dp
                 Text(tr(if(state.services.running)R.string.cancel else R.string.ui_measure_all))
             }
         }
-        Text(tr(R.string.ui_site_latency_note),color=Muted,style=MaterialTheme.typography.bodySmall)
+
         serviceTargets.forEach {target->
             Row(Modifier.fillMaxWidth().heightIn(min=56.dp).testTag("service-detail-${target.id}")
                 .clickable(enabled=measurementEnabled(state)&&!state.services.running,role=Role.Button) {

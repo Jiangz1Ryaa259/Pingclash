@@ -118,3 +118,11 @@ and animated layout offsets. Follow the finger directly, settle with a spring
 after release and reuse the legacy mask Path. A controlled frame-following
 regression covers both directions; physical device frame-rate validation remains
 unperformed. Stable 0.1.1 is unchanged.
+
+## 0.1.2-preview.5 local candidate
+
+Use the external usage guide instead of in-app tutorial paragraphs. Unify the four
+main title styles, move tools into settings chevron rows, and animate details from
+the right while retaining sensitive-window protection through exit. Retire the
+custom command console; the standard terminal and concise safety consent remain.
+Glass navigation is unchanged. Stable 0.1.1 remains unchanged.

@@ -20,7 +20,6 @@ class AdvancedSettingsTest {
     @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     private fun root() {
         compose.onNodeWithTag("nav-3").performClick()
-        compose.onNodeWithTag("tool-settings").performClick()
     }
     private fun section(id: String) {
         visibleControl("settings-$id").performClick();compose.waitForIdle()

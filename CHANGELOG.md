@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2-preview.5 (local candidate)
+
+- Move tutorials and implementation commentary into the external usage guide, remove the retired custom diagnostic-command panel, and delete 102 unused translated resource entries. Keep concise errors, essential consent and legal notices.
+- Use one heading component for Home, Proxies, Profiles and Settings. Replace the top settings/diagnostics/terminal chips with grouped chevron rows and right-entering detail pages.
+- Preserve settings draft/scroll state and keep sensitive outgoing pages protected until their transition is disposed. Retain the existing glass navigation material and direct-drag behavior.
+- Add title/route and sensitive-transition regressions, adapt existing UI flows to the new entries, and audit source resources plus APK bytes for retired copy.
+
 ## 0.1.2-preview.4 (local candidate)
 
 - Track the finger directly during navigation drag; use a spring only after release, cancellation or explicit tab changes. Track bounded gesture velocity separately for the existing stretch effect.

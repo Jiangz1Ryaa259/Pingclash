@@ -30,8 +30,6 @@ import androidx.compose.ui.unit.dp
         state.data.selected?.let {Text(it.name,
             modifier=Modifier.align(Alignment.CenterHorizontally),style=MaterialTheme.typography.titleSmall,
             color=Color.White,maxLines=2,overflow=TextOverflow.Ellipsis)}
-        Text(tr(R.string.ui_lanyard_hint),Modifier.align(Alignment.CenterHorizontally),
-            style=MaterialTheme.typography.labelSmall,color=Color.White.copy(alpha=.78f))
         ImmersiveLatency(state,actions)
         if(state.vpn.phase=="error")Text(state.vpn.message,color=MaterialTheme.colorScheme.error,
             style=MaterialTheme.typography.bodySmall)

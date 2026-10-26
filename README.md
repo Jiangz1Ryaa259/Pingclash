@@ -6,7 +6,7 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 
 [Download 0.1.1](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.1) · [Earlier pre-release](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.0-beta.1)
 
-**Current source: 0.1.2-preview.4 (build 34) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
+**Current source: 0.1.2-preview.5 (build 35) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
 
 ## Features
 
@@ -23,7 +23,7 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 
 ## 状态与边界
 
-已发布版本为 0.1.1；当前源码为 0.1.2-preview.4，优化玻璃导航拖动跟手和图形层位移，同时保留现有材质、测速调度与主页返回修正，尚未发布新的 Release。早期版本为 0.1.0-beta.1（预发布）。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+已发布版本为 0.1.1；当前源码为 0.1.2-preview.5，精简界面文案、统一页面标题，并将设置改为分层详情；详细操作见使用手册，尚未发布新的 Release。早期版本为 0.1.0-beta.1（预发布）。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -67,3 +67,5 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 本轮 HTTP providers、UA/配额及 TCP 指标的源码与验证见 [PR #14](https://github.com/Jiangz1Ryaa259/Pingclash/pull/14) 和[验证记录](docs/security-testing.md)。既有 Release APK 尚未更新。
 
 HTTPS `clash://install-config` imports now require host confirmation and remain inactive until a separate profile selection. See the [provider compatibility corpus](docs/provider-compatibility.md), [output privacy boundaries](docs/output-privacy.md) and [next-beta notes draft](docs/next-beta-notes.md). These source additions do not replace the published beta.1 APK.
+
+操作说明见 [使用手册](docs/user-guide.md)。

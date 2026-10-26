@@ -130,7 +130,7 @@ class ClientIntegrationTest {
             assertFalse(markdown.contains(fixture.host))
             assertTrue(report.steps.any { it.stage == dev.pingclash.diagnostics.Models.Stage.PROXY })
             compose.onNodeWithTag("nav-3").performClick()
-            compose.onNodeWithTag("tool-diagnosis").performClick()
+            visibleSettingsControl(compose,"tool-diagnosis").performClick()
             val previewControl=compose.onNodeWithText("预览脱敏报告").performScrollTo()
             val navTop=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot.top
             val distance=previewControl.fetchSemanticsNode().boundsInRoot.bottom-navTop+

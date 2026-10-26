@@ -22,6 +22,8 @@ internal const val GLYPH_COPY=28
 internal const val GLYPH_SUN=29
 internal const val GLYPH_MOON=30
 
+internal const val BACK_GLYPH=31
+
 private object AppIcons {
     private fun gear(): String {
         val points=(0 until 32).map {i ->
@@ -66,6 +68,7 @@ private object AppIcons {
         24 to "M20.5 12 A8.5 8.5 0 1 1 3.5 12 A8.5 8.5 0 1 1 20.5 12 Z M12 10.5 V16.5 M12 7.2 V7.3",
         25 to "M6.5 9 L12 14.5 L17.5 9",
         26 to "M12 5 V5.1 M12 12 V12.1 M12 19 V19.1",
+        BACK_GLYPH to "M15.5 5 L8.5 12 L15.5 19",
         27 to "M5.5 3.5 H8.5 A2 2 0 0 1 10.5 5.5 V8.5 A2 2 0 0 1 8.5 10.5 H5.5 A2 2 0 0 1 3.5 8.5 V5.5 A2 2 0 0 1 5.5 3.5 Z M15.5 3.5 H18.5 A2 2 0 0 1 20.5 5.5 V8.5 A2 2 0 0 1 18.5 10.5 H15.5 A2 2 0 0 1 13.5 8.5 V5.5 A2 2 0 0 1 15.5 3.5 Z M5.5 13.5 H8.5 A2 2 0 0 1 10.5 15.5 V18.5 A2 2 0 0 1 8.5 20.5 H5.5 A2 2 0 0 1 3.5 18.5 V15.5 A2 2 0 0 1 5.5 13.5 Z M15.5 13.5 H18.5 A2 2 0 0 1 20.5 15.5 V18.5 A2 2 0 0 1 18.5 20.5 H15.5 A2 2 0 0 1 13.5 18.5 V15.5 A2 2 0 0 1 15.5 13.5 Z",
     )
     private val vectors=paths.mapValues {(id,data) ->

@@ -83,7 +83,7 @@ internal data class DashboardActions(
     androidx.compose.foundation.layout.BoxWithConstraints(modifier.testTag("home-control")) {
         LanyardPowerControl(state.vpn.phase,connectionControlEnabled(state),connectLabel(state),
             maxHeight.coerceAtLeast(112.dp),actions.connect)
-        Text("PingClash",Modifier.align(Alignment.TopStart),style=MaterialTheme.typography.titleMedium)
+        PageHeading("PingClash",Modifier.align(Alignment.TopStart).padding(start=4.dp,top=6.dp),"page-title-home")
     }
 }
 
@@ -139,9 +139,9 @@ internal fun connectionControlEnabled(state: DashboardState): Boolean {
                 else -> R.string.ui_not_measured
             }), style = MaterialTheme.typography.titleMedium,
                 color = if (delay?.state in setOf("failed", "timeout")) MaterialTheme.colorScheme.error else Muted)
-            Text(tr(R.string.ui_url_note), color = Muted, style = MaterialTheme.typography.bodySmall)
+
         }
-        Text(tr(R.string.ui_tap_latency), color = Mint, style = MaterialTheme.typography.labelSmall)
+
     }
 }
 

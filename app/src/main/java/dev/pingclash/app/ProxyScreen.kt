@@ -89,8 +89,8 @@ private fun groupProblem(reason: String)=when(reason) {
         val current=groups.getOrNull(pager.currentPage)
         LaunchedEffect(pager.currentPage,groups.map {it.name}) {if(groups.isNotEmpty()) tabs.animateScrollToItem(pager.currentPage)}
         Column(Modifier.fillMaxSize().testTag("proxy-page")) {
-            Row(Modifier.fillMaxWidth().padding(start=18.dp,end=12.dp,top=10.dp,bottom=12.dp),verticalAlignment=Alignment.CenterVertically) {
-                Text((tr(R.string.message_5e84ea61e8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+            Row(Modifier.fillMaxWidth().padding(start=20.dp,end=12.dp,top=12.dp,bottom=12.dp),verticalAlignment=Alignment.CenterVertically) {
+                PageHeading(tr(R.string.message_5e84ea61e8),Modifier.weight(1f),"page-title-proxies")
                 Surface(shape=CircleShape,color=Panel.copy(alpha=.72f)) {
                     Row {
                         IconButton({searching=!searching;if(!searching)query=""},Modifier.semantics {contentDescription=tr(R.string.message_760585442e)}) {AppGlyph(8,Modifier.size(23.dp))}

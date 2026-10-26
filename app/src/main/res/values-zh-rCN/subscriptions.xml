@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="subscription_ua">订阅 User-Agent</string>
-    <string name="subscription_ua_hint">仅在获取此订阅时发送，修改后在下次更新时生效。</string>
     <string name="subscription_ua_invalid">User-Agent 必须为 1–256 个可打印 ASCII 字符。</string>
     <string name="subscription_used">已用：%1$s</string>
     <string name="subscription_total">总配额：%1$s</string>
@@ -21,9 +20,7 @@
     <string name="latency_url">URL：%1$s</string>
     <string name="latency_tcp">TCP：%1$s</string>
     <string name="latency_tcp_test">测试直连 TCP 可达性</string>
-    <string name="latency_tcp_note">TCP 测量当前底层网络到服务器端口的连接耗时，不含 DNS。UDP 协议和策略组跳过此项；URL 测量实际代理链路。</string>
     <string name="latency_skipped">不适用</string>
     <string name="terminal_start_failed">终端无法启动，未执行命令。请尝试新建会话。</string>
-    <string name="terminal_raw_output">命令输出由 Android 和所运行程序产生，可能为英文。Permission denied 表示应用 UID 无权访问；此终端不会申请 root。</string>
     <string name="terminal_process_exit">\n[会话已结束：%1$d]</string>
 </resources>

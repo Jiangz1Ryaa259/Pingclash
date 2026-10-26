@@ -1,5 +1,7 @@
 # Documentation
 
+- [使用手册：界面、配置、设置、诊断与标准终端](user-guide.md)
+
 - [Build and verification](development.md)
 - [Review against the installation-readiness checklist](hardening-review.md)
 - [Subscriptions, HTTP providers and TCP/URL latency](subscriptions.md)

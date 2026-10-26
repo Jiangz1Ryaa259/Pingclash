@@ -13,7 +13,7 @@ $env:Path = $env:JAVA_HOME + '\bin;' + $env:Path
 
 The native bridge pins Go 1.27.3, Mihomo v1.19.32 and the exact module graph in core/go.mod / core/go.sum. Terminal sources are included in terminal-emulator and terminal-view; the same NDK builds their JNI libraries. Gradle wrapper and dependency hashes are pinned in gradle/verification-metadata.xml.
 
-The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.4/build 34). Debug builds use tools/build-android.ps1.
+The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.5/build 35). Debug builds use tools/build-android.ps1.
 
 ## Verification
 
@@ -81,3 +81,10 @@ Preview.4 has 71 integration cases. NavigationTrackingTest uses manual Compose
 frames for continuous LTR/RTL moves, actual selector-center checks and cancellation
 without selection commits. Preview.3 is an intentional failing negative control;
 only the final candidate is expected to pass. The trace is not a phone FPS test.
+
+## Clean interface regressions
+
+Preview.5 has 73 integration cases. CleanInterfaceTest checks four matching title
+styles, settings-list entry points and screenshot protection throughout sensitive
+route exit. Run `python tools/verify-ui-copy.py path/to/app.apk` to audit retired
+copy; the external usage guide remains outside app assets.

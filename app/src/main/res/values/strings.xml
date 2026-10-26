@@ -1,13 +1,8 @@
 <resources>
     <string name="terminal_warning_title">Terminal permissions</string>
-    <string name="terminal_warning_body">Commands run with this app’s UID and permissions. They may read or change app files and access the network. Run only commands you understand. Terminal requests do not automatically use the selected proxy. History stays in memory unless your command explicitly writes a file.</string>
+    <string name="terminal_warning_body">Commands run as this app UID and can read or change app files and use the network. Run trusted commands only.</string>
     <string name="terminal_warning_accept">I understand</string>
     <string name="cancel">Cancel</string>
-    <string name="ui_change_theme">Switch light / dark theme</string>
-    <string name="ui_connection_tests">Connection tests</string>
-    <string name="ui_reachable">Reachable · %1$s ms</string>
-    <string name="ui_service_restricted">Server response: HTTP %1$d</string>
-    <string name="ui_service_check_note">Tests use the selected node. HTTP reachability does not prove regional access or account availability. Requests run only when you tap Test.</string>
     <string name="ui_subscription_copy">Copy subscription URL</string>
     <string name="ui_copied">Copied</string>
     <string name="ui_profile_details">Configuration details</string>
@@ -18,18 +13,9 @@
     <string name="ui_next">Continue</string>
     <string name="ui_back">Back</string>
     <string name="ui_more_actions">Configuration actions</string>
-    <string name="ui_test_sites">Test services</string>
-    <string name="ui_local_profile">Local configuration</string>
-    <string name="ui_profile_updated">Updated %1$s</string>
     <string name="ui_profile_quota">%1$s / %2$s</string>
-    <string name="ui_profile_expiry">Expires %1$s</string>
-    <string name="ui_no_test_result">Tap to test</string>
-    <string name="ui_test_again">Test again</string>
-    <string name="ui_show_details">Show details</string>
-    <string name="ui_hide_details">Hide details</string>
     <string name="ui_import_too_large">Configuration exceeds 2 MiB.</string>
     <string name="ui_session_duration">VPN session</string>
-    <string name="ui_session_duration_note">Time since this VPN session first connected, including network handoffs and reconnect waits. Disconnecting resets it; it does not prove continuous Internet access.</string>
     <string name="ui_dark_mode">Dark mode</string>
     <string name="ui_follow_system">Follow system appearance</string>
     <string name="ui_mode_global_short">Global</string>
@@ -37,10 +23,9 @@
     <string name="ui_more">More</string>
     <string name="ui_measure">Test</string>
     <string name="ui_measure_all">Test all</string>
-    <string name="ui_site_latency_note">Uses Mihomo URLTest (HEAD) through the selected proxy, with at most four simultaneous tests. A response measures HTTP latency, not account, region, service unlock or HTTP success. Google/YouTube use lightweight 204 targets. This probe can run with VPN off and does not verify the TUN route of other apps. VPN state or profile changes clear old results; measurements expire after 60 seconds. Only explicitly selected tests run; opening this panel sends no requests.</string>
     <string name="ui_session_open_home">Open home</string>
-    <string name="ui_site_route_proxy">Selected-node probe · not VPN verification</string>
-    <string name="ui_site_route_direct">Direct probe · not proxy verification</string>
+    <string name="ui_site_route_proxy">Via selected node</string>
+    <string name="ui_site_route_direct">Direct</string>
     <string name="ui_lanyard_loading">Loading 3D control</string>
     <string name="delay_queued">Queued</string>
     <string name="delay_group_empty">No testable members</string>

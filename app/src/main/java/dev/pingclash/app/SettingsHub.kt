@@ -19,10 +19,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,54 +45,55 @@ import org.json.JSONArray
     var showProviderRules by remember {mutableStateOf(false)}
     var reset by remember {mutableStateOf(false)}
     val context=LocalContext.current
-    val sensitive=page=="rules"||page=="connections"&&data.client.inspectConnections
-    DisposableEffect(sensitive) {
-        val window=context.hostActivity()?.window
-        val token=Any()
-        if(sensitive&&window!=null)SecurePage.acquire(window,token)
-        onDispose {if(sensitive&&window!=null)SecurePage.release(window,token)}
-    }
     BackHandler(page.isNotEmpty()) {page=""}
     val titles=mapOf("live" to tr(R.string.message_caaf859d56),"connections" to tr(R.string.message_fc16aec85d),"dns" to "DNS","network" to tr(R.string.message_03fae6b449),"apps" to tr(R.string.message_d8618b5e19),"rules" to tr(R.string.message_beae79496b),"lan" to tr(R.string.message_4f8389a45d),"appearance" to tr(R.string.message_f3d6b6c03b),"usage" to tr(R.string.message_e7370f8097),"control" to tr(R.string.message_4f51d0285e),"privacy" to tr(R.string.message_58e6ce61a6),"about" to tr(R.string.message_495dc9e725))
     val dirty=draft!=data.client||dns!=data.dnsAddress||target!=data.probeUrl
-    key(page) {
+    val pages=rememberSaveableStateHolder()
+    SettingsSlide(page) {shown->pages.SaveableStateProvider(shown) {
+        val sensitive=shown=="rules"||shown=="connections"&&data.client.inspectConnections
+        SettingsPrivacyGuard(context,sensitive)
         Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
             .padding(horizontal=20.dp,vertical=12.dp).padding(bottom=LocalNavigationClearance.current)
             .testTag("settings-page"),verticalArrangement=Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically) {
-                if(page.isNotEmpty()) TextButton({page=""},Modifier.testTag("settings-back")){Text((tr(R.string.message_572cf45ba4)))}
-                Text((titles[page]?:tr(R.string.message_df3d58c7d8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+                if(shown.isNotEmpty()) IconButton({page=""},Modifier.testTag("settings-back").semantics {
+                    contentDescription=tr(R.string.message_572cf45ba4)
+                }) {AppGlyph(BACK_GLYPH)}
+                PageHeading(titles[shown]?:tr(R.string.message_df3d58c7d8),Modifier.weight(1f),
+                    if(shown.isEmpty())"page-title-settings" else "settings-detail-title")
             }
-            if(locked&&page in listOf("dns","network","apps","rules","lan","usage")) Text((tr(R.string.message_0845a173b1)),color=Warning,style=MaterialTheme.typography.bodySmall)
-            when(page) {
+            if(locked&&shown in listOf("dns","network","apps","rules","lan","usage")) {
+                Text(tr(R.string.message_0845a173b1),color=Warning,style=MaterialTheme.typography.bodySmall)
+            }
+            when(shown) {
                 "" -> {
                     SettingsCard {
-                        StatLine(tr(R.string.message_03d39aa1b9),(if(vpn.phase=="established")tr(R.string.message_1f0eb99b7e) else tr(R.string.message_f006455e3b)))
-                        StatLine(tr(R.string.message_3726bcb690),vpn.connections.toString())
-                        StatLine(tr(R.string.message_f3d6b6c03b),(when(data.client.theme){"light"->tr(R.string.message_aa0819dfc4);"dark"->tr(R.string.message_a6b75d0680);else->tr(R.string.message_217cfe7db1)}))
+                        SettingLink("appearance",tr(R.string.message_f3d6b6c03b)) {page="appearance"}
+                        SettingLink("profiles",tr(R.string.message_148d195e21)) {onProfiles()}
+                        SettingLink("groups",tr(R.string.message_47d56387f5)) {onProxies()}
                     }
                     SettingsCard {
-                        SettingLink("live",tr(R.string.message_caaf859d56),tr(R.string.message_3a2c23fbc8)) {page="live"}
-                        SettingLink("connections",tr(R.string.message_fc16aec85d),tr(R.string.message_36dd5f6649)) {page="connections"}
-                        SettingLink("appearance",tr(R.string.message_f3d6b6c03b),tr(R.string.message_a9a0dc61a9)) {page="appearance"}
+                        SettingLink("dns","DNS") {page="dns"}
+                        SettingLink("network",tr(R.string.message_03fae6b449)) {page="network"}
+                        SettingLink("apps",tr(R.string.message_d8618b5e19)) {page="apps"}
+                        SettingLink("rules",tr(R.string.message_beae79496b)) {page="rules"}
+                        SettingLink("lan",tr(R.string.message_4f8389a45d)) {page="lan"}
                     }
                     SettingsCard {
-                        SettingLink("dns","DNS","TCP DNS / HTTPS DNS") {page="dns"}
-                        SettingLink("network",tr(R.string.message_03fae6b449),tr(R.string.message_b187f37b87)) {page="network"}
-                        SettingLink("apps",tr(R.string.message_d8618b5e19),tr(R.string.message_3223a06434)) {page="apps"}
-                        SettingLink("rules",tr(R.string.message_beae79496b),tr(R.string.message_9724800c57)) {page="rules"}
-                        SettingLink("lan",tr(R.string.message_4f8389a45d),tr(R.string.message_9c70f051e3)) {page="lan"}
+                        SettingLink("live",tr(R.string.message_caaf859d56)) {page="live"}
+                        SettingLink("connections",tr(R.string.message_fc16aec85d)) {page="connections"}
+                        SettingLink("usage",tr(R.string.message_e7370f8097)) {page="usage"}
                     }
                     SettingsCard {
-                        SettingLink("profiles",tr(R.string.message_148d195e21),tr(R.string.message_08083cb518)) {onProfiles()}
-                        SettingLink("groups",tr(R.string.message_47d56387f5),tr(R.string.message_8d039d6835)) {onProxies()}
-                        SettingLink("control",tr(R.string.message_4f51d0285e),tr(R.string.message_868b06e262)) {page="control"}
-                        SettingLink("usage",tr(R.string.message_e7370f8097),tr(R.string.message_5848c8f018)) {page="usage"}
+                        SettingLink("diagnosis",tr(R.string.message_75793291b7)) {onDiagnose()}
+                        SettingLink("terminal",tr(R.string.message_e2a76ef1f1)) {
+                            context.startActivity(Intent(context,TerminalActivity::class.java))
+                        }
+                        SettingLink("control",tr(R.string.message_4f51d0285e)) {page="control"}
                     }
                     SettingsCard {
-                        SettingLink("diagnosis",tr(R.string.message_75793291b7),tr(R.string.message_dde1ab0b99)) {onDiagnose()}
-                        SettingLink("privacy",tr(R.string.message_58e6ce61a6),tr(R.string.message_1b7a562155)) {page="privacy"}
-                        SettingLink("about",tr(R.string.message_495dc9e725),tr(R.string.message_87f447012c)) {page="about"}
+                        SettingLink("privacy",tr(R.string.message_58e6ce61a6)) {page="privacy"}
+                        SettingLink("about",tr(R.string.message_495dc9e725)) {page="about"}
                     }
                 }
                 "live" -> RuntimeCards(data,vpn,all=true)
@@ -98,15 +102,14 @@ import org.json.JSONArray
                     Choices(tr(R.string.message_47a270081a),draft.dnsMode,listOf("tcp" to "DNS over TCP","https" to "DNS over HTTPS"),!locked) {draft=draft.copy(dnsMode=it)}
                     SettingField("VPN DNS",dns,!locked) {if(it.length<=80)dns=it}
                     if(draft.dnsMode=="https") SettingField(tr(R.string.message_56dcdaae6d),draft.dnsHttps,!locked) {if(it.length<=2048)draft=draft.copy(dnsHttps=it)}
-                    Text((tr(R.string.message_ec049f51a4)),color=Muted,style=MaterialTheme.typography.bodySmall)
-                    Text((tr(R.string.message_c3856a32e8)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                 }
                 "network" -> {
                     SettingsCard {
                         SettingSwitch(tr(R.string.auto_reconnect),draft.autoReconnect,!locked) {draft=draft.copy(autoReconnect=it)}
-                        Text(tr(R.string.auto_reconnect_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                         SettingSwitch(tr(R.string.message_2ff888afea),draft.ipv6,!locked) {draft=draft.copy(ipv6=it)}
-                        Text((tr(R.string.message_4f4b8ea262)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                         SettingSwitch(tr(R.string.message_bec328ac8e),draft.udp,!locked) {draft=draft.copy(udp=it)}
                         NumberSetting("MTU",draft.mtu,1280..9000,!locked) {draft=draft.copy(mtu=it)}
                         NumberSetting(tr(R.string.message_84b0b71bc5),draft.connectTimeout,3..60,!locked) {draft=draft.copy(connectTimeout=it)}
@@ -119,19 +122,17 @@ import org.json.JSONArray
                         NumberSetting(tr(R.string.message_d4d74926c2),draft.probeTimeout,1000..20000,!locked) {draft=draft.copy(probeTimeout=it)}
                         NumberSetting(tr(R.string.message_8f7e175c9a),draft.probeConcurrency,1..16,!locked) {draft=draft.copy(probeConcurrency=it)}
                         SettingSwitch(tr(R.string.message_57ef467828),draft.unifiedDelay,!locked) {draft=draft.copy(unifiedDelay=it)}
-                        Text(tr(R.string.latency_tcp_note),color=Muted,style=MaterialTheme.typography.bodySmall)
-                        Text(tr(R.string.message_b70091e752),color=Muted,style=MaterialTheme.typography.bodySmall)
-                        Text((tr(R.string.message_80a58f0749)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                     }
                 }
                 "lan" -> SettingsCard {
                     Choices(tr(R.string.message_4f8389a45d),draft.lan,listOf("proxy" to tr(R.string.message_244df9f228),"direct" to tr(R.string.message_72a607c93d),"block" to tr(R.string.message_58c11726a2)),!locked) {draft=draft.copy(lan=it)}
-                    Text((tr(R.string.message_e9a1f1fe25)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                 }
                 "rules" -> {
                     SettingsCard {
                         ModeSegments(draft.mode,!locked) {draft=draft.copy(mode=it)}
-                        Text((tr(R.string.message_2843c2d9dd)),color=Warning,style=MaterialTheme.typography.bodySmall)
+
                         SettingSwitch(tr(R.string.message_8f93778b08),draft.useProviderRules,!locked) {draft=draft.copy(useProviderRules=it)}
                         StatLine(tr(R.string.message_148d195e21),data.activeProfile?.name?:"—")
                         Text("${data.activeProfile?.rules?.size?:0} ${(tr(R.string.message_d60617d759))} · ${data.activeProfile?.rulesOmitted?:0} ${(tr(R.string.message_01e0c3f814))}",color=Muted)
@@ -143,8 +144,8 @@ import org.json.JSONArray
                             {if(it.toByteArray().size<=64*1024)draft=draft.copy(customRules=it)},
                             Modifier.fillMaxWidth().heightIn(min=200.dp,max=400.dp).testTag("custom-rules"),
                             enabled=!locked,label={Text((tr(R.string.message_51c22886b5)))},shape=UiCorners.Compact)
-                        Text("DOMAIN-SUFFIX,example.com,PROXY\nIP-CIDR,192.168.0.0/16,DIRECT,no-resolve\nDST-PORT,443,PROXY\nNETWORK,udp,REJECT\nMATCH,PROXY",style=MaterialTheme.typography.bodySmall,color=Muted)
-                        Text((tr(R.string.message_5103a81309)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
+
                     }
                 }
                 "apps" -> AppRoutingPanel(draft,!locked) {draft=it}
@@ -156,11 +157,11 @@ import org.json.JSONArray
                             android.os.Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.S) {
                             model.appearance(data.client.language,data.client.theme,dynamicColor=it)
                         }
-                        Text(tr(R.string.ui_dynamic_color_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                         SettingSwitch(tr(R.string.ui_reduce_effects),data.client.reduceEffects,true) {
                             model.appearance(data.client.language,data.client.theme,reduceEffects=it)
                         }
-                        Text(tr(R.string.ui_reduce_effects_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                         Choices(tr(R.string.ui_scene),data.client.scene,listOf(
                             "ocean" to tr(R.string.ui_scene_ocean),"clouds" to tr(R.string.ui_scene_clouds),
                             "none" to tr(R.string.ui_scene_none)),true) {
@@ -171,7 +172,7 @@ import org.json.JSONArray
                             model.appearance(data.client.language,data.client.theme,
                                 scenery=ScenePreferenceChange(reduceTransparency=it))
                         }
-                        Text(tr(R.string.ui_transparency_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                     }
                     SettingsCard {
                         Text((tr(R.string.message_02ae2080b8)),style=MaterialTheme.typography.titleMedium)
@@ -202,8 +203,7 @@ import org.json.JSONArray
                         TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_VPN_SETTINGS))}}) {Text((tr(R.string.message_23e3eef5b0)))}
                         TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE,context.packageName))}}) {Text(tr(R.string.notification_settings))}
                         TextButton({runCatching {context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))}}) {Text((tr(R.string.message_11a3eb2648)))}
-                        Text(tr(R.string.background_detail),color=Muted,style=MaterialTheme.typography.bodySmall)
-                        Text((tr(R.string.message_d9b31e5cac)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                         TextButton({reset=true},enabled=!locked) {Text((tr(R.string.message_3b1473939a)))}
                     }
                 }
@@ -213,17 +213,17 @@ import org.json.JSONArray
                         Text((tr(R.string.message_8967970252)))
                         SettingSwitch(tr(R.string.message_1de996dcd1),draft.inspectConnections,!locked) {draft=draft.copy(inspectConnections=it)}
                         Text((tr(R.string.message_4fadf7a9a5)),color=Muted,style=MaterialTheme.typography.bodySmall)
-                        Text((tr(R.string.message_854d45ab64)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
                     }
                 }
                 "about" -> AboutPanel(model.nativeReady)
             }
-            if(page in listOf("dns","network","lan","rules","apps","appearance","usage","privacy")) {
+            if(shown in listOf("dns","network","lan","rules","apps","appearance","usage","privacy")) {
                 Button({model.clientSettings(draft,dns.trim(),target.trim())},enabled=dirty&&!locked,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).testTag("settings-save")) {Text((if(dirty)tr(R.string.message_c8550237ba) else tr(R.string.message_1bd91a7d0c)))}
             }
             Spacer(Modifier.height(8.dp))
         }
-    }
+    }}
     if(showProviderRules) AlertDialog(onDismissRequest={showProviderRules=false},properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn),title={Text((tr(R.string.message_a89096ffdb)))},text={Text(data.activeProfile?.rules?.joinToString("\n").orEmpty(),Modifier.heightIn(max=400.dp).verticalScroll(rememberScrollState()),style=MaterialTheme.typography.bodySmall)},confirmButton={TextButton({showProviderRules=false}){Text((tr(R.string.message_3fd47edce4)))}})
     if(reset) AlertDialog(onDismissRequest={reset=false},title={Text((tr(R.string.message_3b1473939a)))},text={Text((tr(R.string.message_c323a1f237)))},confirmButton={TextButton({model.clientSettings(ClientSettings(),"1.1.1.1","https://www.gstatic.com/generate_204");reset=false}){Text((tr(R.string.message_3b1473939a)))}},dismissButton={TextButton({reset=false}){Text((tr(R.string.message_2cd0f3be87)))}})
 }
@@ -234,20 +234,13 @@ private fun Context.hostActivity(): Activity? {
     return null
 }
 
-@Composable private fun SettingLink(id: String,title: String,description: String,onClick:()->Unit) {
+@Composable private fun SettingLink(id: String,title: String,onClick:()->Unit) {
     Column {
-        Row(Modifier.fillMaxWidth().heightIn(min=60.dp).testTag("settings-$id").clickable(onClick=onClick)
+        Row(Modifier.fillMaxWidth().heightIn(min=52.dp).testTag(if(id in listOf("diagnosis","terminal"))"tool-$id" else "settings-$id").clickable(onClick=onClick)
             .padding(vertical=7.dp),verticalAlignment=Alignment.CenterVertically,
             horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-            AppGlyph(when(id) {
-                "live","diagnosis"->2;"usage"->19;"connections"->20;"network"->22;"dns"->21;"lan"->23
-                "apps"->27;"profiles"->7;"rules"->17;"about"->24;"privacy"->6;"control"->0
-                "appearance"->18;"groups"->14;else->12
-            },Modifier.size(21.dp),Muted)
-            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
-                Text(title,style=MaterialTheme.typography.titleMedium)
-                Text(description,color=Muted,style=MaterialTheme.typography.bodySmall)
-            }
+            AppGlyph(settingsGlyph(id),Modifier.size(21.dp),Muted)
+            Text(title,Modifier.weight(1f),style=MaterialTheme.typography.bodyLarge)
             AppGlyph(5,Modifier.size(18.dp),Muted)
         }
         if(id !in listOf("appearance","lan","usage","about")) {
@@ -287,7 +280,7 @@ private data class VisibleApp(val name: String,val packageName: String)
     fun toggle(pkg: String) {onChange(draft.copy(packages=if(pkg in draft.packages)draft.packages-pkg else (draft.packages+pkg).take(300)))}
     SettingsCard {
         Choices(tr(R.string.message_47a270081a),draft.appMode,listOf("all" to tr(R.string.message_b4de26e01a),"exclude" to tr(R.string.message_b74c5a407d),"include" to tr(R.string.message_cddb6c9475)),enabled) {onChange(draft.copy(appMode=it))}
-        Text((tr(R.string.message_d324a67582)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
         SettingField(tr(R.string.message_06351ff759),query,true) {query=it.take(100)}
         val selected=draft.packages.toSet()
         val listed=available.filter {it.name.contains(query,true)||it.packageName.contains(query,true)}
@@ -323,10 +316,19 @@ private data class ConnectionRow(val id: Long,val network: String,val route: Str
         Text("PingClash",style=MaterialTheme.typography.titleLarge)
         Text(buildIdentity()+" · GPL-3.0",color=Muted)
         StatLine(tr(R.string.message_3b50348ec3),if(ready)"mihomo v1.19.32" else "—")
-        Text((tr(R.string.message_0fce3b3509)),color=Muted,style=MaterialTheme.typography.bodySmall)
+
         listOf("NOTICE.md","GPL-3.0.txt","Apache-2.0.txt").forEach {file -> TextButton({license=file}) {Text(file)}}
     }
     license?.let {file -> val text=remember(file) {runCatching {context.assets.open("licenses/$file").bufferedReader().use {it.readText()}}.getOrDefault(file)}
         AlertDialog(onDismissRequest={license=null},title={Text(file)},text={Text(text,Modifier.heightIn(max=400.dp).verticalScroll(rememberScrollState()),style=MaterialTheme.typography.bodySmall)},confirmButton={TextButton({license=null}){Text((tr(R.string.message_3fd47edce4)))}})
+    }
+}
+
+@Composable private fun SettingsPrivacyGuard(context: Context,sensitive: Boolean) {
+    DisposableEffect(sensitive) {
+        val window=context.hostActivity()?.window
+        val token=Any()
+        if(sensitive&&window!=null)SecurePage.acquire(window,token)
+        onDispose {if(sensitive&&window!=null)SecurePage.release(window,token)}
     }
 }

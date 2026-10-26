@@ -266,7 +266,6 @@ class SubscriptionImportTest {
         compose.waitUntil(5000) { compose.onAllNodesWithText("知道了").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("知道了").performClick()
         compose.onNodeWithTag("nav-3").performClick()
-        compose.onNodeWithTag("tool-settings").performClick()
         captureSyntheticFixture(compose, device, "settings-light.png")
     }
     @Test fun systemDarkThemeAndLargeTextRemainUsable() {
@@ -290,9 +289,11 @@ class SubscriptionImportTest {
             }.getOrDefault(false)}
             compose.waitForIdle()
             compose.onNodeWithTag("nav-3").performClick()
-            compose.waitUntil(10000) {compose.onAllNodesWithTag("tool-settings").fetchSemanticsNodes().isNotEmpty()}
-            compose.onNodeWithTag("tool-settings").performClick()
-            compose.onNodeWithText("跟随系统").assertIsDisplayed()
+            compose.waitUntil(10000) {
+                compose.onAllNodesWithTag("page-title-settings").fetchSemanticsNodes().isNotEmpty()
+            }
+            visibleSettingsControl(compose,"settings-appearance").performClick()
+            compose.onNodeWithText("跟随系统").performScrollTo().assertIsDisplayed()
             captureSyntheticFixture(compose,device,"settings-dark-large.png")
         } finally {
             device.executeShellCommand("settings put system font_scale 1.0")

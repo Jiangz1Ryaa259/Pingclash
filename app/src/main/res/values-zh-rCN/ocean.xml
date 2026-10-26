@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ui_dashboard_subtitle">你的连接，一目了然。</string>
-    <string name="ui_connection">连接状态</string>
     <string name="ui_connection_failed">连接失败</string>
     <string name="ui_connection_path">连接路径</string>
     <string name="ui_choose_configuration">选择配置</string>
-    <string name="ui_current_route">当前配置</string>
-    <string name="ui_switch_route">切换</string>
-    <string name="ui_snapshot">最近诊断</string>
     <string name="ui_checking">检测中…</string>
     <string name="ui_not_measured">未测试</string>
     <string name="ui_not_separately_tested">未单测</string>
@@ -21,16 +16,11 @@
     <string name="ui_target">目标</string>
     <string name="ui_cancel_connection">取消连接</string>
     <string name="ui_test_latency">测试延迟</string>
-    <string name="ui_tap_latency">点按测速</string>
-    <string name="ui_url_note">URL 测试反映代理路径的响应。</string>
     <string name="ui_last_url_result">上次 URL 测试 · %1$s</string>
     <string name="ui_latency_fast">响应快</string>
     <string name="ui_latency_moderate">延迟偏高</string>
     <string name="ui_latency_high">高延迟</string>
-    <string name="ui_diagnostic_boundary">路径展示最近诊断结果，VPN 建立不代表目标可达。</string>
     <string name="ui_dynamic_color">跟随系统配色</string>
-    <string name="ui_dynamic_color_detail">需要 Android 12 或以上；关闭时使用海色主题。</string>
     <string name="ui_reduce_effects">减少效果</string>
-    <string name="ui_reduce_effects_detail">让海浪与云朵静止，并关闭装饰动效；同时遵循系统动画及无障碍设置。</string>
     <string name="ui_traffic_overview">实时流量</string>
 </resources>

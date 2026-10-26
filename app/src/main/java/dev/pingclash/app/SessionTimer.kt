@@ -119,7 +119,7 @@ private fun Modifier.sessionTouches(onTouch: ()->Unit)=pointerInput(Unit) {
     Column(Modifier.fillMaxWidth().testTag("session-action-card"),
         verticalArrangement=Arrangement.spacedBy(4.dp)) {
         Text(lanyardPhaseText(vpn.phase),color=Muted,style=MaterialTheme.typography.labelMedium)
-        Text(tr(R.string.ui_session_duration_note),color=Muted,style=MaterialTheme.typography.bodySmall)
+
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.End) {
             TextButton(onHome,Modifier.testTag("session-open-home")) {Text(tr(R.string.ui_session_open_home))}
             TextButton(onDisconnect,enabled=vpn.active&&vpn.phase!="stopping",

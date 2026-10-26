@@ -78,12 +78,11 @@ internal data class ProfileActions(val select: (LocalProfile)->Unit,
     val bottom=LocalNavigationClearance.current
     Box(Modifier.fillMaxSize()) {
         LazyColumn(state=scroll,modifier=Modifier.fillMaxSize().testTag("profiles-list"),
-            contentPadding=PaddingValues(start=20.dp,end=20.dp,top=16.dp,bottom=bottom+100.dp),
+            contentPadding=PaddingValues(start=20.dp,end=20.dp,top=12.dp,bottom=bottom+100.dp),
             verticalArrangement=Arrangement.spacedBy(14.dp)) {
             item(key="header") {
                 Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-                    Text(tr(R.string.message_148d195e21),Modifier.weight(1f),
-                        style=MaterialTheme.typography.headlineLarge)
+                    PageHeading(tr(R.string.message_148d195e21),Modifier.weight(1f),"page-title-profiles")
                     TextButton(actions.file,enabled=!locked) {Text(tr(R.string.message_fa3ecfb797))}
                 }
             }

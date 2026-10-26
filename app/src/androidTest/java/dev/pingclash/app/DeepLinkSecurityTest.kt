@@ -86,7 +86,7 @@ class DeepLinkSecurityTest {
             openLink(link(url))
             try {
                 assertNull(requireNotNull(currentActivity()).intent.data)
-                compose.onNodeWithText("来源主机：127.0.0.1", substring = true).assertIsDisplayed()
+                compose.onNodeWithText("127.0.0.1", substring = true).assertIsDisplayed()
                 compose.onAllNodes(hasText("CANARY-", substring = true)).assertCountEquals(0)
                 assertEquals(0, fixture.requests.get())
                 assertEquals(before, app.repository.data.value)

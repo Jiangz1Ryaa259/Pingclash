@@ -34,6 +34,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -96,7 +98,10 @@ import org.json.JSONObject
         })
     }} else null
     CompositionLocalProvider(LocalMotionAllowed provides motion,LocalSessionOverlay provides session) {
-    ScenicFrame(tab,data.client.scene,data.client.reduceTransparency,onSelect={tab=it}) {
+    ScenicFrame(tab,data.client.scene,data.client.reduceTransparency,onSelect={destination->
+        if(destination==3&&tab!=3){tool=1}
+        tab=destination
+    }) {
     Scaffold(containerColor = Color.Transparent,contentWindowInsets=WindowInsets(0,0,0,0),snackbarHost = {
         Box(Modifier.padding(bottom=LocalNavigationClearance.current)) {SnackbarHost(snackbar)}
     }) { padding ->
@@ -134,13 +139,10 @@ import org.json.JSONObject
                     }))
                     1 -> ProxyScreen(data,locked,model,tests,onProfiles={tab=2},onDiagnosis={tab=3;tool=0;model.diagnose()})
                     2 -> ProfilesScreen(data,locked,model,ui) {tab=1}
-                    else -> Column(Modifier.fillMaxSize()) {
-                        Row(Modifier.padding(horizontal=20.dp,vertical=8.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                            FilterChip(tool==1,{tool=1},label={Text((tr(R.string.message_df3d58c7d8)))},modifier=Modifier.testTag("tool-settings"))
-                            FilterChip(tool==0,{tool=0},label={Text((tr(R.string.message_40ff6300f9)))},modifier=Modifier.testTag("tool-diagnosis"))
-                            FilterChip(false,{context.startActivity(Intent(context,TerminalActivity::class.java))},label={Text((tr(R.string.message_e2a76ef1f1)))},modifier=Modifier.testTag("tool-terminal"))
-                        }
-                        Box(Modifier.weight(1f)) {if(tool==0)NodeDiagnosisScreen(data,diagnosis,ui.busy||tests.running,model) else SettingsHub(data,vpn,locked,model,onProfiles={tab=2},onProxies={tab=1},onDashboard={tab=0},onDiagnose={tool=0})}
+                    else -> SettingsSlide(if(tool==0)"diagnosis" else "") {route ->
+                        if(route=="diagnosis")NodeDiagnosisScreen(data,diagnosis,ui.busy||tests.running,model) {tool=1}
+                        else SettingsHub(data,vpn,locked,model,onProfiles={tab=2},onProxies={tab=1},
+                            onDashboard={tab=0},onDiagnose={tool=0})
                     }
                 }
             }
@@ -157,13 +159,15 @@ import org.json.JSONObject
 }
 
 
-@Composable private fun Page(title: String, subtitle: String, content: @Composable ColumnScope.() -> Unit) {
+@Composable private fun Page(title: String,onBack: ()->Unit,content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
         .padding(horizontal=20.dp,vertical=16.dp).padding(bottom=LocalNavigationClearance.current),
         verticalArrangement=Arrangement.spacedBy(20.dp)) {
-        Column(Modifier.padding(top=8.dp,bottom=4.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
-            Text((title),style=MaterialTheme.typography.headlineLarge,letterSpacing=(-.6).sp)
-            if(subtitle.isNotBlank()) Text((subtitle),color=Muted,style=MaterialTheme.typography.bodyMedium)
+        Row(verticalAlignment=Alignment.CenterVertically) {
+            IconButton(onBack,Modifier.testTag("diagnosis-back").semantics {
+                contentDescription=tr(R.string.message_572cf45ba4)
+            }) {AppGlyph(BACK_GLYPH)}
+            PageHeading(title,Modifier.weight(1f))
         }
         content()
         Spacer(Modifier.height(8.dp))
@@ -217,7 +221,13 @@ import org.json.JSONObject
             locked,{details=null},commands)
     }
     if(showImport) ImportDialog(ui,{if(!ui.busy)showImport=false},onUserAgent={importUa=it}) { name,body,subscription -> if(subscription)model.subscribe(name,body.trim(),importUa) else model.importText(name,body) }
-    uaProfile?.let {profile -> AlertDialog(onDismissRequest={uaProfile=null},title={Text(tr(R.string.subscription_ua))},text={Column {OutlinedTextField(uaText,{if(it.length<=256)uaText=it},singleLine=true,isError=!validSubscriptionUa(uaText));Text(tr(R.string.subscription_ua_hint))}},confirmButton={TextButton({model.subscriptionUserAgent(profile.id,uaText);uaProfile=null},enabled=validSubscriptionUa(uaText)){Text(tr(R.string.message_a3030bf8f1))}},dismissButton={TextButton({uaProfile=null}){Text(tr(R.string.cancel))}})}
+    uaProfile?.let {profile -> AlertDialog(onDismissRequest={uaProfile=null},title={Text(tr(R.string.subscription_ua))},
+        text={OutlinedTextField(uaText,{if(it.length<=256)uaText=it},
+            singleLine=true,isError=!validSubscriptionUa(uaText))},
+        confirmButton={TextButton({model.subscriptionUserAgent(profile.id,uaText);uaProfile=null},
+            enabled=validSubscriptionUa(uaText)) {
+            Text(tr(R.string.message_a3030bf8f1))
+        }},dismissButton={TextButton({uaProfile=null}){Text(tr(R.string.cancel))}})}
     rename?.let {profile -> AlertDialog(onDismissRequest={rename=null},title={Text((tr(R.string.message_0d0cbac2ee)))},text={OutlinedTextField(renameText,{if(it.length<=100)renameText=it},singleLine=true,label={Text((tr(R.string.message_9919db867b)))})},confirmButton={TextButton({model.rename(profile.id,renameText);rename=null},enabled=renameText.isNotBlank()){Text((tr(R.string.message_a3030bf8f1)))}},dismissButton={TextButton({rename=null}){Text((tr(R.string.message_2cd0f3be87)))}})}
     export?.let {profile -> AlertDialog(onDismissRequest={export=null},title={Text((tr(R.string.message_429ea3af44)))},text={Text((tr(R.string.message_cbf0717721)))},confirmButton={TextButton({exportId=profile.id;export=null;exportPicker.launch("PingClash-profile.json")}){Text((tr(R.string.message_429ea3af44)))}},dismissButton={TextButton({export=null}){Text((tr(R.string.message_2cd0f3be87)))}})}
     delete?.let { profile -> AlertDialog(onDismissRequest={delete=null},title={Text((tr(R.string.message_03300a88fe)))},text={Text(trPlural(R.plurals.message_9e39a158c5, (profile.nodes.size).toInt(), profile.nodes.size))},confirmButton={TextButton({model.delete(profile.id);delete=null}) {Text((tr(R.string.message_2f9daa8289)),color=MaterialTheme.colorScheme.error)}},dismissButton={TextButton({delete=null}) {Text((tr(R.string.message_2cd0f3be87)))}}) }
@@ -244,7 +254,7 @@ private const val MAX_IMPORT_BYTES=2*1024*1024
     ModalBottomSheet(onDismissRequest=onDismiss,sheetState=rememberModalBottomSheetState(skipPartiallyExpanded=true),containerColor=Panel,
         properties=ModalBottomSheetProperties(securePolicy=if(!subscription||visible)SecureFlagPolicy.SecureOn else SecureFlagPolicy.SecureOff)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal=24.dp).padding(bottom=28.dp),verticalArrangement=Arrangement.spacedBy(18.dp)) {
-            Column(verticalArrangement=Arrangement.spacedBy(6.dp)) {Text((tr(R.string.message_108c6cdd56)),style=MaterialTheme.typography.headlineMedium);Text((tr(R.string.message_a12140eb61)),color=Muted,style=MaterialTheme.typography.bodyMedium)}
+            Text(tr(R.string.message_108c6cdd56),style=MaterialTheme.typography.headlineMedium)
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
                 listOf(tr(R.string.message_6a113a5edf),tr(R.string.message_33e74eb6db)).forEachIndexed { index,label ->
                 SegmentedButton(subscription==(index==0),{
@@ -271,7 +281,7 @@ private const val MAX_IMPORT_BYTES=2*1024*1024
                 Box(Modifier.bringIntoViewRequester(errorLocation)){InputIssue(it)}
             }
             if(step==1)TextButton({step=0},enabled=!ui.busy) {Text(tr(R.string.ui_back))}
-            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { AppGlyph(6,Modifier.size(18.dp),Muted);Text((tr(R.string.message_8e3b073b9e)),color=Muted,style=MaterialTheme.typography.bodySmall) }
+
             Button({
                 localError=importInputIssue(content,subscription)
                 if(localError==null) {if(step==0)step=1 else onSubmit(name.trim(),content,subscription)}
@@ -316,10 +326,9 @@ private fun importInputIssue(content: String,subscription: Boolean): String? = w
 
 
 @Composable
-private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, busy: Boolean, model: AppViewModel) {
+private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, busy: Boolean, model: AppViewModel,onBack: ()->Unit) {
     var auxiliary by rememberSaveable { mutableStateOf(false) }
     var preview by rememberSaveable { mutableStateOf(false) }
-    var console by rememberSaveable { mutableStateOf(false) }
     val auxiliaryModel: DiagnosticViewModel = viewModel()
     val context = LocalContext.current
     var pending by rememberSaveable { mutableStateOf("") }
@@ -333,14 +342,13 @@ private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, bus
         }
         return
     }
-    Page(tr(R.string.message_75793291b7), tr(R.string.message_bf9f55ecd9)) {
+    androidx.activity.compose.BackHandler(!auxiliary) {onBack()}
+    Page(tr(R.string.message_75793291b7),onBack) {
         Tile {
             Row(horizontalArrangement=Arrangement.spacedBy(14.dp),verticalAlignment=Alignment.CenterVertically) {
                 IconBadge(2)
                 Column(Modifier.weight(1f)) { Text((tr(R.string.message_b138010267)),color=Muted,style=MaterialTheme.typography.bodySmall);Text(data.selected?.name ?: tr(R.string.message_428504d9a1),style=MaterialTheme.typography.titleMedium,maxLines=2,overflow=TextOverflow.Ellipsis) }
             }
-            Text(if(data.selected?.type=="group") tr(R.string.message_c64f7a1712) else if (data.selected?.type in listOf("hysteria2", "tuic")) tr(R.string.message_7dc01582d2)
-                else tr(R.string.message_beab869615), color = Muted, lineHeight = 22.sp)
             Button(onClick = model::diagnose, enabled = data.selected != null && !diagnosis.running && !busy,
                 modifier = Modifier.fillMaxWidth().height(52.dp), shape = CircleShape) {
                 Text(if (diagnosis.running) tr(R.string.message_113a2e4325) else tr(R.string.message_c1fdb389b7))
@@ -353,40 +361,13 @@ private fun NodeDiagnosisScreen(data: AppData, diagnosis: DiagnosticUiState, bus
             Text("${report.elapsedMs} ms · ${report.networkType}", color = Muted, style = MaterialTheme.typography.labelMedium)
             OutlinedButton(onClick = { preview = true }) { Text((tr(R.string.message_e89513334b))) }
         } }
-        if (diagnosis.steps.isEmpty()) Text((tr(R.string.message_7e185a6da8)), color = Muted, lineHeight = 23.sp)
         diagnosis.steps.filter { it.stage != Models.Stage.POLICY }.forEach { StepCard(it) }
         TextButton(onClick = { auxiliary = true }) { Text((tr(R.string.message_87533a0a61))) }
-        TextButton(onClick = { console = !console }) { Text(if (console) tr(R.string.message_ddc2dcfebf) else tr(R.string.message_a030d422db)) }
-        if (console) DiagnosticConsole(diagnosis, onNode = model::diagnose, onDns = { host ->
-            runCatching { Models.Request(host, 443, false, "", Models.Family.AUTO, true) }
-                .onSuccess { auxiliaryModel.start(it); auxiliary = true }.onFailure { model.message(tr(R.string.message_a2d331fa6a)) }
-        }, onReport = { if (diagnosis.report != null) preview = true else model.message(tr(R.string.message_891736e998)) })
+
     }
     if (preview && diagnosis.report != null) ReportPreview(requireNotNull(diagnosis.report), onSave = { report ->
         pending = ReportFormatter.markdown(report); save.launch("PingClash-${report.runId.take(8)}.md")
     }) { preview = false }
-}
-
-@Composable
-private fun DiagnosticConsole(diagnosis: DiagnosticUiState, onNode: () -> Unit, onDns: (String) -> Unit, onReport: () -> Unit) {
-    var command by remember { mutableStateOf("") }
-    var output by remember { mutableStateOf(tr(R.string.message_35410a62be)) }
-    Tile {
-        Text((tr(R.string.message_47b5d86936)), fontWeight = FontWeight.Bold)
-        Text(output, color = Muted, lineHeight = 22.sp, style = MaterialTheme.typography.bodySmall)
-        OutlinedTextField(command, { if (it.length <= 512) command = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text((tr(R.string.message_617f4593d8))) })
-        TextButton(onClick = {
-            val input = command.trim(); command = ""
-            when {
-                input == "help" -> output = tr(R.string.message_ec5dbb4b87)
-                input == "diag node" -> { onNode(); output = tr(R.string.message_4941596c41) }
-                input.startsWith("diag dns ") -> { onDns(input.removePrefix("diag dns ").trim()); output = tr(R.string.message_904d1683cf) }
-                input == "logs --recent" -> output = diagnosis.steps.joinToString("\n") { "${it.stage.title()} · ${it.state.title()} · ${it.code.message()}" }.ifEmpty { tr(R.string.message_d2fbb7ebe4) }
-                input == "report preview" -> onReport()
-                else -> output = tr(R.string.message_acbcd289d3)
-            }
-        }, enabled = !diagnosis.running) { Text((tr(R.string.message_32c8d373af))) }
-    }
 }
 
 @Composable
@@ -395,7 +376,6 @@ private fun ReportPreview(report: Models.Report, onSave: (Models.Report) -> Unit
     val markdown = remember(report,UiStrings.resources().configuration.locales.toLanguageTags()) { ReportFormatter.markdown(report) }
     AlertDialog(onDismissRequest = onDismiss, title = { Text((tr(R.string.message_423dd8c4db))) },
         text = { Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text((tr(R.string.message_0343a8806f)), color = Mint)
             Text(markdown, style = MaterialTheme.typography.bodySmall)
         } },
         confirmButton = { TextButton(onClick = { onSave(report) }) { Text((tr(R.string.message_e7a44965ac))) } },
