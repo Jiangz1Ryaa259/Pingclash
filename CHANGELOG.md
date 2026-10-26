@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1
+
+- Promote the beta.11 implementation to 0.1.1 (versionCode 30), retaining the existing signing identity and upgrade path.
+- Preserve the fixed-screen ocean dashboard, original subscription policy groups, offline 3D lanyard control, glass navigation, terminal and diagnostics.
+- Include APK, corresponding source with vendored Go dependencies, and SHA-256 checksums in the GitHub Release.
+- Known limitations remain: partial Mihomo configuration/provider compatibility; no physical OEM/GPU or long-duration background validation.
+
+
 ## 0.1.0-beta.11 (local candidate)
 
 - Remove the old native imitation card/clasp while the offline 3D control loads.

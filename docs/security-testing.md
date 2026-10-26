@@ -1,3 +1,15 @@
+# 0.1.1 release identity
+
+0.1.1 promotes the beta.11 implementation with versionCode 30. APK SHA-256:
+`a879e0db548e213075696c5bb87b607e3e9631fb2fb4a017a1f222805e731cf5`.
+All 129 packaged asset/native entries and declared permissions match beta.11.
+The existing signing identity, non-debuggable flag, 16 KiB native alignment and
+private/test-marker package check pass. Release-specific validation results and
+both distribution hashes are recorded on the [0.1.1 Release](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.1).
+The beta.11 measurements below remain historical evidence for that exact build.
+
+---
+
 # Beta.11 / build 29 lifecycle and navigation candidate
 
 - Exact signed APK SHA-256: `408e180b55795ba3ccc16ae51d614b055a8d48e704010563bf663b11a6e773e0`; 131,278,386 bytes. Existing signing identity, v2/v3, non-debuggable; shell run-as denied. Six native libraries / 20 LOAD segments retain 16 KiB alignment. Private/test marker scan: zero matches.
