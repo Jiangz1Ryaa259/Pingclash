@@ -15,22 +15,24 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
-@Stable internal class NavigationMotion(selected: Int) {
+@Stable internal class NavigationMotion(private val drag: NavigationDragState,selected: Int) {
     val position=Animatable(selected.toFloat())
     val press=Animatable(0f)
+    fun visualPosition()=drag.position?:position.value
     fun pressure()=press.value.coerceIn(0f,1f)
-    fun stretch()=(abs(position.velocity)*.04f).coerceAtMost(.18f)*pressure()
+    fun stretch()=(abs(if(drag.position!=null)drag.velocity else position.velocity)*.04f).coerceAtMost(.18f)*pressure()
 }
 
 internal fun navigationPhysicalPosition(position: Float,rtl: Boolean)=if(rtl)3f-position else position
 
 @Composable internal fun rememberNavigationMotion(drag: NavigationDragState,selected: Int,
     enabled: Boolean): NavigationMotion {
-    val state=remember {NavigationMotion(selected)}
+    val state=remember(drag) {NavigationMotion(drag,selected)}
     val current by rememberUpdatedState(selected)
     LaunchedEffect(state,enabled) {
-        snapshotFlow {drag.position?:current.toFloat()}.collectLatest {target->
-            state.position.moveTo(target,enabled,.78f,430f)
+        snapshotFlow {(drag.position!=null) to (drag.position?:current.toFloat())}.collectLatest {(dragging,target)->
+            // Finger tracking is direct. Springs are reserved for release/tab changes.
+            state.position.moveTo(target,enabled&&!dragging,.78f,430f)
         }
     }
     LaunchedEffect(state,enabled) {

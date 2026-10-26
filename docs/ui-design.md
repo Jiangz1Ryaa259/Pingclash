@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.2-preview.3, build 33. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.2-preview.4, build 34. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -131,3 +131,11 @@ The pinned [LiquidBottomTabs sample](https://github.com/Kyant0/AndroidLiquidGlas
 `NavigationGlassStyle.kt` uses a 14/18 dp bar rim, 1 dp highlight and 0.11 inner-shadow alpha. Light/dark base tints are 0.28/0.32; a separate soft vertical veil is strongest under labels (0.58/0.72) and fades at the rim. This is a deliberate theme-based readability treatment, not automatic analysis of user screen pixels. Normal and accent label contrast is checked over the synthetic wave palettes plus black/white backgrounds. There are no letter or glyph outlines.
 
 Selector coordinates use an absolute top-left anchor, absoluteOffset and one logical-to-physical mirror. Drag deltas reverse once in RTL. The actual rendered center is tested against its tab, including 2x text, physical drag/cancel and exactly four accessible tabs. API 31/32 retain Haze and a matching clipped accent mask; API 29/30, Reduce transparency and protected/background windows use the solid fallback. Only the optical backend refracts.
+
+## Direct finger tracking (0.1.2-preview.4)
+
+`NavigationMotion.kt` reads the current drag position directly in draw/layer callbacks. While dragging, its stored settled position is snapped to the input for a continuous handoff; the spring runs only on release, cancellation and tab changes. The former implementation restarted a spring at every pointer update and visibly chased the moving target. Bounded VelocityTracker samples preserve stretch while the finger is down.
+
+`BottomNavigationBar.kt:56` retains a fixed absolute 4 dp origin. The selector material's graphics-layer translation applies the single RTL-aware physical position; animated position no longer invalidates placement through absoluteOffset. `NavGlassMaterial.kt` owns this translation together with the existing press/stretch transform and backdrop-coordinate handling. The legacy accent mask reads the same visual position and reuses a cached Path. Glass parameters, highlights, tint, depth/dispersion and label layout are unchanged.
+
+`NavigationTrackingTest` advances the Compose clock one frame per gesture step, compares the actual selector center with the expected displacement and checks cancellation in both directions without committing a tab change. Its trace contains only synthetic coordinates. The same test is run against preview.3 as a negative control. This does not measure physical input latency, GPU throughput or public-network performance; a static synthetic backdrop isolates the gesture-following behavior.

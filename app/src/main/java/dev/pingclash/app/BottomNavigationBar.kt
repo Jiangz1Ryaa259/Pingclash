@@ -27,7 +27,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
@@ -45,13 +45,11 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.backdrops.rememberCombinedBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
-import kotlin.math.roundToInt
 
 // The non-interactive row records finished glass and accent labels; its source
 // excludes the selector itself so it cannot feed back into the lens.
@@ -94,11 +92,11 @@ import kotlin.math.roundToInt
                     NavigationTabs(labels,selected,navAccentColor(dark),null,motion::pressure)
                 }
             }
-            Box(Modifier.align(AbsoluteAlignment.TopLeft).absoluteOffset {IntOffset(
-                (navigationPhysicalPosition(motion.position.value,rtl)*cellWidth+4.dp.toPx()).roundToInt(),
-                4.dp.roundToPx())}.width(selectorWidth).height(height-8.dp)
-                .navGlassMaterial(style,selector=true,press=motion::pressure,
-                    stretch=motion::stretch,selectorSource=selectorSource).testTag("glass-selector"))
+            Box(Modifier.align(AbsoluteAlignment.TopLeft).absoluteOffset(4.dp,4.dp)
+                .width(selectorWidth).height(height-8.dp)
+                .navSelectorMaterial(style,selectorSource,motion) {
+                    navigationPhysicalPosition(motion.visualPosition(),rtl)*cellWidth
+                }.testTag("glass-selector"))
             if(tabsBackdrop==null)LegacyNavigationAccent(labels,selected,motion,cellWidth,rtl)
         }
     }
@@ -130,15 +128,18 @@ import kotlin.math.roundToInt
 
 @Composable private fun LegacyNavigationAccent(labels: List<String>,selected: Int,motion: NavigationMotion,
     cellWidth: Float,rtl: Boolean) {
-    Box(Modifier.fillMaxSize().clearAndSetSemantics {}.drawWithContent {
+    Box(Modifier.fillMaxSize().clearAndSetSemantics {}.drawWithCache {
+        val path=Path()
+        onDrawWithContent {
         val width=cellWidth-8.dp.toPx();val height=size.height-8.dp.toPx()
-        val left=navigationPhysicalPosition(motion.position.value,rtl)*cellWidth+4.dp.toPx()
+        val left=navigationPhysicalPosition(motion.visualPosition(),rtl)*cellWidth+4.dp.toPx()
         val sx=1f+.12f*motion.pressure()+motion.stretch()
         val sy=1f+.08f*motion.pressure()-motion.stretch()*.35f
         val dx=width*(sx-1)/2;val dy=height*(sy-1)/2
-        val path=Path().apply {addRoundRect(RoundRect(left-dx,4.dp.toPx()-dy,
-            left+width+dx,4.dp.toPx()+height+dy,CornerRadius(height*sy/2)))}
-        clipPath(path){this@drawWithContent.drawContent()}
+        path.reset();path.addRoundRect(RoundRect(left-dx,4.dp.toPx()-dy,
+            left+width+dx,4.dp.toPx()+height+dy,CornerRadius(height*sy/2)))
+        clipPath(path){this@onDrawWithContent.drawContent()}
+        }
     }) {
         NavigationTabs(labels,selected,navAccentColor(Ink.luminance()<.5f),null,motion::pressure)
     }

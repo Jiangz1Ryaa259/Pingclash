@@ -110,3 +110,11 @@ anchoring, two-axis growth, bounded velocity stretch and draw-phase state reads
 are included. Legacy devices retain clipped accent feedback with Haze/solid
 materials. The stable 0.1.1 Release remains unchanged. Optical-driver and real
 OEM validation limitations must remain explicit in any later release notes.
+
+## 0.1.2-preview.4 local candidate
+
+Retain the preview.3 glass appearance while removing drag-time spring chasing
+and animated layout offsets. Follow the finger directly, settle with a spring
+after release and reuse the legacy mask Path. A controlled frame-following
+regression covers both directions; physical device frame-rate validation remains
+unperformed. Stable 0.1.1 is unchanged.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2-preview.4 (local candidate)
+
+- Track the finger directly during navigation drag; use a spring only after release, cancellation or explicit tab changes. Track bounded gesture velocity separately for the existing stretch effect.
+- Move selector position through a graphics-layer translation from a fixed absolute origin instead of animated layout offsets. Preserve the optical material, accent layer and RTL mapping. Reuse the legacy accent clipping path.
+- Add a deterministic, frame-stepped LTR/RTL drag regression with cancellation and no-commit assertions. The same test exposes the prior spring-following lag; it is a response/geometry check, not a real-device FPS benchmark.
+
 ## 0.1.2-preview.3 (local candidate)
 
 - Record finished navigation glass once and combine it with a non-interactive accent-label layer for selector sampling. Resting selection has a subtle tint and no lens; press/drag introduces depth, dispersion and magnification.

@@ -33,14 +33,11 @@ internal val NavBlurEnabled=SemanticsPropertyKey<Boolean>("NavBlurEnabled")
 internal val NavOpticalBackend=SemanticsPropertyKey<String>("NavOpticalBackend")
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
-@Composable internal fun Modifier.navGlassMaterial(style: NavigationGlassStyle,
-    selector: Boolean=false,press: ()->Float={0f},stretch: ()->Float={0f},
-    selectorSource: Backdrop?=null): Modifier {
+@Composable internal fun Modifier.navGlassMaterial(style: NavigationGlassStyle): Modifier {
     val backdrop=LocalNavigationBackdrop.current
     val haze=LocalNavHaze.current
     val surface=MaterialTheme.colorScheme.surface
     val dark=MaterialTheme.colorScheme.background.luminance()<.5f
-    if(selector)return selectorGlass(selectorSource,style,dark,press,stretch)
     val material=when {
         backdrop!=null->drawBackdrop(backdrop=backdrop,shape={UiCorners.Pill},effects={
             colorControls(saturation=style.saturation)
@@ -65,10 +62,14 @@ internal val NavOpticalBackend=SemanticsPropertyKey<String>("NavOpticalBackend")
     }
 }
 
-private fun Modifier.selectorGlass(source: Backdrop?,style: NavigationGlassStyle,dark: Boolean,
-    press: ()->Float,stretch: ()->Float): Modifier {
+@Composable internal fun Modifier.navSelectorMaterial(style: NavigationGlassStyle,source: Backdrop?,
+    motion: NavigationMotion,offsetX: ()->Float): Modifier {
+    val dark=MaterialTheme.colorScheme.background.luminance()<.5f
+    val press=motion::pressure
+    val stretch=motion::stretch
     val transform: androidx.compose.ui.graphics.GraphicsLayerScope.()->Unit={
         val k=press().coerceIn(0f,1f);val v=stretch()
+        translationX=offsetX()
         scaleX=1f+.12f*k+v;scaleY=1f+.08f*k-v*.35f
     }
     if(source==null)return graphicsLayer(transform).clip(UiCorners.Pill).navSelectionWash(dark,press)

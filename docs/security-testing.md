@@ -1,3 +1,15 @@
+# 0.1.2-preview.4 direct-drag candidate (build 34)
+
+- Exact signed APK SHA-256: `c3d8f46865d94f98642afdb272eed80c8469a3d1f5dd8927aea5eeea995cd90e` (131360306 bytes). Existing signing identity; release run-as denied.
+- API 35/AOSP x86_64, Emulator 37.2.12 host-GPU backend: **71/71, zero skipped, 420.289 seconds**. Controlled VPN DNS 1 and separate-UID HTTP 1. This is the final signed APK, not a debug substitute.
+- Same APK, focused navigation regressions: API 31 Haze **10/10, zero skipped, 18.84 seconds**; API 29 opaque **10/10, zero skipped, 20.657 seconds**. Neither legacy run claims physical refraction or a full integration suite.
+- Controlled negative comparison: the same NavigationTrackingTest intentionally fails against preview.3 (build 33, SHA-256 `702be17f6d87e9119fee331e0f6feaec18b3bdb2e160c262c0de89bb8cbd474b`). Its six LTR steps have maximum center-displacement error 185.06 px, then the assertion stops before RTL. The final candidate passes all twelve LTR/RTL steps with maximum error 0.000793 px and cancels back to the original tab with zero commits. This uses a manually advanced Compose clock and a static synthetic backdrop; it is a geometry/response regression, not physical input-latency or FPS measurement.
+- Drag reads the finger position directly; only settling/tab changes use the spring. Selector motion is a graphics-layer translation from a fixed absolute origin rather than a per-frame layout offset. Bounded pointer velocity retains stretch; legacy mask Path is reused. Existing material values, blur, refraction, labels and upstream optical kernels are unchanged.
+- Existing actual-pixel tests for accent movement, two-axis press, RTL, release residuals and rim displacement still pass. Synthetic moved-selector imagery was reviewed to confirm the lens samples the label at its current position. No preview video generated.
+- Detekt/release build passed; lint 0 errors, 71 warnings, 2 information. Localization 633 pairs; Backdrop 27 upstream hashes / four documented compatibility shims. Package private/test-marker matches 0; six native libraries / 20 aligned LOAD segments. Source/history scans run separately before publication.
+- No permission, listener, telemetry, production screenshot or CPU bitmap readback was added. The stable 0.1.1 Release is unchanged. Prior SwiftShader limitations below remain unverified on this candidate; physical OEM/GPU frame pacing, prolonged background behavior and public-network latency are not claimed as tested.
+- Complete navigation: `BottomNavigationBar.kt:56`; drag/velocity input: `NavigationDrag.kt`; follow/settle state: `NavigationMotion.kt`; optical transform: `NavGlassMaterial.kt:65`. `NavigationGlassStyle.kt` is unchanged.
+
 # 0.1.2-preview.3 press-driven navigation candidate (build 33)
 
 - Exact local signed APK SHA-256: `702be17f6d87e9119fee331e0f6feaec18b3bdb2e160c262c0de89bb8cbd474b` (131360306 bytes). Existing signing identity; release run-as denied.
