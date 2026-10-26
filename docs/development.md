@@ -13,7 +13,7 @@ $env:Path = $env:JAVA_HOME + '\bin;' + $env:Path
 
 The native bridge pins Go 1.27.3, Mihomo v1.19.32 and the exact module graph in core/go.mod / core/go.sum. Terminal sources are included in terminal-emulator and terminal-view; the same NDK builds their JNI libraries. Gradle wrapper and dependency hashes are pinned in gradle/verification-metadata.xml.
 
-The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.2/build 32). Debug builds use tools/build-android.ps1.
+The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.3/build 33). Debug builds use tools/build-android.ps1.
 
 ## Verification
 
@@ -61,8 +61,16 @@ the bottom glass navigation component/material/gestures are unchanged.
 
 ## Measurement-plan regressions
 
-The current candidate has 68 integration cases. `ProxyDelayPlanTest` covers
+The measurement-plan candidate introduced three cases (68 total at preview.2). `ProxyDelayPlanTest` covers
 unique native requests across overlapping groups, member-result aliases, a fast
 node scheduled before failing group members, the ten-worker bound and cancellation,
 and bounded cyclic/chained graph handling. Fixtures use synthetic loopback servers;
 public subscriptions, real mobile latency and OEM behavior are not implied.
+
+## Navigation selector regressions
+
+Preview.3 has 70 integration cases. NavigationSelectorTest checks physical accent
+pixels, two-axis press growth, release cleanup, fixed glyph positions, large-font
+RTL alignment and a single interactive row. LiquidOpticsTest retains the actual
+rim-displacement and residual-state checks. Test evidence names the emulator and
+graphics backend; no physical OEM/GPU equivalence is implied.

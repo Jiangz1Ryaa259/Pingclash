@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.2-preview.2, build 32. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.2-preview.3, build 33. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -8,12 +8,15 @@ On Android 13+ an AGSL shader draws procedural waves, reflected sky and moving c
 
 Content and navigation are sibling layers. Android 13+ uses the actual pinned
 Backdrop 1.0.4 source module for GPU source capture, color controls, blur, rounded
-lens refraction, highlights and inner/outer shadows. A second, small lens samples
-the same original source for the selected tab; the bar is not repeatedly tinted.
+lens refraction, highlights and inner/outer shadows. The bar material is recorded once without foreground labels. A separate local
+layer records accent labels; the selected capsule samples their combination.
+At rest the capsule has no refraction; press/drag introduces the lens.
 API 31/32 keep Haze 1.6.8 blur. Older APIs, Reduce transparency, protected windows
 and background lifecycle detach captures and draw a solid fallback. The terminal
 is a separate protected activity. No production screenshot file or CPU bitmap is
 created by this navigation renderer.
+
+Historical material comparison (beta.11, superseded below):
 
 | Material | Previous implementation | Beta.11 |
 | --- | --- | --- |
@@ -36,7 +39,7 @@ Harmony-style particles and other light-effect additions are outside this iterat
 - The independent timer strip uses this VPN session’s monotonic start, not the core lifetime. It continues across network handoffs and reconnect waits, resets after disconnect, and stops ticking outside the foreground. Tap it to expand the inline Home/Disconnect operation card; it is never a promise of continuous Internet access.
 - Tap operates the existing VPN action. A stationary long press begins an unrestricted drag; releasing returns the card through its physical solver. App pause/resume restarts the renderer without relying on a stale animation-frame handle.
 - Appearance settings contain a dark-mode switch and a Follow system chip; no theme control sits beside the home timer. The switch expands a circular reveal from its own center. One transient app-window PixelCopy frame exists only in memory and is cleared on completion, protection or backgrounding; it is never saved or uploaded. Protected windows do not capture a frame. System/reduced-motion preferences suppress the transition.
-- The selected navigation label expands while switching. All tabs retain accessible labels and large-font navigation clearance.
+- All four navigation labels remain visible in a fixed layout. A moving accent layer follows the capsule; large-font navigation retains its clearance.
 - Profiles use stable-ID cards, quota/expiry details and a three-dot menu. The add button collapses while scrolling and remains accessible. Imports remain disabled during active VPN under the existing repository guard.
 - Copying a subscription is an explicit menu action: copy changes to a check, without putting the URL into feedback. The clip is marked sensitive and cleared on a best-effort basis after 60 seconds only if its ownership marker still matches; another application's clipboard is never cleared. Process death or OS clipboard restrictions can prevent expiry.
 - Importing has input and review steps. Review shows the HTTPS host, then requires a final action before download/write. Errors expand inline with a short shake; editing removes stale errors. Details and profile selection use expanding content and dropdowns.
@@ -66,9 +69,9 @@ Only actual user actions control the VPN; card animation is not connection evide
 
 ## Bottom navigation code map (beta.11)
 
-- `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt`: complete navigation layout, tab semantics, sliding selector, label expansion and press animation. Extracted from `GlassUi.kt`; default Material indication is disabled to avoid a second pressed-state layer.
+- `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt`: complete navigation layout, one interactive tab row, fixed labels, accent source and selector placement. Extracted from `GlassUi.kt`; default Material indication is disabled to avoid a second pressed-state layer.
 - `app/src/main/java/dev/pingclash/app/NavGlassMaterial.kt`: Backdrop lens, blur, highlight and shadows. Selector deformation now uses Backdrop's own layer transform; Haze and solid fallbacks explicitly clip to the capsule.
-- `app/src/main/java/dev/pingclash/app/NavigationGlassStyle.kt`: lighter tint, sharper source detail and stronger edge refraction; reduced inner shadow.
+- `app/src/main/java/dev/pingclash/app/NavigationGlassStyle.kt`: bar tint, refraction, highlights, inner shadow, normal/accent label colors and the soft readability veil.
 - `app/src/main/java/dev/pingclash/app/NavigationDrag.kt`: pointer press/release/cancel state, drag selection, and background reset.
 - `app/src/main/java/dev/pingclash/app/ScenicFrame.kt`: sibling content-source and navigation composition, protected-window and API fallbacks.
 - `third-party/backdrop`: pinned upstream optical implementation; optical shaders are unchanged.
@@ -116,3 +119,15 @@ The configured pool (default 10, maximum 16) runs independent nodes before graph
 Group cards show completed/total members and reachable count, not an invented single-route millisecond value. These summaries describe the current batch and target only; they do not prove the selected group route or system VPN works. Full route diagnosis remains a separate action. TCP measurements remain separate.
 
 The complete bottom navigation remains in `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt` (`BottomNavigationBar`, line 53). This change does not modify its layout, optical material, gestures or selection animation; proxy measurement labels are in `ProxyScreen.kt`.
+
+## Press-driven navigation lens (0.1.2-preview.3)
+
+The pinned [LiquidBottomTabs sample](https://github.com/Kyant0/AndroidLiquidGlass/blob/1.0.4/catalog/src/main/java/com/kyant/backdrop/catalog/components/LiquidBottomTabs.kt) informs the layered sampling and moving accent approach. The original Backdrop implementation remains unchanged.
+
+`BottomNavigationBar.kt` records the finished toolbar material once, without labels, then records a separate invisible accent-label row. The selector samples their combined backdrop rather than sharp page pixels. Its own output is excluded from both sources. The normal row alone owns click/Tab semantics; both rows share a fixed glyph/label layout. No screenshots, CPU bitmap readback, permissions or remote sources are added.
+
+`NavGlassMaterial.kt` uses no selector refraction at rest. During press/drag it ramps a 10/14 dp lens with depth and chromatic aberration, boosts highlight/inner shadow and enlarges both axes. `NavigationMotion.kt` uses Animatable springs, bounded velocity stretch and draw/layer reads of animation values. Normal tab changes do not read animated position/pressure in composition. Reduced motion snaps position and suppresses decorative deformation.
+
+`NavigationGlassStyle.kt` uses a 14/18 dp bar rim, 1 dp highlight and 0.11 inner-shadow alpha. Light/dark base tints are 0.28/0.32; a separate soft vertical veil is strongest under labels (0.58/0.72) and fades at the rim. This is a deliberate theme-based readability treatment, not automatic analysis of user screen pixels. Normal and accent label contrast is checked over the synthetic wave palettes plus black/white backgrounds. There are no letter or glyph outlines.
+
+Selector coordinates use an absolute top-left anchor, absoluteOffset and one logical-to-physical mirror. Drag deltas reverse once in RTL. The actual rendered center is tested against its tab, including 2x text, physical drag/cancel and exactly four accessible tabs. API 31/32 retain Haze and a matching clipped accent mask; API 29/30, Reduce transparency and protected/background windows use the solid fallback. Only the optical backend refracts.

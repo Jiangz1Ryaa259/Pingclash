@@ -227,9 +227,11 @@ private fun assertGlassContrast(scheme: ColorScheme, backgrounds: List<Color>, t
     for (background in backgrounds+listOf(Color.Black,Color.White)) {
         val panel=scheme.surface.copy(alpha=CONNECTION_TINT_ALPHA).compositeOver(background)
         texts.forEach {assertTrue("Connection panel text contrast below 4.5:1",contrast(it,panel)>=4.5)}
-        // Transparent glass needs local two-tone contours, not an opaque slab.
-        val contour=navLabelOutline(dark).copy(alpha=NAV_LABEL_CONTOUR_ALPHA).compositeOver(background)
-        assertTrue("Navigation contour contrast below 4.5:1",contrast(navLabelColor(dark),contour)>=4.5)
-        assertTrue("Navigation material is too opaque",navigationGlassStyle(dark).tint.alpha<=.3f)
+        val glass=navigationGlassStyle(dark).tint.compositeOver(background)
+        val labelSurface=navReadabilityTint(dark).compositeOver(glass)
+        val selectedSurface=navAccentColor(dark).copy(alpha=if(dark).12f else .06f).compositeOver(labelSurface)
+        assertTrue("Navigation text contrast below 4.5:1",contrast(navLabelColor(dark),labelSurface)>=4.5)
+        assertTrue("Selected navigation text contrast below 4.5:1",contrast(navAccentColor(dark),selectedSurface)>=4.5)
+
     }
 }

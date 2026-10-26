@@ -7,13 +7,16 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.drawBackdrop
-import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.colorControls
 import com.kyant.backdrop.effects.lens
@@ -31,32 +34,55 @@ internal val NavOpticalBackend=SemanticsPropertyKey<String>("NavOpticalBackend")
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable internal fun Modifier.navGlassMaterial(style: NavigationGlassStyle,
-    selector: Boolean=false,press: Float=0f): Modifier {
+    selector: Boolean=false,press: ()->Float={0f},stretch: ()->Float={0f},
+    selectorSource: Backdrop?=null): Modifier {
     val backdrop=LocalNavigationBackdrop.current
     val haze=LocalNavHaze.current
     val surface=MaterialTheme.colorScheme.surface
     val dark=MaterialTheme.colorScheme.background.luminance()<.5f
-    return when {
-        backdrop!=null->backdropGlass(backdrop,style,selector,dark,press)
-        haze==null->clip(UiCorners.Pill).background(surface.copy(alpha=if(selector).12f else NAV_FALLBACK_ALPHA))
-        selector->clip(UiCorners.Pill).background(Color.White.copy(alpha=if(dark).10f else .18f))
-        else->{
-    val material=HazeMaterials.thin(surface).copy(blurRadius=style.blur,noiseFactor=.005f,
-        tints=listOf(HazeTint(style.tint)),
-        fallbackTint=HazeTint(surface.copy(alpha=NAV_FALLBACK_ALPHA)))
-    clip(UiCorners.Pill).hazeEffect(haze,style=material)
+    if(selector)return selectorGlass(selectorSource,style,dark,press,stretch)
+    val material=when {
+        backdrop!=null->drawBackdrop(backdrop=backdrop,shape={UiCorners.Pill},effects={
+            colorControls(saturation=style.saturation)
+            blur(style.blur.toPx())
+            lens(style.refractionHeight.toPx(),style.refractionAmount.toPx())
+        },highlight={Highlight(width=1.dp,alpha=style.highlightAlpha)},
+            shadow={Shadow(radius=18.dp,alpha=style.shadowAlpha)},
+            innerShadow={InnerShadow(radius=6.dp,alpha=style.innerShadowAlpha)},
+            onDrawSurface={drawRect(style.tint)})
+        haze!=null->{
+            val material=HazeMaterials.thin(surface).copy(blurRadius=style.blur,noiseFactor=.005f,
+                tints=listOf(HazeTint(style.tint)),fallbackTint=HazeTint(surface.copy(alpha=NAV_FALLBACK_ALPHA)))
+            clip(UiCorners.Pill).hazeEffect(haze,style=material)
         }
+        else->clip(UiCorners.Pill).background(surface.copy(alpha=NAV_FALLBACK_ALPHA))
+    }
+    val veil=navReadabilityTint(dark)
+    return material.drawBehind {
+        // A soft material veil behind glyphs replaces per-letter outlines.
+        drawRect(Brush.verticalGradient(0f to Color.Transparent,.16f to veil,
+            .84f to veil,1f to Color.Transparent))
     }
 }
 
-@Composable private fun Modifier.backdropGlass(backdrop: LayerBackdrop,style: NavigationGlassStyle,
-    selector: Boolean,dark: Boolean,press: Float)= drawBackdrop(backdrop=backdrop,shape={UiCorners.Pill},effects={
-        colorControls(saturation=style.saturation)
-        blur((if(selector)0.dp else style.blur).toPx())
-        lens(style.refractionHeight.toPx(),style.refractionAmount.toPx(),
-            chromaticAberration=selector)
-    },layerBlock=if(selector) {{scaleX=1f+press*.06f;scaleY=1f-press*.035f}} else null,
-        highlight={Highlight(width=.65f.dp,alpha=style.highlightAlpha)},
-        shadow={Shadow(radius=if(selector)8.dp else 18.dp,alpha=style.shadowAlpha)},
-        innerShadow={InnerShadow(radius=if(selector)3.dp else 5.dp,alpha=style.innerShadowAlpha)},
-        onDrawSurface={drawRect(if(selector)Color.White.copy(alpha=if(dark).08f else .10f) else style.tint)})
+private fun Modifier.selectorGlass(source: Backdrop?,style: NavigationGlassStyle,dark: Boolean,
+    press: ()->Float,stretch: ()->Float): Modifier {
+    val transform: androidx.compose.ui.graphics.GraphicsLayerScope.()->Unit={
+        val k=press().coerceIn(0f,1f);val v=stretch()
+        scaleX=1f+.12f*k+v;scaleY=1f+.08f*k-v*.35f
+    }
+    if(source==null)return graphicsLayer(transform).clip(UiCorners.Pill).navSelectionWash(dark,press)
+    return drawBackdrop(backdrop=source,shape={UiCorners.Pill},effects={
+        // Source already contains toolbar blur, tint and the accent row.
+        // At rest k=0: no refraction. Press/drag smoothly introduces a lens.
+        val k=press().coerceIn(0f,1f)
+        lens(10.dp.toPx()*k,14.dp.toPx()*k,depthEffect=true,chromaticAberration=true)
+    },layerBlock=transform,
+        highlight={Highlight(width=1.dp,alpha=style.highlightAlpha*(.12f+.88f*press()))},
+        shadow={Shadow(radius=8.dp,alpha=style.shadowAlpha*press())},
+        innerShadow={InnerShadow(radius=4.dp,alpha=style.innerShadowAlpha*press())})
+}
+
+internal fun Modifier.navSelectionWash(dark: Boolean,press: ()->Float)=drawBehind {
+    drawRect(navAccentColor(dark).copy(alpha=(if(dark).12f else .06f)*(1f-press().coerceIn(0f,1f))))
+}

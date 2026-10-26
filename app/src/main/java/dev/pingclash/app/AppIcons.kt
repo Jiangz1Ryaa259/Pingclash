@@ -75,13 +75,6 @@ private object AppIcons {
             strokeLineCap=StrokeCap.Round,strokeLineJoin=StrokeJoin.Round,
         ).build()
     }
-    val navOutlines=listOf(12,14,7,3).associateWith {id ->
-        ImageVector.Builder("PingClash-Outline-$id",24.dp,24.dp,24f,24f).addPath(
-            pathData=PathParser().parsePathString(paths.getValue(id)).toNodes(),fill=null,
-            stroke=SolidColor(Color.Black),strokeLineWidth=2.35f,
-            strokeLineCap=StrokeCap.Round,strokeLineJoin=StrokeJoin.Round,
-        ).build()
-    }
     operator fun get(index: Int)=vectors[if(index==11)1 else index]?:vectors.getValue(24)
 }
 
@@ -90,9 +83,5 @@ private object AppIcons {
 }
 
 @Composable internal fun NavigationGlyph(index: Int,modifier: Modifier,tint: Color) {
-    androidx.compose.foundation.layout.Box(modifier) {
-        Icon(AppIcons.navOutlines.getValue(index),contentDescription=null,
-            modifier=Modifier.size(23.dp),tint=navLabelOutline(tint==Color.White).copy(alpha=NAV_LABEL_CONTOUR_ALPHA))
-        AppGlyph(index,Modifier.size(23.dp),tint)
-    }
+    AppGlyph(index,modifier,tint)
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2-preview.3 (local candidate)
+
+- Record finished navigation glass once and combine it with a non-interactive accent-label layer for selector sampling. Resting selection has a subtle tint and no lens; press/drag introduces depth, dispersion and magnification.
+- Drive two-axis press scaling, velocity stretch and spring return through draw/layer callbacks. Keep all four labels visible in a fixed layout; remove text and glyph contours.
+- Correct RTL anchoring with an absolute top-left origin and exactly one physical-coordinate mirror. Retain one accessible, interactive tab row and the legacy clipped accent fallback.
+- Increase the bar rim highlight to 1 dp, shorten its refraction rim, strengthen inner shadow and provide a soft label-area readability veil. Add physical pixel, large-font RTL, accent-following and cancellation regressions.
+
 ## 0.1.2-preview.2 (local candidate)
 
 - Expand requested policy groups into a bounded, deduplicated native URL-test queue. Start directly requested leaf nodes first; retain original subscription group order, membership and selections.

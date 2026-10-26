@@ -1,3 +1,16 @@
+# 0.1.2-preview.3 press-driven navigation candidate (build 33)
+
+- Exact local signed APK SHA-256: `702be17f6d87e9119fee331e0f6feaec18b3bdb2e160c262c0de89bb8cbd474b` (131360306 bytes). Existing signing identity; release run-as denied.
+- API 35/AOSP x86_64, Emulator 37.2.12 host-GPU backend: **70/70, zero skipped, 409.424 seconds**. Controlled VPN DNS 1 and separate-UID HTTP 1. The final signed APK is the one tested.
+- API 31/AOSP x86_64 Haze fallback: **9/9, zero skipped, 19.587 seconds**. API 29/AOSP x86_64 opaque fallback: **9/9, zero skipped, 15.813 seconds**. These are focused navigation/optics/contrast cases on the same signed APK, not full legacy suites or real refraction on legacy APIs.
+- New actual-pixel/geometry checks verify accent only inside the selected capsule, movement to the next tab, two-axis press enlargement, restored pixels after cancellation, fixed glyph locations at 2x text, exactly four interactive tabs and physical RTL drag alignment. Existing rim-displacement and no-residual-layer assertions remain in place. Normal/accent foreground contrast replaces the former letter-contour formula and passes the synthetic palettes plus black/white backgrounds.
+- Toolbar material is recorded once, separately from normal labels. Its combination with an invisible non-interactive accent row supplies the selector; source capture excludes the selector's own output. Rest has zero selector refraction; active pressure controls the depth/dispersion lens, highlight, two-axis scaling and bounded velocity stretch. Animation values are read in draw/layer callbacks.
+- Detekt, release builds and lint passed: 0 errors, 71 warnings, 2 information. Localization: 633 matched resources. Backdrop fidelity: 27 hashes / four documented compatibility shims; upstream optical code and renderer assets unchanged. No new listener, permission, telemetry, production bitmap readback or screenshot file.
+- Package audit: zero private/test-marker matches, six native libraries and 20 LOAD segments aligned to 16 KiB. Source/history scans are performed separately before pushing the curated source.
+- Environment limits: early Windows SwiftShader attempts terminated the qemu host with 0xc0000005; Emulator 35.6.11 and 37.2.12 were affected. The host-GPU backend completed the focused optical checks and final full suite. Code was also refined between attempts, so these observations do not isolate a single driver/code cause. The API 31 first attempt encountered stale external screenshot files owned by a previous install UID; resetting only the verified synthetic AVD's app directory allowed unchanged assertions to complete. No assertion was skipped to obtain these results.
+- Physical OEM/GPU, prolonged Doze and real subscriptions/public-network latency remain unverified. The stable 0.1.1 Release is unchanged. No preview video was generated.
+- Bottom navigation implementation: `BottomNavigationBar.kt:58`; optics: `NavGlassMaterial.kt`; parameters/colors: `NavigationGlassStyle.kt`; spring/velocity model: `NavigationMotion.kt`. There are no text or glyph contour layers.
+
 # 0.1.2-preview.2 measurement-plan candidate (build 32)
 
 - Exact local signed APK SHA-256: `2158accb237bfcb1a4f4d11b1f20214efee4d3849b9b5046dc9c9c7ceb8bf096` (131343922 bytes).

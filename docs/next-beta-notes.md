@@ -101,3 +101,12 @@ share member results and show progress/reachable summaries, not route latency.
 Real chained checks remain graph-backed and may still take longer; they no longer
 delay the first independent-node results. The bottom navigation is unchanged.
 The published 0.1.1 Release is unchanged; this is a local preview, not a new Release.
+
+## 0.1.2-preview.3 local candidate
+
+Navigation now uses a press-driven selector lens over the finished toolbar plus
+an accent-label layer, fixed visible labels and one interactive row. Correct RTL
+anchoring, two-axis growth, bounded velocity stretch and draw-phase state reads
+are included. Legacy devices retain clipped accent feedback with Haze/solid
+materials. The stable 0.1.1 Release remains unchanged. Optical-driver and real
+OEM validation limitations must remain explicit in any later release notes.
