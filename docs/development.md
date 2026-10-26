@@ -13,7 +13,7 @@ $env:Path = $env:JAVA_HOME + '\bin;' + $env:Path
 
 The native bridge pins Go 1.27.3, Mihomo v1.19.32 and the exact module graph in core/go.mod / core/go.sum. Terminal sources are included in terminal-emulator and terminal-view; the same NDK builds their JNI libraries. Gradle wrapper and dependency hashes are pinned in gradle/verification-metadata.xml.
 
-The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.0-beta.10/build 28). Debug builds use tools/build-android.ps1.
+The release script generates a private project-local signing identity if none exists. Keep `.tools/signing` private and backed up separately. The public repository does not contain the original developer signing identity. Output uses the version declared in app/build.gradle.kts (currently 0.1.2-preview.2/build 32). Debug builds use tools/build-android.ps1.
 
 ## Verification
 
@@ -58,3 +58,11 @@ resume message, then verifies recovery, view identity and unchanged flip count.
 Five additional pure lifecycle cases bring the offline renderer suite to 25.
 The main navigation page transition fades Home without shifting its 3D anchor;
 the bottom glass navigation component/material/gestures are unchanged.
+
+## Measurement-plan regressions
+
+The current candidate has 68 integration cases. `ProxyDelayPlanTest` covers
+unique native requests across overlapping groups, member-result aliases, a fast
+node scheduled before failing group members, the ten-worker bound and cancellation,
+and bounded cyclic/chained graph handling. Fixtures use synthetic loopback servers;
+public subscriptions, real mobile latency and OEM behavior are not implied.

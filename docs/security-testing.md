@@ -1,3 +1,14 @@
+# 0.1.2-preview.2 measurement-plan candidate (build 32)
+
+- Exact local signed APK SHA-256: `2158accb237bfcb1a4f4d11b1f20214efee4d3849b9b5046dc9c9c7ceb8bf096` (131343922 bytes).
+- API 35/AOSP x86_64: **68/68, zero skipped, 442.562 seconds**. Controlled DNS 1 and separate-UID HTTP 1; release `run-as` denied.
+- Three new regressions exercise the actual native delay path: overlapping automatic/fallback groups issue one native test per unique leaf and populate nested views; a fast independent node completes within the 2.5-second bound despite twelve hanging members, respecting ten workers, and cancellation closes active peers; cyclic/chained definitions retain their graph and terminate expansion. The fast-node bound is a controlled local assertion, not a public-network latency claim.
+- Independent nodes now run first; real graph-backed chains retain their routes and can still initialize automatic-group dependencies. Group cards summarize measured/reachable members, not a selected-route millisecond result. Original subscription grouping and selection are unchanged.
+- Detekt/build passed; lint: 0 errors, 71 warnings, 2 information. Localization: 633 matched resources. Backdrop: 27 upstream hashes and four compatibility shims verified; no navigation optical code or renderer asset changes.
+- Package audit: zero private/test-marker matches, six native libraries and 20 LOAD segments aligned to 16 KiB. No new listener, permission or telemetry is introduced. Curated source/history scans are recorded separately during publication.
+- An earlier full-suite attempt stalled before these new tests, in an existing VPN UI interaction. The main-thread dump was waiting in HardwareRenderer/DrawFrame; the render thread was waiting in HWUI. After restarting only the dedicated AVD, the same signed APK completed all 68 tests without skips. The trace does not establish a physical-device cause. No physical OEM/GPU, real subscription or mobile-network performance validation is claimed.
+- The published 0.1.1 Release remains unchanged. This preview is local; bottom navigation remains in `BottomNavigationBar.kt:53` and is unchanged. No preview video was generated.
+
 # 0.1.2-preview.1 quiet re-entry candidate (build 31)
 
 - Exact signed APK: 131,327,538 bytes; SHA-256 `81a91bf353ef1c7a8374cb343e19306d18f8cf843f1ef801a973f74409ed78cc`. Existing signing identity, v2/v3, non-debuggable/run-as denial, six native libraries and 20 LOAD segments aligned at 16 KiB. Package private/test-marker matches: zero.

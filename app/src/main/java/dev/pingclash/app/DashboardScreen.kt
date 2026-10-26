@@ -123,7 +123,9 @@ internal fun connectionControlEnabled(state: DashboardState): Boolean {
 
 @Composable internal fun UrlMeasurement(delay: ProxyDelay?, modifier: Modifier) {
     Column(modifier.padding(vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        if (delay?.state == "passed") {
+        if(delay?.state in setOf("members","members_running")) {
+            Text(groupDelayText(requireNotNull(delay)),style=MaterialTheme.typography.bodySmall,color=Muted)
+        } else if (delay?.state == "passed") {
             val tone = latencyColor(delay.elapsedMs)
             Text(tr(R.string.latency_url, "${delay.elapsedMs.coerceAtLeast(1)} ms"),
                 style = MaterialTheme.typography.titleLarge, color = tone)

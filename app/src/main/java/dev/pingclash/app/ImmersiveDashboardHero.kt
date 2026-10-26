@@ -52,7 +52,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable private fun ImmersiveLatency(state: DashboardState,actions: DashboardActions) {
     val delay=selectedUrlDelay(state.data,state.tests)
-    val value=if(delay?.state=="passed")tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms")
+    val value=if(delay?.state in setOf("members","members_running"))groupDelayText(requireNotNull(delay))
+        else if(delay?.state=="passed")tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms")
         else tr(when(delay?.state) {
             "running"->R.string.ui_checking
             "timeout"->R.string.message_e512cf016f

@@ -92,3 +92,12 @@ retain the physical animation. Retry missing frame/resume acknowledgments twice,
 then retain a usable native action. Local signed API 35 regression: 65/65;
 offline renderer cases: 25/25. Physical OEM/GPU behavior remains unverified.
 The published 0.1.1 Release is not replaced and no new Release/tag is created.
+
+## 0.1.2-preview.2 local candidate
+
+Replace group-first serial URL checks with a bounded unique-member plan. Preserve
+the official subscription graph and measure independent nodes first. Nested groups
+share member results and show progress/reachable summaries, not route latency.
+Real chained checks remain graph-backed and may still take longer; they no longer
+delay the first independent-node results. The bottom navigation is unchanged.
+The published 0.1.1 Release is unchanged; this is a local preview, not a new Release.

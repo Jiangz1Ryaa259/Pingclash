@@ -154,8 +154,11 @@ private fun groupProblem(reason: String)=when(reason) {
                                     val nested=profile.groups.firstOrNull {it.name==name}
                                     val available=name in listOf("DIRECT","REJECT","COMPATIBLE") || node!=null || nested?.supported==true
                                     val chosen=if(group.type=="nodes") node?.id==data.selectedId else group.selected==name
-                                    ProxyCard(name,profile.proxyDescription(name),node?.type in setOf("hysteria2","tuic"),chosen,!locked&&group.selectionEditable&&available,
-                                        tests.values[delayKey(profile.id,name,group.name)],tests.tcpValues[delayKey(profile.id,name,group.name)],Modifier.testTag("group-choice-${group.name}-$name"),
+                                    ProxyCard(name,profile.proxyDescription(name),node?.type in setOf("hysteria2","tuic"),
+                                        chosen,!locked&&group.selectionEditable&&available,
+                                        tests.delayFor(profile.id,name,group.name),
+                                        tests.tcpValues[delayKey(profile.id,name,group.name)],
+                                        Modifier.testTag("group-choice-${group.name}-$name"),
                                         onClick={when(group.type) {
                                             "nodes" -> node?.let {model.select(it.id)}
                                             "load-balance" -> model.message(tr(R.string.message_42f6bdedaa))
@@ -196,6 +199,8 @@ private fun groupProblem(reason: String)=when(reason) {
             Text(tr(R.string.latency_tcp,if(udpOnly)tr(R.string.latency_udp_na) else when(tcp?.state){"passed"->"${tcp.elapsedMs.coerceAtLeast(1)} ms";"skipped"->tr(R.string.latency_skipped);"timeout"->tr(R.string.message_e512cf016f);"failed","dns","stale"->tr(R.string.message_28384d7afd);"running"->"…";else->"—"}),modifier=Modifier.clickable(enabled=onTcpTest!=null){onTcpTest?.invoke()},style=MaterialTheme.typography.bodySmall,color=if(tcp?.state=="passed")Success else Muted)
             Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription=tr(R.string.message_e5cc5f1229, name)},contentAlignment=Alignment.CenterStart) {
                 when(delay?.state) {
+                    "queued" -> Text(tr(R.string.delay_queued),fontSize=12.sp,color=Muted)
+                    "members","members_running" -> Text(groupDelayText(delay),fontSize=12.sp,color=Muted)
                     "running" -> CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=1.5.dp)
                     "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),
                         style=MaterialTheme.typography.bodySmall,color=latencyColor(delay.elapsedMs))

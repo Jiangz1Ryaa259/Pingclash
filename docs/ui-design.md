@@ -1,6 +1,6 @@
 # Interface and motion
 
-The current source is 0.1.2-preview.1, build 31. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
+The current source is 0.1.2-preview.2, build 32. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
 ## Background and glass
 
@@ -106,3 +106,13 @@ are in `AppScreens.kt`. Host ownership/visibility are in `LanyardThreeState.kt`,
 `LanyardThreeView.kt` and `LanyardPowerControl.kt`; the bounded recovery policy is
 `LanyardRecovery.kt`. Offline reconciliation is in `ui/lanyard/src/hostLifecycle.mjs`,
 with adapter wiring in `ui/lanyard/adapt.mjs`.
+
+## Policy-group measurement scheduling (0.1.2-preview.2)
+
+`ProxyDelayPlan.kt` expands requested groups for measurement only, preserving the stored subscription graph and UI order. Directly requested nodes enter first; direct leaf members precede nested-group expansion. Overlapping groups share one native Mihomo URL test per unique leaf in the batch (at most 500 targets, eight group levels and 10,000 traversal operations). Invalid cycles and unsupported dependencies are not replaced with DIRECT.
+
+The configured pool (default 10, maximum 16) runs independent nodes before graph-backed nodes. A real dialer chain retains its profile and runs separately because native automatic-group initialization already fans out; complex chained checks can still be slower. Node results are shared with nested tabs through result aliases and published at 100 ms intervals. Cancellation stops active probes and clears queued/running states.
+
+Group cards show completed/total members and reachable count, not an invented single-route millisecond value. These summaries describe the current batch and target only; they do not prove the selected group route or system VPN works. Full route diagnosis remains a separate action. TCP measurements remain separate.
+
+The complete bottom navigation remains in `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt` (`BottomNavigationBar`, line 53). This change does not modify its layout, optical material, gestures or selection animation; proxy measurement labels are in `ProxyScreen.kt`.

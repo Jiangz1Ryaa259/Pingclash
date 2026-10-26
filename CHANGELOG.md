@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2-preview.2 (local candidate)
+
+- Expand requested policy groups into a bounded, deduplicated native URL-test queue. Start directly requested leaf nodes first; retain original subscription group order, membership and selections.
+- Share member results across nested group views. Group cards show member progress and reachable counts instead of a misleading group-route delay.
+- Run independent nodes with the configured bounded pool (default 10, maximum 16); retain real chained routes separately without multiplying the core health-check pool. Cancellation, native timeouts and 100 ms UI batching remain in place.
+- Add controlled regressions for overlapping groups, a fast node behind failing groups, cancellation, concurrency and cyclic/chained definitions. Bottom navigation and the offline renderer are unchanged.
+
 ## 0.1.2-preview.1 (local candidate)
 
 - Keep the last painted lanyard scene, orientation and valid layout across ordinary tab navigation.

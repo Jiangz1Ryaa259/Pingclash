@@ -79,7 +79,7 @@
     <string name="message_3356dda6d6">"在本机保存累计用量"</string>
     <string name="message_33e74eb6db">"节点配置"</string>
     <string name="message_33ff6d18e1">"诊断主代理"</string>
-    <string name="message_3538e7b1a7">"测速 %1$s / %2$s · %3$s 路并发"</string>
+    <string name="message_3538e7b1a7">"测速 %1$s / %2$s · 并发上限 %3$s"</string>
     <string name="message_35410a62be">"输入 help 查看命令。"</string>
     <string name="message_35f7d981fb">"VPN 隧道已建立"</string>
     <string name="message_3696c244fd">"没有活动连接"</string>

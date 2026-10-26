@@ -79,7 +79,7 @@
     <string name="message_3356dda6d6">"Keep aggregate usage on this device"</string>
     <string name="message_33e74eb6db">"Node configuration"</string>
     <string name="message_33ff6d18e1">"Diagnose main proxy"</string>
-    <string name="message_3538e7b1a7">"Testing %1$s / %2$s · %3$s workers"</string>
+    <string name="message_3538e7b1a7">"Testing %1$s / %2$s · up to %3$s workers"</string>
     <string name="message_35410a62be">"Enter help to list commands."</string>
     <string name="message_35f7d981fb">"VPN tunnel established"</string>
     <string name="message_3696c244fd">"No active connections"</string>
