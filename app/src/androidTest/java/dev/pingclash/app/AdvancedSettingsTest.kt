@@ -20,13 +20,28 @@ class AdvancedSettingsTest {
     @get:Rule(order=1) val compose=createAndroidComposeRule<MainActivity>()
     private fun root() {
         compose.onNodeWithTag("nav-3").performClick()
-        compose.onNodeWithTag("tool-settings").performClick()
     }
-    private fun section(id: String) {compose.onNodeWithTag("settings-$id").performScrollTo().performClick();compose.waitForIdle()}
-    private fun back() {compose.onNodeWithTag("settings-back").performScrollTo().performClick();compose.waitForIdle()}
+    private fun section(id: String) {
+        visibleControl("settings-$id").performClick();compose.waitForIdle()
+        compose.onNodeWithTag("settings-back").assertIsDisplayed()
+    }
+    private fun back() {visibleControl("settings-back").performClick();compose.waitForIdle()}
+    // ScrollTo sees the full viewport; an overlaid navigation bar still owns its taps.
+    private fun visibleControl(tag: String): SemanticsNodeInteraction {
+        val node=compose.onNodeWithTag(tag).performScrollTo()
+        val navTop=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot.top
+        val clearance=12*compose.activity.resources.displayMetrics.density
+        val distance=node.fetchSemanticsNode().boundsInRoot.bottom-navTop+clearance
+        if(distance>0)compose.onNodeWithTag("settings-page").performSemanticsAction(
+            androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {it(0f,distance)}
+        compose.waitForIdle()
+        assertTrue("Settings control remains behind navigation",
+            node.fetchSemanticsNode().boundsInRoot.bottom<=navTop)
+        return node
+    }
     private fun save() {
         hideFixtureKeyboard()
-        compose.onNodeWithTag("settings-save").performScrollTo().assertIsEnabled().performClick()
+        visibleControl("settings-save").assertIsEnabled().performClick()
         val model=ViewModelProvider(compose.activity)[AppViewModel::class.java]
         compose.waitUntil(10000) {!model.ui.value.busy}
         model.dismissMessage()
@@ -46,16 +61,16 @@ class AdvancedSettingsTest {
             compose.waitUntil(10000) {repo.data.value.client.mtu==1400}
             assertEquals(8,ProfileRepository(app).data.value.client.connectTimeout)
             back();section("dns")
-            compose.onNodeWithTag("choice-模式-https").performScrollTo().performClick()
+            visibleControl("choice-模式-https").performClick()
             compose.onNodeWithTag("field-加密 DNS 地址").performScrollTo().performTextReplacement("https://example.invalid/dns-query")
             save();compose.waitUntil(10000) {repo.data.value.client.dnsMode=="https"}
             assertEquals("https://example.invalid/dns-query",ProfileRepository(app).data.value.client.dnsHttps)
             assertFalse(File(app.filesDir,"profiles.enc").readBytes().toString(Charsets.ISO_8859_1).contains("example.invalid/dns-query"))
             captureSyntheticFixture(compose,device,"settings-dns.png")
             back();section("appearance")
-            compose.onNodeWithTag("choice-主题-dark").performScrollTo().performClick()
+            visibleControl("theme-toggle").performClick()
             compose.waitUntil(10000) {repo.data.value.client.theme=="dark"}
-            compose.onNodeWithTag("choice-语言-en").performScrollTo().performClick()
+            visibleControl("choice-语言-en").performClick()
             compose.waitUntil(10000) {repo.data.value.client.language=="en"}
             compose.waitUntil(10000) {compose.onAllNodesWithText("Theme").fetchSemanticsNodes().isNotEmpty()}
             compose.onNodeWithText("Theme").assertIsDisplayed()

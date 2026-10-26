@@ -38,7 +38,7 @@ data class VpnUiState(
     val uploaded: Long = 0, val downloaded: Long = 0, val failures: Long = 0,
     val uploadSpeed: Long=0,val downloadSpeed: Long=0,val uptime: Long=0,val connections: Int=0,
     val totalConnections: Long=0,val dnsQueries: Long=0,val rejected: Long=0,val heapBytes: Long=0,val goroutines: Int=0,
-    val history: List<SpeedSample> = emptyList(),
+    val history: List<SpeedSample> = emptyList(), val sessionStartedElapsed: Long=-1,
 ) { val active get() = phase in listOf("connecting", "established", "stopping") }
 data class SpeedSample(val up: Long,val down: Long)
 
@@ -49,7 +49,7 @@ object VpnRuntime {
     internal fun stats(owner: PingVpnService, status: JSONObject,upSpeed: Long,downSpeed: Long) {
         mutableState.update { if (it.phase == "established" && PingVpnService.instance === owner)
             it.copy(uploaded=status.optLong("uploaded"),downloaded=status.optLong("downloaded"),failures=status.optLong("failures"),
-                uploadSpeed=upSpeed,downloadSpeed=downSpeed,uptime=status.optLong("uptime"),connections=status.optInt("activeConnections"),
+                uploadSpeed=upSpeed,downloadSpeed=downSpeed,uptime=owner.sessionSeconds(),connections=status.optInt("activeConnections"),
                 totalConnections=status.optLong("totalConnections"),dnsQueries=status.optLong("dnsQueries"),rejected=status.optLong("rejected"),heapBytes=status.optLong("heapBytes"),goroutines=status.optInt("goroutines"),history=(it.history+SpeedSample(upSpeed,downSpeed)).takeLast(60)) else it }
     }
     fun connect(context: Context) {
@@ -75,6 +75,9 @@ class PingVpnService : VpnService() {
     @Volatile internal var boundNetwork: Network? = null
         private set
     private var observing = false
+    @Volatile private var sessionStartedElapsed=-1L
+    internal fun sessionSeconds()=if(sessionStartedElapsed<0)0 else
+        ((SystemClock.elapsedRealtime()-sessionStartedElapsed)/1000).coerceAtLeast(0)
     private var usageStarted=false
     private val usageRecorded=AtomicBoolean(false)
     private val manager by lazy { getSystemService(ConnectivityManager::class.java) }
@@ -107,7 +110,10 @@ class PingVpnService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == DISCONNECT) { requestStop(); return START_NOT_STICKY }
         val settings=(application as PingClashApplication).repository.data.value.client
-        val resume=intent==null&&settings.autoReconnect&&getSharedPreferences("vpn_runtime",0).getBoolean("resume_requested",false)&&prepare(this)==null
+        if(intent?.action==RECONFIGURE) {
+            return reconfigure(settings)
+        }
+        val resume=shouldResume(intent,settings)
         if (intent?.action != CONNECT && !isAlwaysOn && !resume) { requestStop(); return START_NOT_STICKY }
         if (!starting.compareAndSet(false, true)) return START_NOT_STICKY
         stopRequested.set(false)
@@ -162,7 +168,8 @@ class PingVpnService : VpnService() {
             if(descriptor==null)descriptor = builder.establish() ?: error("tun_unavailable")
             if(network==null) {
                 if(!data.client.autoReconnect)error("network_unavailable")
-                VpnRuntime.publish(VpnUiState("connecting",tr(R.string.vpn_waiting_network)))
+                VpnRuntime.publish(VpnUiState("connecting",tr(R.string.vpn_waiting_network),
+                    uptime=sessionSeconds(),sessionStartedElapsed=sessionStartedElapsed))
                 getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID,notification(tr(R.string.vpn_waiting_network)))
                 return
             }
@@ -170,7 +177,9 @@ class PingVpnService : VpnService() {
             stage = if (result.optString("code") == "config_or_dns_invalid") "configuration" else "forwarder"
             check(result.optString("code") == "tun_established_not_verified") { "native_start_failed" }
             if (stopRequested.get()) { shutdown(); return }
-            VpnRuntime.publish(VpnUiState("established", tr(R.string.message_35f7d981fb)))
+            if(sessionStartedElapsed<0)sessionStartedElapsed=SystemClock.elapsedRealtime()
+            VpnRuntime.publish(VpnUiState("established", tr(R.string.message_35f7d981fb),
+                uptime=sessionSeconds(),sessionStartedElapsed=sessionStartedElapsed))
             usageStarted=true
             usageRecorded.set(false)
             getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(tr(R.string.message_247da58fe9)))
@@ -210,13 +219,16 @@ class PingVpnService : VpnService() {
         }==true
     }
 
-    private suspend fun rebindNetwork() {
+    private suspend fun rebindNetwork(force: Boolean=false) {
         val next=currentNetwork()
         val running=runCatching {JSONObject(Mobile.vpnStatus()).optBoolean("running")}.getOrDefault(false)
-        if(next==boundNetwork&&(running||next==null))return
-        if(!(application as PingClashApplication).repository.data.value.client.autoReconnect) {
-            shutdown(tr(R.string.message_8d668116e3));return
-        }
+        val unchanged=next==boundNetwork&&(running||next==null)
+        if(!force&&unchanged)return
+        if(!force&&!(application as PingClashApplication).repository.data.value.client.autoReconnect)
+            shutdown(tr(R.string.message_8d668116e3)) else reestablish(next)
+    }
+
+    private suspend fun reestablish(next: Network?) {
         statisticsJob?.cancel();statisticsJob=null
         saveUsage();usageStarted=false
         // Stop old outbound sockets before installing the new physical route.
@@ -226,9 +238,24 @@ class PingVpnService : VpnService() {
         Mobile.stopVPN()
         if(stopRequested.get()){shutdown();return}
         val message=tr(if(next==null)R.string.vpn_waiting_network else R.string.vpn_reconnecting)
-        VpnRuntime.publish(VpnUiState("connecting",message))
+        VpnRuntime.publish(VpnUiState("connecting",message,
+            uptime=sessionSeconds(),sessionStartedElapsed=sessionStartedElapsed))
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID,notification(message))
         establish()
+    }
+
+    private fun shouldResume(intent: Intent?,settings: ClientSettings)=intent==null&&settings.autoReconnect&&
+        getSharedPreferences("vpn_runtime",0).getBoolean("resume_requested",false)&&prepare(this)==null
+
+    private fun reconfigure(settings: ClientSettings): Int {
+        scope.launch {mutex.withLock {
+            if(descriptor!=null&&!stopRequested.get()) {
+                try {rebindNetwork(true)}
+                catch(cancelled: kotlinx.coroutines.CancellationException) {throw cancelled}
+                catch(_: Exception) {shutdown(tr(R.string.message_5567ea6394))}
+            }
+        }}
+        return if(isAlwaysOn||settings.autoReconnect) START_STICKY else START_NOT_STICKY
     }
 
     private fun requestStop(message: String? = null) {
@@ -240,6 +267,7 @@ class PingVpnService : VpnService() {
     private fun shutdown(message: String? = null) {
         if (message != null) terminalMessage = message
         saveUsage()
+        sessionStartedElapsed=-1
         statisticsJob?.cancel();statisticsJob=null
         getSharedPreferences("vpn_runtime",0).edit().putBoolean("resume_requested",false).apply()
         VpnRuntime.publish(VpnUiState("stopping", tr(R.string.message_ee2fa91fe1)))
@@ -287,6 +315,7 @@ class PingVpnService : VpnService() {
 
     companion object {
         const val CONNECT = "dev.pingclash.CONNECT"
+        const val RECONFIGURE = "dev.pingclash.RECONFIGURE"
         const val DISCONNECT = "dev.pingclash.DISCONNECT"
         private const val CHANNEL = "vpn"
         private const val NOTIFICATION_ID = 1

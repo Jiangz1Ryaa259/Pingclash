@@ -3,7 +3,10 @@
 Standard terminal: Termux terminal-emulator and terminal-view v0.118.3, GPL-3.0. Vendored source, license and local patches accompany the release.
 Proxy page layout and interactions: FlClash (chen08209), GPL-3.0, commit 8d4f9744948751f1273fe871e1d05276fac09b0e; Kotlin/Compose adaptation. No upstream fonts or image assets bundled.
 Application source: GPL-3.0-only. Engine: MetaCubeX/mihomo v1.19.32. Each dependency retains its own license.
+Offline Lanyard renderer: user-supplied React Bits component, MIT + Commons Clause; see lanyard/ReactBits.md. React, React DOM and Three.js: MIT; see lanyard/*.txt. Original renderer source, pinned lockfile and Android adaptations accompany the source tree.
 AndroidX, Kotlin, kotlinx.coroutines and Gradle: Apache-2.0 notices. Go and its mobile binding runtime: BSD notices.
+VPN state morphing: AndroidX graphics-shapes 1.0.1, Apache-2.0.
+Navigation blur: Haze and haze-materials 1.6.8, copyright Christopher Banes and the Haze project contributors, Apache-2.0; https://github.com/chrisbanes/haze/tree/1.6.8.
 Full corresponding Go dependency sources and notices are included in the accompanying source archive.
 
 - github.com/andybalholm/brotli v1.1.1
@@ -106,3 +109,5 @@ Full corresponding Go dependency sources and notices are included in the accompa
 - golang.org/x/text v0.43.0
 - golang.org/x/time v0.10.0
 - google.golang.org/protobuf v1.34.2
+
+Liquid Glass navigation: Backdrop 1.0.4, copyright 2025 Kyant, Apache-2.0; pinned source module and compatibility changes accompany the app in third-party/backdrop.

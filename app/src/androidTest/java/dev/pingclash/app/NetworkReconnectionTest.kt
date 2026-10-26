@@ -47,6 +47,8 @@ class NetworkReconnectionTest {
                 VpnRuntime.connect(app)
                 compose.waitUntil(20000) {VpnRuntime.state.value.phase in listOf("established","error")}
                 assertEquals(VpnRuntime.state.value.message,"established",VpnRuntime.state.value.phase)
+                val sessionStart=VpnRuntime.state.value.sessionStartedElapsed
+                assertTrue(sessionStart>=0)
                 val service=requireNotNull(PingVpnService.instance)
                 val descriptor=PingVpnService::class.java.getDeclaredField("descriptor").apply {isAccessible=true}
                 val tun=descriptor.get(service) as ParcelFileDescriptor
@@ -79,6 +81,9 @@ class NetworkReconnectionTest {
                 if(wifi)device.executeShellCommand("svc wifi enable")
                 compose.waitUntil(30000) {service.boundNetwork!=null&&VpnRuntime.state.value.phase=="established"}
                 assertSame("Handoff closed the original TUN",tun,descriptor.get(service))
+                assertEquals("Handoff reset the session timer",sessionStart,
+                    VpnRuntime.state.value.sessionStartedElapsed)
+                assertTrue(VpnRuntime.state.value.uptime>0)
                 assertNull("Handoff required new VPN authorization",VpnService.prepare(app))
                 val reply=JSONObject(Mobile.probe(config,"http://127.0.0.1:${fixture.http.localPort}/",UUID.randomUUID().toString(),4000))
                 assertEquals("proxy_request_verified",reply.optString("code"))

@@ -259,9 +259,28 @@ class ProfileRepository(context: Context) {
         commit(current.copy(client=value,dnsAddress=dns,probeUrl=probe,usage=if(value.keepUsage)current.usage else LocalUsage()))
         if(value.language!=current.client.language)UiStrings.apply(value.language)
     }
-    @Synchronized fun appearance(language: String,theme: String) {
+
+    /** The sole live routing preference; all other settings keep ensureMutable's VPN lock. */
+    @Synchronized fun routeMode(mode: String) {
+        val current=mutableData.value
+        check(!current.loadFailed) {tr(R.string.message_d372823dd0)}
+        check(VpnRuntime.state.value.phase !in listOf("connecting","stopping")) {tr(R.string.message_012c5c80c2)}
+        val value=current.client.copy(mode=mode)
+        validateClientSettings(value)
+        val reply=JSONObject(Mobile.validateRuntimeOptions(current.runtimeOptions(value)))
+        if(reply.optString("state")!="passed")throw SettingsFailure(tr(R.string.message_6e7c33d963))
+        commit(current.copy(client=value))
+    }
+    @Synchronized fun appearance(language: String,theme: String,
+        dynamicColor: Boolean?=null,reduceEffects: Boolean?=null,
+        scenery: ScenePreferenceChange?=null) {
         val current=mutableData.value;check(!current.loadFailed)
-        val value=current.client.copy(language=language,theme=theme);validateClientSettings(value)
+        val value=current.client.copy(language=language,theme=theme,
+            dynamicColor=dynamicColor?:current.client.dynamicColor,
+            reduceEffects=reduceEffects?:current.client.reduceEffects,
+            scene=scenery?.scene?:current.client.scene,
+            reduceTransparency=scenery?.reduceTransparency?:current.client.reduceTransparency)
+        validateClientSettings(value)
         commit(current.copy(client=value))
         UiStrings.apply(language)
     }

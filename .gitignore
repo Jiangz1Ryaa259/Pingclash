@@ -17,4 +17,6 @@ profiles.enc*
 .idea/
 *.iml
 dist/
+**/node_modules/
 
+videos/

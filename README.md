@@ -4,7 +4,9 @@
 
 A privacy-focused Android proxy client powered by Mihomo, with connection diagnostics and a built-in terminal.
 
-**Version: 0.1.0-beta.1 · Android 10+ · arm64-v8a / x86_64 · GPL-3.0-only**
+[Download 0.1.2](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.2) · [Earlier pre-release](https://github.com/Jiangz1Ryaa259/Pingclash/releases/tag/v0.1.0-beta.1)
+
+**Current source: 0.1.2 (build 37) · Android 10+ · arm64-v8a / x86_64 · App code GPL-3.0-only; renderer licenses in [NOTICE](NOTICE.md)**
 
 ## Features
 
@@ -15,10 +17,13 @@ A privacy-focused Android proxy client powered by Mihomo, with connection diagno
 - Standard Android `sh` terminal with PTY, keyboard input, pipes, redirection and Ctrl+C.
 - Configurations encrypted locally with Android Keystore and AES-GCM. No telemetry or advertisements.
 - English / Simplified Chinese resources, Android 13+ system app-language settings, and automatic network reconnection with TUN retained during outages.
+- Full-screen procedural animated ocean/clouds on Android 13+, animated photographic fallback on Android 10–12, circular light/dark reveal and Backdrop-powered refractive glass navigation on Android 13+. Reduced motion/transparency and protected-window fallbacks remain available.
+- A non-scrolling, responsive home: draggable VPN card, top session capsule with auto-collapsing actions, configuration/routing mode and 2–4 website latency tiles. Expand the panel for 12 targets; tests run only on demand through native Mihomo URLTest. Theme switching lives in Appearance settings. Compact quota cards, scroll-collapsing import button and sensitive subscription-copy feedback.
+- Top-anchored hanging card using the supplied React Bits geometry, PBR materials, woven normals and physics in an isolated offline Three.js renderer. Native Compose retains long-press input, VPN actions and accessibility; unsupported WebGL devices use a native fallback.
 
 ## 状态与边界
 
-这是首个公开 Beta，功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
+当前版本为 0.1.2，精简界面文案、统一页面标题，并将设置改为分层详情；详细操作见使用手册。早期版本为 0.1.0-beta.1（预发布）。功能仍在完善。支持的配置是受限子集，HTTP providers 已实现受限首版；file/inline/MRS、部分规则和复杂筛选尚未支持；请勿视为完整 Mihomo 配置兼容保证。模拟器验证不能替代真实设备和网络测试。
 
 终端使用本应用的 UID 和权限，可按用户输入读写应用文件及访问网络。系统命令的网络请求不等于经过所选节点。设备缺少的 curl、dig 等工具目前不额外打包。
 
@@ -36,11 +41,11 @@ This repository contains the current source, tests and build scripts. Local tool
 
 ## Screenshots
 
-Synthetic emulator data only; no personal subscription or credentials are shown.
+Synthetic emulator data only; no personal subscription or credentials are shown. These screenshots show the earlier beta.6 layout; beta.7 reorganizes Home and Profiles. Any sample passing path or latency illustrates layout, not a real network measurement. See [UI design and accessibility](docs/ui-design.md).
 
-| Dashboard | Proxies | Settings | DNS |
+| Front face | Reverse face (synthetic renderer fixture) | Proxies | Settings |
 | --- | --- | --- | --- |
-| ![Dashboard](docs/images/dashboard.png) | ![Proxies](docs/images/proxies.png) | ![Settings](docs/images/settings.png) | ![DNS](docs/images/dns.png) |
+| ![Dashboard](docs/images/dashboard.png) | ![Reverse card](docs/images/dashboard-dark.png) | ![Proxies](docs/images/proxies.png) | ![Settings](docs/images/settings.png) |
 
 ## Development status
 
@@ -50,13 +55,23 @@ See the [checklist review](docs/hardening-review.md), [documentation index](docs
 
 | 环境 | 系统 | 已有证据 |
 | --- | --- | --- |
-| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | 当前签名候选 APK 29 项回归通过，无跳过；含 Doze、跨 UID 转发、重连与 providers 更新 |
-| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | 同一签名候选 APK 29 项回归通过，无跳过；含 UA/配额、TCP、终端及后台 VPN |
+| 本地 AOSP x86_64 模拟器 | Android 15 / API 35 | beta.11/build 29 同一签名候选 64 项通过、0 跳过；含切页翻面、真实背景折射、点击残影对照、任务预览保护和 VPN 转发 |
+| 本地 AOSP x86_64 模拟器 | Android 12 / API 31 | beta.11 同一签名候选 16 项玻璃回退、任务预览保护、对比度和交互专项通过；此项不是完整 VPN/WebGL 测试 |
+| 本地 AOSP x86_64 模拟器 | Android 10 / API 29 | beta.11 同一签名候选 16 项不透明回退、任务预览及交互专项通过；旧 WebView 的三维能力不作保证 |
+| GitHub CI AOSP 矩阵 | Android 12–15 / API 31、33、34、35 | 本轮以 PR #16 当前提交的 Actions 为准，不沿用旧提交绿色状态 |
 
-此前基线 GitHub CI 的 Android 12、13、14、15 / API 31、33、34、35 矩阵各 26 项全部通过，无跳过，包含受控 DNS 与跨 UID HTTP 转发：[运行记录](https://github.com/Jiangz1Ryaa259/Pingclash/actions/runs/40009562806)。对应应用与测试代码提交为 `daa738faf3de72548e59a6d3ad61acf0ba72e0b4`。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
+具体构建、范围和 APK 校验值见[验证记录](docs/security-testing.md)，公共源码审查见 [PR #16](https://github.com/Jiangz1Ryaa259/Pingclash/pull/16)。当前没有开发者直接完成的国产 OEM 物理机测试，未将未知机型列为已验证。
 
 仪表盘会显示在最近任务中；Android 13+ 禁用该卡片的页面快照，终端和敏感页面继续保护截屏。最近任务卡片与前台 VPN 通知是两项独立功能，移除卡片不会自动断开 VPN。网络切换会重建出站连接；若希望系统杀进程期间也阻断直连，请参考[后台、始终开启 VPN 与锁定模式](docs/background-vpn.md)。
 
 本轮 HTTP providers、UA/配额及 TCP 指标的源码与验证见 [PR #14](https://github.com/Jiangz1Ryaa259/Pingclash/pull/14) 和[验证记录](docs/security-testing.md)。既有 Release APK 尚未更新。
 
 HTTPS `clash://install-config` imports now require host confirmation and remain inactive until a separate profile selection. See the [provider compatibility corpus](docs/provider-compatibility.md), [output privacy boundaries](docs/output-privacy.md) and [next-beta notes draft](docs/next-beta-notes.md). These source additions do not replace the published beta.1 APK.
+
+操作说明见 [使用手册](docs/user-guide.md)。
+
+### 界面操作
+
+首页挂绳卡片轻点连接或断开，长按拖动只改变卡片姿态。顶部是本次连接的正计时；离开首页时横向展开，点按可打开连接操作。这样首页能保留在一屏内。
+
+配置以卡片勾选标记当前选择，右上角菜单提供复制、更新和详情。设置按功能分组，带箭头的整行可点击，详情从右侧进入；详细步骤与参数含义见 [使用手册](docs/user-guide.md)。

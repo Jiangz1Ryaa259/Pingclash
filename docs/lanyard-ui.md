@@ -1,0 +1,32 @@
+# 悬挂卡片连接控件
+
+0.1.0-beta.8 / build 26 使用用户提供的 React Bits Lanyard 源码。`ui/lanyard/reference/Lanyard.jsx` 保留原始组件，适配器只处理原生输入、状态同步、生命周期及有界图片缓存；卡片倒角与厚度、三维环扣/卡扣、织带几何、法线纹理、PBR 参数、环境光和物理求解保留原代码。源码保真和离线产物散列均有回归检查。
+
+React、React DOM 和 Three.js 打包到 APK 内的离线 WebView，不下载脚本、模型、字体或图片。组件保留独立的 MIT + Commons Clause 许可，见 [NOTICE](../NOTICE.md) 和 [原许可](../ui/lanyard/LICENSE-ReactBits.md)。原生应用代码的 GPL 许可不覆盖上游组件。
+
+- 挂绳从窗口顶部延伸到卡片，卡片比例按原组件的竖版尺寸。首页按可用高度适配大小，横屏时同步实际横向中心与点击区域，避让系统侧边导航区。原生内容滚动时场景同步移出屏幕。
+- 点按执行既有连接/取消/断开/选择配置操作；开始连接翻到背面，关闭或错误翻回。翻牌不代表网络已连通，文字仍区分连接中和已建立。
+- 普通滑动不会开关；静止长按后才开始拖动，取消原先的小范围位移限制，松开交给原组件物理求解。恢复前台时重新同步状态并重启动画帧，避免旧句柄导致卡住。原生 Compose 保留输入、按钮语义、禁用状态与辅助功能，网页不执行 VPN 操作。
+- 减少动效时使用静止姿态；离开首页、进入后台或受保护页面停止渲染。不能建立 WebGL 场景时使用原生材质回退；回退不冒充完整三维效果。
+- 渲染层只接收视口、姿态、固定操作文本和阶段，不接收订阅、节点、地址、凭据或终端内容。没有 JavaScript 到原生桥接；固定资源白名单、CSP 和网络阻断共同限制渲染页。
+
+开发步骤见 [renderer README](../ui/lanyard/README.md)。新增测试检查实际 WebGL 绘制、正反状态同步、文件/content 访问设置、资源白名单、外部请求阻断及停止渲染；原有原生手势测试独立验证回退控件。模拟器结果不代表国产 OEM 物理机验证，具体记录见 [验证说明](security-testing.md)。
+
+## Beta.11 renderer lifetime
+
+The renderer is owned by ScenicFrame, not a transient Home composition. Tab changes
+pause it; activity disposal destroys it. Per-slot ownership prevents late disposal
+of an outgoing page from releasing the new page's control. Re-entry and phase
+changes require the renderer to acknowledge both frame generation and the actual
+painted phase. No old native card or metal clasp is overlaid during loading. The
+small native fallback retains accessible connect/disconnect actions.
+
+## Quiet re-entry
+
+A persistent scene is shown across ordinary Home returns without invalidating its
+last healthy frame. Host messages retain valid geometry while inactive and include
+a separate resume generation. `hostLifecycle.mjs` distinguishes re-entry from a
+visible state change: initial/hidden changes align without impulses; user-driven
+connection changes still animate. The adapter retains the upstream meshes,
+materials and physical solver. A bounded native acknowledgment watchdog retries
+lost messages without rebuilding the scene and retains a usable native fallback.

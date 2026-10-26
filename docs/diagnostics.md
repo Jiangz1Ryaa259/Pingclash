@@ -153,3 +153,12 @@ Hysteria2 / TUIC 使用 UDP/QUIC，入口 TCP 与标准辅助 TLS 跳过，不�
 “证书校验：按配置跳过”是导入参数，不是一次连接失败。证书策略步骤显示“跳过”，不标为失败或未知。所选节点的连通性独立读取真实代理测试结果，初始为未测试，只有 PROXY_OK 的通过观测才显示本次访问成功。证书策略不能充当成功证据；节点、目标变化或终止状态不能继续显示旧成功。不增加自动后台测试或数据上传。
 
 current beta 按用户要求将静态证书提示改为首次弹窗，关闭后普通页面不再常驻，完整脱敏报告仍保留策略。实际拨号链使用构造时的组选择快照；辅助入口探测仍为直连，报告明确两者路径不同，不能据此确定代理链哪一跳出错。没有逐跳握手遥测，也没有失败后直连重试。
+
+
+## Review of the proposed layered pipeline
+
+The existing engine already uses structured stage/state/code results and resource-based English/Chinese explanations. Direct DNS uses `DnsResolver` with an explicit underlying non-VPN network; auxiliary TCP sockets come from that network's socket factory. Native Mihomo sockets additionally use the platform protect/bind bridge. A network change invalidates the run. The shell has no equivalent routing guarantee.
+
+DNS/TCP/TLS dependency failures remain distinct from the through-proxy result. UDP/QUIC transports do not undergo a misleading standard TCP/TLS test. Auxiliary failures do not suppress an independently valid protocol-level request. Raw addresses, SNI, credentials and exceptions remain excluded from the diagnostic export.
+
+This UI change does not add automatic system-DNS versus third-party-DoH comparisons, remote clock checks or a new two-target diagnostic run. DNS answers can legitimately differ, and a reset after ClientHello alone cannot establish SNI interference or an operator's intent. These observations must not become definitive tampering claims. No extra resolver or time-service requests were introduced by the scenery/glass work.

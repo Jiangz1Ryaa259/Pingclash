@@ -4,6 +4,8 @@ package dev.pingclash.app
 import org.json.JSONArray
 import org.json.JSONObject
 
+data class ScenePreferenceChange(val scene: String?=null,val reduceTransparency: Boolean?=null)
+
 data class ClientSettings(
     val mode: String="global", val mtu: Int=1500, val ipv6: Boolean=true, val udp: Boolean=true,
     val lan: String="proxy", val connectTimeout: Int=10, val udpTimeout: Int=60, val maxConnections: Int=256,
@@ -15,6 +17,8 @@ data class ClientSettings(
     val showService: Boolean=true, val notificationSpeed: Boolean=true,
     val probeTimeout: Int=5000, val probeConcurrency: Int=10, val unifiedDelay: Boolean=true, val delayUrl: String="",
     val autoReconnect: Boolean=true,
+    val dynamicColor: Boolean=false, val reduceEffects: Boolean=false,
+    val scene: String="ocean", val reduceTransparency: Boolean=false,
 ) {
     fun json(): JSONObject = JSONObject().apply {
         put("mode",mode);put("mtu",mtu);put("ipv6",ipv6);put("udp",udp);put("lan",lan)
@@ -26,6 +30,8 @@ data class ClientSettings(
         put("notificationSpeed",notificationSpeed);put("probeTimeout",probeTimeout);put("probeConcurrency",probeConcurrency)
         put("probeSettingsVersion",2);put("unifiedDelay",unifiedDelay);put("delayUrl",delayUrl)
         put("autoReconnect",autoReconnect)
+        put("dynamicColor",dynamicColor);put("reduceEffects",reduceEffects)
+        put("scene",scene);put("reduceTransparency",reduceTransparency)
     }
     companion object {
         fun read(p: JSONObject?): ClientSettings {
@@ -38,7 +44,11 @@ data class ClientSettings(
                 p.optString("dnsMode","tcp"),p.optString("dnsHttps",defaults.dnsHttps),p.optString("appMode","all"),(0 until packages.length()).map(packages::getString),
                 p.optBoolean("useProviderRules",true),p.optString("customRules"),p.optBoolean("inspectConnections"),p.optString("language","system"),p.optString("theme","system"),p.optBoolean("keepUsage"),
                 p.optBoolean("showSpeed",true),p.optBoolean("showTraffic",true),p.optBoolean("showMemory",true),p.optBoolean("showService",true),p.optBoolean("notificationSpeed",true),p.optInt("probeTimeout",5000),
-                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},p.optBoolean("unifiedDelay",true),p.optString("delayUrl"),p.optBoolean("autoReconnect",true))
+                p.optInt("probeConcurrency",10).let {if(p.optInt("probeSettingsVersion")<2&&it==2)10 else it},
+                    p.optBoolean("unifiedDelay",true),p.optString("delayUrl"),p.optBoolean("autoReconnect",
+                    true),p.optBoolean("dynamicColor"),p.optBoolean("reduceEffects"),
+                    p.optString("scene","ocean").takeIf {it in setOf("ocean","clouds","none")}?:"ocean",
+                    p.optBoolean("reduceTransparency"))
         }
     }
 }
@@ -56,6 +66,7 @@ internal fun AppData.runtimeOptions(settings: ClientSettings=client): String {
         .put("rules",JSONArray(rules)).put("definition",if(settings.mode=="rule")activeProfile?.definition.orEmpty() else "").toString()
 }
 internal fun validateClientSettings(value: ClientSettings) {
+    require(value.scene in setOf("ocean","clouds","none")) {tr(R.string.message_fef3d1894e)}
     require(value.delayUrl.isEmpty() || value.delayUrl.length<=2048 && runCatching {
         val url=java.net.URI(value.delayUrl)
         url.scheme in listOf("http","https")&&!url.host.isNullOrBlank()&&url.rawUserInfo==null&&url.rawFragment==null&&(url.port==-1||url.port in 1..65535)

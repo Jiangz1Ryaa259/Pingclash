@@ -102,14 +102,14 @@ class TerminalActivity:ComponentActivity() {
             TextButton(model::closeCurrent,enabled=model.sessions.isNotEmpty()) {Text(tr(R.string.message_965df3bce4))}
         }
         if(model.startFailed)Text(tr(R.string.terminal_start_failed),Modifier.padding(16.dp),color=MaterialTheme.colorScheme.error)
-        Text(tr(R.string.message_b8b89f7925),Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.labelSmall,color=Color.Gray)
+
         if(model.sessions.isEmpty()) {
             Column(Modifier.weight(1f).padding(24.dp),verticalArrangement=Arrangement.Center) {
                 Text(tr(R.string.message_ffa09539e0),style=MaterialTheme.typography.headlineMedium,color=Color.White)
                 Spacer(Modifier.height(16.dp))
-                Text(tr(R.string.message_dd950864ba),color=Color.LightGray)
+
                 Spacer(Modifier.height(12.dp))
-                Text(tr(R.string.terminal_raw_output),color=Color.LightGray)
+
             }
         } else {
             LazyRow {items(model.sessions.size) {i->FilterChip(model.selected==i,{model.selected=i},label={Text("sh ${i+1}"+(if(model.sessions[i].isRunning)"" else tr(R.string.message_4263ea7dfa)))})}}

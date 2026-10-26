@@ -1,5 +1,7 @@
 # Documentation
 
+- [使用手册：界面、配置、设置、诊断与标准终端](user-guide.md)
+
 - [Build and verification](development.md)
 - [Review against the installation-readiness checklist](hardening-review.md)
 - [Subscriptions, HTTP providers and TCP/URL latency](subscriptions.md)
@@ -10,6 +12,8 @@
 - [Background, network handoff and always-on VPN](background-vpn.md)
 - [Diagnostic evidence and limits](diagnostics.md)
 - [UI and interaction](ui-design.md)
+- [Offline Three.js hanging-card control](lanyard-ui.md)
+- [Local photographic assets and generation prompts](scene-assets.md)
 - [Validation history](security-testing.md)
 - [Privacy](../PRIVACY.md)
 - [Security boundaries](../SECURITY.md)

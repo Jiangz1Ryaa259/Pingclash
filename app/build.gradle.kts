@@ -13,8 +13,8 @@ android {
         applicationId = "dev.pingclash.app"
         minSdk = 29
         targetSdk = 35
-        versionCode = 19
-        versionName = "0.1.0-beta.1"
+        versionCode = 37
+        versionName = "0.1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
@@ -40,11 +40,15 @@ android {
 
 dependencies {
     implementation(project(":terminal-view"))
+    implementation(project(":backdrop"))
     implementation(files(rootProject.file(".tools/native/pingcore.aar")))
     implementation(project(":diagnostics"))
     implementation(platform(libs.compose.bom))
     implementation(libs.activity.compose)
     implementation(libs.compose.material3)
+    implementation(libs.graphics.shapes)
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
     implementation(libs.compose.preview)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.runtime)

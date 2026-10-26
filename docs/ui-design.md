@@ -1,15 +1,163 @@
-# current beta 界面与交互
+# Interface and motion
 
-current beta 重画本地图标，统一 24 单位网格、1.7 单位描边、圆角端点与连接，使用缓存的 Compose ImageVector。仪表盘 / 代理 / 配置 / 设置分别使用仪表、分层、折角文件和齿轮；设置类别按实际功能区分，不再大量复用地球或齿轮。图标不重复朗读按钮文字，可访问标签由原交互控件保留。
+The current source is 0.1.2, build 37. Home has three sections on one fixed screen: the hanging VPN card (with an activity-owned timer above the page); configuration and rule/global/direct routing mode; and 2–4 explicit website latency tiles. The card adapts to the available height, with a minimal native action while the offline renderer loads. Landscape places the three sections side by side. Home has no vertical scroll container. Traffic, memory, connections and full diagnostics remain accessible through Settings. Importing or browsing never starts website checks.
 
-桌面图标为蓝底白色圆角 P，与通知图标统一。使用 Android 自适应背景 / 前景和单色层，前景留在安全区域内；实现依据 [Android 自适应图标文档](https://developer.android.com/develop/ui/compose/system/icon_design_adaptive)。所有路径由本项目绘制，不下载图标、引入图标 SDK 或修改连接逻辑。
+## Background and glass
 
-依据设计参考的 Minimalism 风格图，使用系统无衬线字体、黑白灰层次、蓝色强调和细轮廓图标。借鉴 iPhone 的留白、分组和浮动导航，以及 Android 的状态按钮、触觉反馈与权限流程；不打包 Apple 字体、图标或第三方客户端素材。
+On Android 13+ an AGSL shader draws procedural waves, reflected sky and moving clouds. It does not play a video or display a captured reference frame. All tabs share this root background. Android 10–12 retain the locally generated photographic mesh fallback documented in [scene assets](scene-assets.md); this is not the same real-time water renderer. Plain background mode is available.
 
-- 普通页面以内容为主，白色 / 中性深灰卡片和细边框建立层级。代理组保留订阅原始顺序、直接成员与嵌套引用；选中态使用轻蓝底色和轮廓，搜索、测速、配置操作继续使用原逻辑。
-- 底部导航使用半透明渐变、高光与弹簧位移形成玻璃质感。拖动时只有指示块跟手，松手提交一次切页，取消不切页；也支持点击与无障碍选择。页面短距离滑移与淡入，策略组仍由自己的横向分页响应，不叠加整页滑动手势。
-- 首页电源控制按压缩放、松手回弹，真实服务 established 后才转蓝、变形并完成外环。connecting / stopping 保留进度指示；connecting 可停止，stopping 禁止重复点击。VPN 隧道建立不等于节点或所有目标均已验证，连通性仍通过用户主动诊断判断。
-- 读取 Android 的动画缩放与触摸探索设置，关闭动画或启用触摸探索时取消装饰性位移、回弹和颜色补间。没有空闲时永久循环装饰动画。大字体扩展电源控制与导航高度，代理网格在字体放大时改成单列。
-- 玻璃效果直接绘制渐变和高光，不捕获页面、建立模糊位图缓存或读取屏幕；不是 Apple Liquid Glass 渲染器。敏感窗口保护、一次性证书提示、加密资料和路由边界保持原逻辑。系统偏好监听仅在界面组合存活时存在，不发送网络请求、不新增权限。
+Content and navigation are sibling layers. Android 13+ uses the actual pinned
+Backdrop 1.0.4 source module for GPU source capture, color controls, blur, rounded
+lens refraction, highlights and inner/outer shadows. The bar material is recorded once without foreground labels. A separate local
+layer records accent labels; the selected capsule samples their combination.
+At rest the capsule has no refraction; press/drag introduces the lens.
+API 31/32 keep Haze 1.6.8 blur. Older APIs, Reduce transparency, protected windows
+and background lifecycle detach captures and draw a solid fallback. The terminal
+is a separate protected activity. No production screenshot file or CPU bitmap is
+created by this navigation renderer.
 
-验证入口：`GlassInteractionTest` 检查导航松手提交、取消回退、无障碍选择、取消电源按压不启动 VPN，以及系统动画切换；原有真 VPN / 分组 / 加密 / 大字体 / 深色测试一起执行。
+Historical material comparison (beta.11, superseded below):
+
+| Material | Previous implementation | Beta.11 |
+| --- | --- | --- |
+| Source and optics | Haze in two material layers plus a custom shader | One source; upstream Backdrop capture/lens/highlight pipeline |
+| Light/dark tint | 60% / 66% | 12% white / 22% dark |
+| Selector | Flat fill and heavy outline | Independent refracted capsule; spring following and press stretch |
+| Foreground | Relied on a thick material | Crisp original vectors and thin two-tone text/icon contours |
+| Controls | Distributed constants | `NavigationGlassStyle` and shared contour tokens |
+
+The actual Backdrop source, version/commit, Apache-2.0 license and four Kotlin/
+Compose compatibility shims are preserved under `third-party/backdrop`. The
+upstream optical shaders and algorithms are hash-verified. `LiquidBottomTabs`
+and FlClash v0.9.2 inform interaction/layout; no Flutter migration, upstream demo
+APK, fonts or artwork is included. This is an Android implementation with measured
+pixel behavior, not a claim of identical Apple rendering or performance on all GPUs.
+Harmony-style particles and other light-effect additions are outside this iteration.
+
+## Interactions
+
+- The independent timer strip uses this VPN session’s monotonic start, not the core lifetime. It continues across network handoffs and reconnect waits, resets after disconnect, and stops ticking outside the foreground. Tap it to expand the inline Home/Disconnect operation card; it is never a promise of continuous Internet access.
+- Tap operates the existing VPN action. A stationary long press begins an unrestricted drag; releasing returns the card through its physical solver. App pause/resume restarts the renderer without relying on a stale animation-frame handle.
+- Appearance settings contain a dark-mode switch and a Follow system chip; no theme control sits beside the home timer. The switch expands a circular reveal from its own center. One transient app-window PixelCopy frame exists only in memory and is cleared on completion, protection or backgrounding; it is never saved or uploaded. Protected windows do not capture a frame. System/reduced-motion preferences suppress the transition.
+- All four navigation labels remain visible in a fixed layout. A moving accent layer follows the capsule; large-font navigation retains its clearance.
+- Profiles use stable-ID cards, quota/expiry details and a three-dot menu. The add button collapses while scrolling and remains accessible. Imports remain disabled during active VPN under the existing repository guard.
+- Copying a subscription is an explicit menu action: copy changes to a check, without putting the URL into feedback. The clip is marked sensitive and cleared on a best-effort basis after 60 seconds only if its ownership marker still matches; another application's clipboard is never cleared. Process death or OS clipboard restrictions can prevent expiry.
+- Importing has input and review steps. Review shows the HTTPS host, then requires a final action before download/write. Errors expand inline with a short shake; editing removes stale errors. Details and profile selection use expanding content and dropdowns.
+
+Decorative animation stops outside the foreground and respects system motion settings, touch exploration and Reduce effects. The same settings suppress shake, card motion and circular reveal. No new permissions or remote artwork are required.
+
+## Website latency
+
+The FlClash v0.9.2 service card/provider is the reference for a short home list and an expanded sheet, attributed in [NOTICE](../NOTICE.md). On a tall normal-font screen the four defaults are Google, ChatGPT, Gemini and YouTube. Small screens or large fonts show Google and ChatGPT. More opens the complete list: those four, GitHub, Claude, Cloudflare, Netflix, Spotify, Discord, Telegram and Bilibili. Opening the sheet is local only. Tap one tile/row to test it, the home lightning icon to test shown targets, or Test all in the sheet to explicitly test the full list.
+
+All requests use the existing Mihomo URLTest bridge and the selected unified-delay setting, with at most four concurrent runs and bounded timeout/cancellation. Google/YouTube use lightweight generate_204 targets; other targets use fixed public HTTPS endpoints and HEAD, without response bodies, cookies, accounts or IP/region lookup. The Cloudflare trace body is not read. Unknown target IDs cannot become arbitrary URLs. Changing nodes/configurations or the VPN phase/session cancels and clears old results; measurements expire after 60 seconds. This is a selected-node probe that works even with VPN off, not a check of another UID's TUN route. The compact panel labels its route; the external usage guide explains the measurement boundary.
+
+A measured HTTP response is not an account, regional, unlock or HTTP-success check: an error-page response may still yield a latency value. Full diagnostics remain separate. Results are memory-only and no website is automatically tested by opening Home or More.
+
+See [validation](security-testing.md) for measured evidence and [the card renderer](lanyard-ui.md) for source/license boundaries. No preview video is generated for this iteration.
+
+## Top session strip
+
+Elapsed time lives above every main tab while a VPN session is active (and on Home
+when idle). It is not a countdown and has no pause or automatic-disconnect function.
+Leaving Home widens the capsule horizontally. Tapping opens an inline operation card
+with Home and Disconnect. After 4.5 seconds with no interaction it collapses to a
+small time capsule. A tab change or backgrounding closes expanded actions; returning
+recomputes elapsed time from the unchanged monotonic session start. Page content
+reserves space for the top capsule, while its temporary action card overlays content.
+Only actual user actions control the VPN; card animation is not connection evidence.
+
+## Bottom navigation code map (beta.11)
+
+- `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt`: complete navigation layout, one interactive tab row, fixed labels, accent source and selector placement. Extracted from `GlassUi.kt`; default Material indication is disabled to avoid a second pressed-state layer.
+- `app/src/main/java/dev/pingclash/app/NavGlassMaterial.kt`: Backdrop lens, blur, highlight and shadows. Selector deformation now uses Backdrop's own layer transform; Haze and solid fallbacks explicitly clip to the capsule.
+- `app/src/main/java/dev/pingclash/app/NavigationGlassStyle.kt`: bar tint, refraction, highlights, inner shadow, normal/accent label colors and the soft readability veil.
+- `app/src/main/java/dev/pingclash/app/NavigationDrag.kt`: pointer press/release/cancel state, drag selection, and background reset.
+- `app/src/main/java/dev/pingclash/app/ScenicFrame.kt`: sibling content-source and navigation composition, protected-window and API fallbacks.
+- `third-party/backdrop`: pinned upstream optical implementation; optical shaders are unchanged.
+
+The lanyard WebView remains mounted after the first Home visit. Leaving Home pauses
+its animation without destroying its renderer. Owner tokens prevent an outgoing
+AnimatedContent slot from detaching the incoming control. A frame generation and
+painted-phase acknowledgment keep obsolete face textures hidden until the current
+VPN state is drawn. The former native imitation card/clasp has been removed; a
+small native action remains usable during loading or renderer failure.
+
+Ordinary pages now allow system task previews. SecurePage temporarily disables task
+screenshots while protected content owns the window, restoring the ordinary policy
+after replacement frames. This does not change service lifetime or OEM task policy.
+
+## Quiet Home re-entry (0.1.2-preview.1)
+
+Normal tab return retains the WebView, physical pose, textures and last valid slot
+geometry. Receiving a fresh renderer acknowledgment is separate from showing an
+already-painted healthy scene. Detaching a native Home slot never substitutes a
+zero-height layout. Home uses a short fade instead of moving its persistent 3D
+anchor through the page slide transition.
+
+A resume generation is reconciled once before drawing. Initial connected state,
+offscreen phase changes and unfinished flips are aligned quietly; an actual visible
+front/back state change still adds one physical impulse. Duplicate host frames do
+not repeat it. Native recovery checks run independently of JavaScript callbacks:
+missing acknowledgments cause at most two frame retries, two seconds apart, then
+the usable native action replaces the unhealthy renderer. Ordinary re-entry never
+reloads the scene. This is recovery behavior, not a guarantee about every OEM/GPU.
+
+Bottom navigation remains in `BottomNavigationBar.kt`; its optical material,
+parameters and gesture code are unchanged in this iteration. Page-transition changes
+are in `AppScreens.kt`. Host ownership/visibility are in `LanyardThreeState.kt`,
+`LanyardThreeView.kt` and `LanyardPowerControl.kt`; the bounded recovery policy is
+`LanyardRecovery.kt`. Offline reconciliation is in `ui/lanyard/src/hostLifecycle.mjs`,
+with adapter wiring in `ui/lanyard/adapt.mjs`.
+
+## Policy-group measurement scheduling (0.1.2-preview.2)
+
+`ProxyDelayPlan.kt` expands requested groups for measurement only, preserving the stored subscription graph and UI order. Directly requested nodes enter first; direct leaf members precede nested-group expansion. Overlapping groups share one native Mihomo URL test per unique leaf in the batch (at most 500 targets, eight group levels and 10,000 traversal operations). Invalid cycles and unsupported dependencies are not replaced with DIRECT.
+
+The configured pool (default 10, maximum 16) runs independent nodes before graph-backed nodes. A real dialer chain retains its profile and runs separately because native automatic-group initialization already fans out; complex chained checks can still be slower. Node results are shared with nested tabs through result aliases and published at 100 ms intervals. Cancellation stops active probes and clears queued/running states.
+
+Group cards show completed/total members and reachable count, not an invented single-route millisecond value. These summaries describe the current batch and target only; they do not prove the selected group route or system VPN works. Full route diagnosis remains a separate action. TCP measurements remain separate.
+
+The complete bottom navigation remains in `app/src/main/java/dev/pingclash/app/BottomNavigationBar.kt` (`BottomNavigationBar`, line 53). This change does not modify its layout, optical material, gestures or selection animation; proxy measurement labels are in `ProxyScreen.kt`.
+
+## Press-driven navigation lens (0.1.2-preview.3)
+
+The pinned [LiquidBottomTabs sample](https://github.com/Kyant0/AndroidLiquidGlass/blob/1.0.4/catalog/src/main/java/com/kyant/backdrop/catalog/components/LiquidBottomTabs.kt) informs the layered sampling and moving accent approach. The original Backdrop implementation remains unchanged.
+
+`BottomNavigationBar.kt` records the finished toolbar material once, without labels, then records a separate invisible accent-label row. The selector samples their combined backdrop rather than sharp page pixels. Its own output is excluded from both sources. The normal row alone owns click/Tab semantics; both rows share a fixed glyph/label layout. No screenshots, CPU bitmap readback, permissions or remote sources are added.
+
+`NavGlassMaterial.kt` uses no selector refraction at rest. During press/drag it ramps a 10/14 dp lens with depth and chromatic aberration, boosts highlight/inner shadow and enlarges both axes. `NavigationMotion.kt` uses Animatable springs, bounded velocity stretch and draw/layer reads of animation values. Normal tab changes do not read animated position/pressure in composition. Reduced motion snaps position and suppresses decorative deformation.
+
+`NavigationGlassStyle.kt` uses a 14/18 dp bar rim, 1 dp highlight and 0.11 inner-shadow alpha. Light/dark base tints are 0.28/0.32; a separate soft vertical veil is strongest under labels (0.58/0.72) and fades at the rim. This is a deliberate theme-based readability treatment, not automatic analysis of user screen pixels. Normal and accent label contrast is checked over the synthetic wave palettes plus black/white backgrounds. There are no letter or glyph outlines.
+
+Selector coordinates use an absolute top-left anchor, absoluteOffset and one logical-to-physical mirror. Drag deltas reverse once in RTL. The actual rendered center is tested against its tab, including 2x text, physical drag/cancel and exactly four accessible tabs. API 31/32 retain Haze and a matching clipped accent mask; API 29/30, Reduce transparency and protected/background windows use the solid fallback. Only the optical backend refracts.
+
+## Direct finger tracking (0.1.2-preview.4)
+
+`NavigationMotion.kt` reads the current drag position directly in draw/layer callbacks. While dragging, its stored settled position is snapped to the input for a continuous handoff; the spring runs only on release, cancellation and tab changes. The former implementation restarted a spring at every pointer update and visibly chased the moving target. Bounded VelocityTracker samples preserve stretch while the finger is down.
+
+`BottomNavigationBar.kt:56` retains a fixed absolute 4 dp origin. The selector material's graphics-layer translation applies the single RTL-aware physical position; animated position no longer invalidates placement through absoluteOffset. `NavGlassMaterial.kt` owns this translation together with the existing press/stretch transform and backdrop-coordinate handling. The legacy accent mask reads the same visual position and reuses a cached Path. Glass parameters, highlights, tint, depth/dispersion and label layout are unchanged.
+
+`NavigationTrackingTest` advances the Compose clock one frame per gesture step, compares the actual selector center with the expected displacement and checks cancellation in both directions without committing a tab change. Its trace contains only synthetic coordinates. The same test is run against preview.3 as a negative control. This does not measure physical input latency, GPU throughput or public-network performance; a static synthetic backdrop isolates the gesture-following behavior.
+
+## Application copy and settings navigation (0.1.2-preview.6)
+
+The full [usage guide](user-guide.md) is repository Markdown and is not bundled in the APK. Settings tutorials, implementation paragraphs, long terminal/latency explanations and the retired custom diagnostic-command console are removed from the application. Essential error messages, export/certificate/deep-link/terminal consent, accessible labels and dependency licenses remain, with concise copy where appropriate. Service names and untrusted subscription names remain application data.
+
+`PageHeading.kt` provides the same 22 sp / 30 sp-line-height, bold heading for all four main pages, with a minimum 48 dp heading slot. Root text starts at the same 20 dp horizontal inset. Profiles no longer uses 32 sp while Home uses 16 sp.
+
+Settings is a grouped list with chevrons; diagnostics and the standard terminal are entries in that list. `SettingsSlide` pushes details from the right and provides a back action, respecting reduced motion. Saveable per-page scroll state and the existing editable draft are retained. Sensitive-window guards belong to each visible route, including outgoing content, so the screenshot flag is not cleared while rules/connection targets remain in a transition.
+
+The complete bottom navigation remains `BottomNavigationBar.kt:56` and is unchanged. This iteration changes page headings, AppScreens/SettingsHub navigation and copy; it does not alter the glass material, selected capsule, direct-finger tracking or renderer assets.
+
+`tools/verify-ui-copy.py` rejects retired tutorial resource IDs and custom-command markers in source resources and APK entries, and checks that the external guide is present but not bundled. The title/route regression verifies actual text layout styles, and the sensitive-route test checks protection during the outgoing animation rather than only at its endpoints.
+
+## Minimal task content (0.1.2-preview.6)
+
+The profile empty state is a single factual label beside the existing import paths. Quota bars appear only with known used and positive total amounts; unknown quota has no decorative progress line. Selected profile cards use a check and selected radio semantics instead of a duplicated “View proxies” label. Auxiliary checks have the same heading/back pattern as settings; the legacy brand masthead, version stamp and slogan are gone. Results appear only after steps exist. Privacy/accounting explanations live in the external guide, and valid numeric fields no longer repeat their ranges.
+
+UX: the existing actions and result evidence remain, with fewer repeated labels. DX: `SettingsLinks.kt` owns the grouped destinations, titles, chevrons and between-row dividers; `AuxiliaryDiagnostics.kt` separates input state, form and results and reuses the common report preview. Automation/accessibility: settings rows expose button roles, profile cards expose selected radio state and choice rows have a single focusable radio target. Stable test tags remain; no agent-facing labels are shown to users.
+
+`MinimalCopyTest` exercises large-font/dark empty and selected profiles, import/menu actions, keyboard selection, validation-only ranges, empty auxiliary results, invalid input and back navigation. Existing suites continue to cover loading/success/errors, protected windows, large fonts, RTL and optical contrast. This is emulator evidence, not physical-device certification.
+
+Full bottom navigation remains `BottomNavigationBar.kt:56`, unchanged. Its optical, gesture and shader code and the renderer assets are untouched.

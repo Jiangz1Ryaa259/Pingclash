@@ -115,7 +115,7 @@ func main() {
 	encoded, err := json.Marshal(metadata)
 	must(err)
 	must(os.WriteFile(*ready, encoded, 0600))
-	deadline := time.NewTimer(5 * time.Minute)
+	deadline := time.NewTimer(12 * time.Minute)
 	defer deadline.Stop()
 	tick := time.NewTicker(250 * time.Millisecond)
 	defer tick.Stop()

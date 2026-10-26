@@ -18,3 +18,6 @@ rootProject.name = "PingClash"
 include(":diagnostics", ":app")
 include(":terminal-emulator", ":terminal-view")
 
+
+include(":backdrop")
+project(":backdrop").projectDir = file("third-party/backdrop")

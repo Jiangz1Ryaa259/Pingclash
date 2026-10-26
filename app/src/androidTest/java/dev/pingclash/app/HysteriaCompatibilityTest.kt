@@ -74,7 +74,7 @@ class HysteriaCompatibilityTest {
             compose.onNodeWithTag("nav-0").performClick()
             compose.onNodeWithText("当前节点按配置跳过服务器证书验证；HTTPS 网站证书仍会验证。").assertDoesNotExist()
             compose.onNodeWithText("节点证书校验提示").assertDoesNotExist()
-            compose.onNodeWithText("建立 VPN 连接").performClick()
+            compose.onNodeWithTag("vpn-power").performClick()
             approveSyntheticVpn(device,compose)
             compose.waitUntil(15000) { VpnRuntime.state.value.phase in listOf("established", "error") }
             assertEquals("established", VpnRuntime.state.value.phase)

@@ -63,11 +63,12 @@ class ClientIntegrationTest {
                 .put("server", "127.0.0.1").put("port", fixture.socks.localPort)
                 .put("username", "fixture-user").put("password", "fixture-private-password").toString()
             compose.onNodeWithTag("nav-2").performClick()
-            compose.onNodeWithText("添加订阅").performClick()
+            compose.onNodeWithTag("profile-add").performClick()
             compose.onNodeWithText("节点配置").performClick()
             compose.onNodeWithText("名称（可选）").performTextInput(name)
             compose.onNodeWithText("节点 JSON / Clash YAML").performTextInput(config)
             hideFixtureKeyboard() // Dismiss only IME before scrolling on small displays.
+            compose.onNodeWithText("下一步").performScrollTo().performClick()
             compose.onNodeWithText("导入", useUnmergedTree = false).performScrollTo().performClick()
             compose.waitUntil(10_000) { app.repository.data.value.nodes.isNotEmpty() }
             compose.waitUntil(5000) { compose.onAllNodesWithText("知道了").fetchSemanticsNodes().isNotEmpty() }
@@ -86,14 +87,21 @@ class ClientIntegrationTest {
 
             device.executeShellCommand("pm grant dev.pingclash.app android.permission.POST_NOTIFICATIONS")
             compose.onNodeWithTag("nav-0").performClick()
-            compose.onNodeWithText("建立 VPN 连接").performClick()
+            compose.onNodeWithTag("vpn-power").performClick()
             approveSyntheticVpn(device,compose)
             compose.waitUntil(20_000) { VpnRuntime.state.value.phase in listOf("established", "error") }
             assertEquals(VpnRuntime.state.value.message, "established", VpnRuntime.state.value.phase)
             assertEquals("Starting VPN introduced a TCP listener",baselineAcceptors,tcpAcceptors())
             assertTrue("VPN foreground notification missing",app.getSystemService(android.app.NotificationManager::class.java).activeNotifications.any {it.id==1&&it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT!=0})
             compose.waitForIdle()
-            compose.onNodeWithText("VPN 隧道已建立").assertIsDisplayed()
+            compose.onNodeWithTag("vpn-power").assert(SemanticsMatcher.expectValue(
+                androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                compose.activity.getString(R.string.message_5be0323e8a)))
+            assertEquals(180f,compose.onNodeWithTag("lanyard-stage").fetchSemanticsNode().config[LanyardFaceAngle],.1f)
+            compose.onNodeWithTag("vpn-power").performTouchInput {
+                down(center);advanceEventTime(800);moveBy(androidx.compose.ui.geometry.Offset(60f,0f),160);cancel()
+            }
+            assertTrue("Dragging the connected card stopped VPN",VpnRuntime.state.value.active)
             captureSyntheticFixture(compose, device, "connection-light.png")
             device.waitForIdle(2000)
 
@@ -122,8 +130,17 @@ class ClientIntegrationTest {
             assertFalse(markdown.contains(fixture.host))
             assertTrue(report.steps.any { it.stage == dev.pingclash.diagnostics.Models.Stage.PROXY })
             compose.onNodeWithTag("nav-3").performClick()
-            compose.onNodeWithTag("tool-diagnosis").performClick()
-            compose.onNodeWithText("预览脱敏报告").performScrollTo().performClick()
+            visibleSettingsControl(compose,"tool-diagnosis").performClick()
+            val previewControl=compose.onNodeWithText("预览脱敏报告").performScrollTo()
+            val navTop=compose.onNodeWithTag("glass-navigation").fetchSemanticsNode().boundsInRoot.top
+            val distance=previewControl.fetchSemanticsNode().boundsInRoot.bottom-navTop+
+                16*compose.activity.resources.displayMetrics.density
+            if(distance>0)compose.onNode(hasScrollAction() and hasAnyDescendant(hasText("预览脱敏报告")))
+                .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {it(0f,distance)}
+            compose.waitForIdle()
+            assertTrue("Report preview control remains behind navigation",
+                previewControl.fetchSemanticsNode().boundsInRoot.bottom<=navTop)
+            previewControl.performClick()
             compose.onNodeWithText("脱敏报告预览").assertIsDisplayed()
             device.waitForIdle(2000)
             compose.onNodeWithText("保存 .md").performClick()
@@ -142,8 +159,11 @@ class ClientIntegrationTest {
             assertFalse("Export leaked a credential", exported.contains("fixture-private-password"))
             device.pressBack()
 
-            VpnRuntime.disconnect(app)
+            compose.onNodeWithTag("nav-0").performClick()
+            compose.onNodeWithTag("vpn-power").performClick()
             compose.waitUntil(10_000) { !VpnRuntime.state.value.active }
+            compose.waitForIdle()
+            assertEquals(0f,compose.onNodeWithTag("lanyard-stage").fetchSemanticsNode().config[LanyardFaceAngle],.1f)
             assertFalse(JSONObject(Mobile.vpnStatus()).getBoolean("running"))
             Mobile.stopVPN(); Mobile.stopVPN()
             VpnRuntime.connect(app)

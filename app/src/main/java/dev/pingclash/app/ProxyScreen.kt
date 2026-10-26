@@ -89,8 +89,8 @@ private fun groupProblem(reason: String)=when(reason) {
         val current=groups.getOrNull(pager.currentPage)
         LaunchedEffect(pager.currentPage,groups.map {it.name}) {if(groups.isNotEmpty()) tabs.animateScrollToItem(pager.currentPage)}
         Column(Modifier.fillMaxSize().testTag("proxy-page")) {
-            Row(Modifier.fillMaxWidth().padding(start=18.dp,end=12.dp,top=10.dp,bottom=12.dp),verticalAlignment=Alignment.CenterVertically) {
-                Text((tr(R.string.message_5e84ea61e8)),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+            Row(Modifier.fillMaxWidth().padding(start=20.dp,end=12.dp,top=12.dp,bottom=12.dp),verticalAlignment=Alignment.CenterVertically) {
+                PageHeading(tr(R.string.message_5e84ea61e8),Modifier.weight(1f),"page-title-proxies")
                 Surface(shape=CircleShape,color=Panel.copy(alpha=.72f)) {
                     Row {
                         IconButton({searching=!searching;if(!searching)query=""},Modifier.semantics {contentDescription=tr(R.string.message_760585442e)}) {AppGlyph(8,Modifier.size(23.dp))}
@@ -144,14 +144,21 @@ private fun groupProblem(reason: String)=when(reason) {
                         if(members.isEmpty()) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center){Text((tr(R.string.message_7f3c2f9e96)),color=Muted)}
                         else {
                             val columns=if(LocalDensity.current.fontScale>=1.6f) 1 else 2
-                            LazyVerticalGrid(GridCells.Fixed(columns),modifier=Modifier.fillMaxSize().testTag("group-members-${group.name}"),contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=18.dp),horizontalArrangement=Arrangement.spacedBy(8.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                            LazyVerticalGrid(GridCells.Fixed(columns),modifier=Modifier.fillMaxSize()
+                                .testTag("group-members-${group.name}"),contentPadding=PaddingValues(
+                                start=16.dp,end=16.dp,top=4.dp,bottom=LocalNavigationClearance.current+18.dp),
+                                horizontalArrangement=Arrangement.spacedBy(8.dp),
+                                verticalArrangement=Arrangement.spacedBy(8.dp)) {
                                 items(members,key={it}) {name ->
                                     val node=profile.nodes.firstOrNull {it.name==name}
                                     val nested=profile.groups.firstOrNull {it.name==name}
                                     val available=name in listOf("DIRECT","REJECT","COMPATIBLE") || node!=null || nested?.supported==true
                                     val chosen=if(group.type=="nodes") node?.id==data.selectedId else group.selected==name
-                                    ProxyCard(name,profile.proxyDescription(name),node?.type in setOf("hysteria2","tuic"),chosen,!locked&&group.selectionEditable&&available,
-                                        tests.values[delayKey(profile.id,name,group.name)],tests.tcpValues[delayKey(profile.id,name,group.name)],Modifier.testTag("group-choice-${group.name}-$name"),
+                                    ProxyCard(name,profile.proxyDescription(name),node?.type in setOf("hysteria2","tuic"),
+                                        chosen,!locked&&group.selectionEditable&&available,
+                                        tests.delayFor(profile.id,name,group.name),
+                                        tests.tcpValues[delayKey(profile.id,name,group.name)],
+                                        Modifier.testTag("group-choice-${group.name}-$name"),
                                         onClick={when(group.type) {
                                             "nodes" -> node?.let {model.select(it.id)}
                                             "load-balance" -> model.message(tr(R.string.message_42f6bdedaa))
@@ -176,7 +183,10 @@ private fun groupProblem(reason: String)=when(reason) {
 @Composable private fun ProxyCard(name: String,description: String,udpOnly: Boolean,chosen: Boolean,enabled: Boolean,delay: ProxyDelay?,tcp: ProxyDelay?,modifier: Modifier,onClick: () -> Unit,onTest: (() -> Unit)?,onTcpTest: (() -> Unit)?,onOpen: (() -> Unit)?) {
     val background by animateColorAsState(if(chosen) MaterialTheme.colorScheme.primaryContainer.copy(alpha=.65f) else Panel,
         if(LocalMotionAllowed.current)tween(180) else snap(),label="proxy-selection")
-    Surface(shape=RoundedCornerShape(22.dp),color=background,border=BorderStroke(if(chosen)1.dp else .7.dp,if(chosen)Mint.copy(alpha=.5f) else MaterialTheme.colorScheme.outlineVariant),modifier=modifier.fillMaxWidth().semantics {selected=chosen}.clickable(enabled=enabled,onClick=onClick)) {
+    Surface(shape=UiCorners.Card,color=background,border=BorderStroke(if(chosen)1.dp else .7.dp,
+        if(chosen)Mint.copy(alpha=.5f) else MaterialTheme.colorScheme.outlineVariant),
+        modifier=modifier.fillMaxWidth().semantics {selected=chosen}.clickable(enabled=enabled,
+        onClick=onClick)) {
         Column(Modifier.padding(horizontal=14.dp,vertical=13.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment=Alignment.Top,horizontalArrangement=Arrangement.spacedBy(4.dp)) {
                 Text(name,Modifier.weight(1f).heightIn(min=48.dp),fontSize=16.sp,lineHeight=23.sp,maxLines=2,overflow=TextOverflow.Ellipsis,color=if(enabled)MaterialTheme.colorScheme.onSurface else Muted)
@@ -189,8 +199,11 @@ private fun groupProblem(reason: String)=when(reason) {
             Text(tr(R.string.latency_tcp,if(udpOnly)tr(R.string.latency_udp_na) else when(tcp?.state){"passed"->"${tcp.elapsedMs.coerceAtLeast(1)} ms";"skipped"->tr(R.string.latency_skipped);"timeout"->tr(R.string.message_e512cf016f);"failed","dns","stale"->tr(R.string.message_28384d7afd);"running"->"…";else->"—"}),modifier=Modifier.clickable(enabled=onTcpTest!=null){onTcpTest?.invoke()},style=MaterialTheme.typography.bodySmall,color=if(tcp?.state=="passed")Success else Muted)
             Box(Modifier.heightIn(min=24.dp).clickable(enabled=onTest!=null){onTest?.invoke()}.semantics {contentDescription=tr(R.string.message_e5cc5f1229, name)},contentAlignment=Alignment.CenterStart) {
                 when(delay?.state) {
+                    "queued" -> Text(tr(R.string.delay_queued),fontSize=12.sp,color=Muted)
+                    "members","members_running" -> Text(groupDelayText(delay),fontSize=12.sp,color=Muted)
                     "running" -> CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=1.5.dp)
-                    "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),fontSize=12.sp,color=Success)
+                    "passed" -> Text(tr(R.string.latency_url,"${delay.elapsedMs.coerceAtLeast(1)} ms"),
+                        style=MaterialTheme.typography.bodySmall,color=latencyColor(delay.elapsedMs))
                     "timeout" -> Text((tr(R.string.message_e512cf016f)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "failed" -> Text((tr(R.string.message_28384d7afd)),fontSize=12.sp,color=MaterialTheme.colorScheme.error)
                     "busy" -> Text(tr(R.string.message_7b0fe85cc2),fontSize=12.sp,color=Muted)

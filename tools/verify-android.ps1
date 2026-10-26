@@ -30,7 +30,10 @@ if(($avdName -join "`n") -notmatch '(?m)^PingClash_API35\s*$'){throw 'Refusing t
 $appApk=Join-Path $projectRoot 'app\build\outputs\apk\debug\app-debug.apk'
 $testApk=Join-Path $projectRoot 'app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk'
 if($Release){
-    $appApk=Join-Path $projectRoot 'dist\PingClash-0.1.0-beta.1.apk'
+    $metadata=Get-Content -LiteralPath (Join-Path $projectRoot 'app\build\outputs\apk\release\output-metadata.json') -Raw | ConvertFrom-Json
+    $version=$metadata.elements[0].versionName
+    if($version -notmatch '\A[0-9A-Za-z.+-]{1,60}\z'){throw 'Invalid release version name'}
+    $appApk=Join-Path $projectRoot ('dist\PingClash-'+$version+'.apk')
     $testApk=Join-Path $projectRoot 'app\build\outputs\apk\androidTest\release\app-release-androidTest.apk'
     $signedTest=Join-Path $projectRoot '.tools\native\app-release-test.apk'
     $key=Join-Path $projectRoot '.tools\signing\pingclash-release.p12'
@@ -105,7 +108,7 @@ if(($result -join "`n") -notmatch 'OK \([1-9][0-9]* tests?\)'){
 }
 if($fixtureStats.peerRequests -lt 1 -or $fixtureStats.dnsQueries -lt 1){throw 'Hysteria VPN did not relay peer HTTP and DNS through the selected node.'}
 if($Visuals){
-    foreach($file in @('connection-light.png','nodes-light.png','node-policy-light.png','strategy-groups.png','proxy-grid-light.png','proxy-group-region.png','proxy-grid-dark.png','proxy-grid-large.png','certificate-notice.png','import-error-light.png','settings-light.png','connection-dark.png','settings-dark-large.png','settings-dns.png','settings-english-dark.png','settings-live.png','minimal-home-light.png','group-availability.png','delay-compatibility.png')){
+    foreach($file in @('ocean-home-light.png','ocean-home-dark.png','ocean-home-large.png','connection-light.png','nodes-light.png','node-policy-light.png','strategy-groups.png','proxy-grid-light.png','proxy-group-region.png','proxy-grid-dark.png','proxy-grid-large.png','certificate-notice.png','import-error-light.png','settings-light.png','connection-dark.png','settings-dark-large.png','settings-dns.png','settings-english-dark.png','settings-live.png','minimal-home-light.png','group-availability.png','delay-compatibility.png')){
         & $adb -s $serial pull ('/sdcard/Android/data/dev.pingclash.app/files/'+$file) (Join-Path $output $file)
         if($LASTEXITCODE -ne 0){throw 'Synthetic visual capture missing.'}
     }

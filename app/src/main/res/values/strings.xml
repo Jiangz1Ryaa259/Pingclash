@@ -1,6 +1,33 @@
 <resources>
     <string name="terminal_warning_title">Terminal permissions</string>
-    <string name="terminal_warning_body">Commands run with this app’s UID and permissions. They may read or change app files and access the network. Run only commands you understand. Terminal requests do not automatically use the selected proxy. History stays in memory unless your command explicitly writes a file.</string>
+    <string name="terminal_warning_body">Commands run as this app UID and can read or change app files and use the network. Run trusted commands only.</string>
     <string name="terminal_warning_accept">I understand</string>
     <string name="cancel">Cancel</string>
+    <string name="ui_subscription_copy">Copy subscription URL</string>
+    <string name="ui_copied">Copied</string>
+    <string name="ui_profile_details">Configuration details</string>
+    <string name="ui_home_configuration">Configuration</string>
+    <string name="ui_timer_elapsed">Connected for %1$s</string>
+    <string name="ui_input_required">Enter a subscription URL or configuration.</string>
+    <string name="ui_review_import">Review import</string>
+    <string name="ui_next">Continue</string>
+    <string name="ui_back">Back</string>
+    <string name="ui_more_actions">Configuration actions</string>
+    <string name="ui_profile_quota">%1$s / %2$s</string>
+    <string name="ui_import_too_large">Configuration exceeds 2 MiB.</string>
+    <string name="ui_session_duration">VPN session</string>
+    <string name="ui_dark_mode">Dark mode</string>
+    <string name="ui_follow_system">Follow system appearance</string>
+    <string name="ui_mode_global_short">Global</string>
+    <string name="ui_site_latency">Node website latency</string>
+    <string name="ui_more">More</string>
+    <string name="ui_measure">Test</string>
+    <string name="ui_measure_all">Test all</string>
+    <string name="ui_session_open_home">Open home</string>
+    <string name="ui_site_route_proxy">Via selected node</string>
+    <string name="ui_site_route_direct">Direct</string>
+    <string name="ui_lanyard_loading">Loading 3D control</string>
+    <string name="delay_queued">Queued</string>
+    <string name="delay_group_empty">No testable members</string>
+    <plurals name="delay_group_progress"><item quantity="one">Member %1$d/%2$d · reachable %3$d</item><item quantity="other">Members %1$d/%2$d · reachable %3$d</item></plurals>
 </resources>
